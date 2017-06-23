@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="cn.whaley.datawarehouse.illidan.mapper.UserMapper">
+	<!-- findAll -->
+    <select id="findAll" resultType="UserInfo">
+        select * from boot_user
+    </select>
+
+    <select id="findOne" parameterType="int" resultType="UserInfo">
+        select * from boot_user where id = #{id}
+    </select>
+
+    <select id="findByName" parameterType="String" resultType="UserInfo">
+        select * from boot_user where name = #{name}
+    </select>
+
+    <insert id="addUser" useGeneratedKeys="true" keyProperty="id" parameterType="cn.whaley.datawarehouse.illidan.domain.UserInfo">
+        insert into boot_user (id,name,tel,create_time) values (#{id},#{name},#{tel},#{createTime})
+    </insert>
+</mapper>
