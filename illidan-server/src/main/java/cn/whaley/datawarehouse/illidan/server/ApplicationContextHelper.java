@@ -1,4 +1,4 @@
-package cn.whaley.datawarehouse.illidan;
+package cn.whaley.datawarehouse.illidan.server;
 
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;

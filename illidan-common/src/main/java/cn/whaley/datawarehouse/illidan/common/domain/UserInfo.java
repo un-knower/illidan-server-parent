@@ -1,4 +1,4 @@
-package cn.whaley.datawarehouse.illidan.domain;
+package cn.whaley.datawarehouse.illidan.common.domain;
 
 import com.alibaba.fastjson.annotation.JSONField;
 

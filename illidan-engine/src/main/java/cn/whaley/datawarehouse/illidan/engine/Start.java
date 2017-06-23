@@ -1,6 +1,7 @@
 package cn.whaley.datawarehouse.illidan.engine;
 
-import cn.whaley.datawarehouse.illidan.service.UserService;
+import cn.whaley.datawarehouse.illidan.common.service.UserService;
+import cn.whaley.datawarehouse.illidan.engine.service.HiveService;
 import org.springframework.context.support.GenericXmlApplicationContext;
 
 /**
@@ -14,5 +15,7 @@ public class Start {
         context.refresh();
         UserService userService = context.getBean(UserService.class);
         System.out.println(userService.findAll().size());
+        HiveService hiveService = context.getBean(HiveService.class);
+        System.out.println(hiveService.queryForCount("select count(1) from default.eagle_live_statistics"));
     }
 }

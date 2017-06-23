@@ -1,6 +1,6 @@
-package cn.whaley.datawarehouse.illidan.mapper;
+package cn.whaley.datawarehouse.illidan.common.mapper;
 
-import cn.whaley.datawarehouse.illidan.domain.UserInfo;
+import cn.whaley.datawarehouse.illidan.common.domain.UserInfo;
 import org.apache.ibatis.annotations.Mapper;
 import org.springframework.stereotype.Component;
 

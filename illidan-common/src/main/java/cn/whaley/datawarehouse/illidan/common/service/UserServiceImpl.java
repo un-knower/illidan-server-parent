@@ -1,7 +1,7 @@
-package cn.whaley.datawarehouse.illidan.service;
+package cn.whaley.datawarehouse.illidan.common.service;
 
-import cn.whaley.datawarehouse.illidan.domain.UserInfo;
-import cn.whaley.datawarehouse.illidan.mapper.UserMapper;
+import cn.whaley.datawarehouse.illidan.common.domain.UserInfo;
+import cn.whaley.datawarehouse.illidan.common.mapper.UserMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

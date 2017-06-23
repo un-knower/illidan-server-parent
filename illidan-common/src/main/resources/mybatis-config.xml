@@ -24,6 +24,6 @@
         <setting name="defaultStatementTimeout" value="25000" />
     </settings>
     <typeAliases>
-        <typeAlias alias="UserInfo" type="cn.whaley.datawarehouse.illidan.domain.UserInfo"/>
+        <typeAlias alias="UserInfo" type="cn.whaley.datawarehouse.illidan.common.domain.UserInfo"/>
     </typeAliases>
 </configuration>

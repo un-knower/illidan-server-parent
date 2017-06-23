@@ -1,6 +1,6 @@
-package cn.whaley.datawarehouse.illidan.service;
+package cn.whaley.datawarehouse.illidan.common.service;
 
-import cn.whaley.datawarehouse.illidan.domain.UserInfo;
+import cn.whaley.datawarehouse.illidan.common.domain.UserInfo;
 
 import java.util.List;
 

@@ -1,4 +1,4 @@
-package cn.whaley.datawarehouse.illidan.util;
+package cn.whaley.datawarehouse.illidan.server.util;
 
 
 
