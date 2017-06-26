@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="cn.whaley.datawarehouse.illidan.common.mapper.project.ProjectMapper">
+
+    <!--The user defined SQL!-->
+
+
+    <!--The user defined SQL!-->
+
+    <sql id="updateSql">
+        update project project
+        <set>
+            <if test="project.projectCode != null">
+                projectCode = #{project.projectCode},
+            </if>
+            <if test="project.projectDes != null">
+                projectDes = #{project.projectDes},
+            </if>
+            <if test="project.ownerId != null">
+                ownerId = #{project.ownerId},
+            </if>
+            <if test="project.status != null">
+                status = #{project.status},
+            </if>
+            <if test="project.createTime != null">
+                createTime = #{project.createTime},
+            </if>
+            <if test="project.updateTime != null">
+                updateTime = #{project.updateTime},
+            </if>
+
+        </set>
+    </sql>
+
+    <sql id="joinTables">
+    </sql>
+
+    <sql id="colList">
+        <trim prefix="" prefixOverrides=",">
+            , project.projectCode AS projectCode
+            , project.projectDes AS projectDes
+            , project.ownerId AS ownerId
+            , project.status AS status
+            , project.createTime AS createTime
+            , project.updateTime AS updateTime
+            , project.id AS id
+
+        </trim>
+    </sql>
+
+    <sql id="whereCase">
+        <where>
+            1=1
+            <if test="project != null and project.id != null">and project.id = #{project.id}</if>
+            <if test="project != null and project.idGT != null">and project.id > #{project.idGT}</if><if test="idLT != null">and #{idLT} > project.id</if>
+            <if test="project != null and project.projectCode != null">and project.projectCode = #{project.projectCode}</if>
+            <if test="project != null and project.projectCodeLK != null">and project.projectCode LIKE #{project.projectCodeLK}</if>
+            <if test="project != null and project.projectDes != null">and project.projectDes = #{project.projectDes}</if>
+            <if test="project != null and project.projectDesLK != null">and project.projectDes LIKE #{project.projectDesLK}</if>
+            <if test="project != null and project.createTime != null">and project.createTime = #{project.createTime}</if>
+            <if test="project != null and project.updateTime != null">and project.updateTime = #{project.updateTime}</if>
+            <if test="project != null and project.ownerId != null">and project.ownerId = #{project.ownerId}</if>
+            <if test="project != null and project.ownerIdLK != null">and project.ownerId LIKE #{project.ownerIdLK}</if>
+            <if test="project != null and project.status != null">and project.status = #{project.status}</if>
+            <if test="project != null and project.statusLK != null">and project.status LIKE #{project.statusLK}</if>
+
+        </where>
+    </sql>
+
+    <sql id="smallWhereCase">
+        <where>
+            <if test="project != null and project.id != null">and project.id = #{project.id}</if>
+            <if test="project != null and project.projectCode != null">and project.projectCode = #{project.projectCode}</if>
+            <if test="project != null and project.projectDes != null">and project.projectDes = #{project.projectDes}</if>
+            <if test="project != null and project.createTime != null">and project.createTime = #{project.createTime}</if>
+            <if test="project != null and project.updateTime != null">and project.updateTime = #{project.updateTime}</if>
+            <if test="project != null and project.ownerId != null">and project.ownerId = #{project.ownerId}</if>
+            <if test="project != null and project.status != null">and project.status = #{project.status}</if>
+        </where>
+    </sql>
+
+    <resultMap id="returnProject" type="cn.whaley.datawarehouse.illidan.common.domain.project.Project">
+        <id column="id" javaType="Long" jdbcType="BIGINT" property="id"/>
+        <result column="projectCode" javaType="String" jdbcType="VARCHAR" property="projectCode"/>
+        <result column="projectDes" javaType="String" jdbcType="VARCHAR" property="projectDes"/>
+        <result column="createTime" javaType="Date" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="updateTime" javaType="Date" jdbcType="TIMESTAMP" property="updateTime"/>
+        <result column="ownerId" javaType="String" jdbcType="VARCHAR" property="ownerId"/>
+        <result column="status" javaType="String" jdbcType="VARCHAR" property="status"/>
+
+    </resultMap>
+
+    <select id="get"  resultMap="returnProject">
+        select * from project project where  project.id = #{id}
+    </select>
+
+    <update id="update">
+        <include refid="updateSql"/>
+        <include refid="whereCase"/>
+    </update>
+
+    <insert id="insertBatch" >
+        insert into project
+        (
+        <trim prefix="" prefixOverrides=",">
+            ,projectCode,projectDes,createTime,updateTime,ownerId,status
+        </trim>
+        ) values
+        <foreach collection="list" item="item" index="index" separator=",">
+            (
+            <trim prefix="" prefixOverrides=",">
+                ,#{projectCode} ,#{projectDes} ,#{createTime} ,#{updateTime} ,#{ownerId} ,#{status}
+            </trim>
+            )
+        </foreach>
+    </insert>
+
+    <insert id="insert" parameterType="Project">
+        <selectKey resultType="long" keyProperty="id" order="AFTER">
+            SELECT
+            LAST_INSERT_ID()
+        </selectKey>
+        insert into project
+        (
+        <trim prefix="" prefixOverrides=",">
+            ,projectCode,projectDes,createTime,updateTime,ownerId,status
+        </trim>
+        )values(
+        <trim prefix="" prefixOverrides=",">
+            ,#{project.projectCode},#{project.projectDes},#{project.createTime},#{project.updateTime},#{project.ownerId},#{project.status}
+        </trim>
+        )
+    </insert>
+
+    <delete id="remove" >
+        delete project from project project <include refid="whereCase"/>
+    </delete>
+
+    <select id="find"  resultMap="returnProject">
+        select <include refid="colList" /> from project project
+        <include refid="joinTables"/>
+        <include refid="smallWhereCase"/>
+        <if test="project != null and project.orderBy != null">order by #{project.orderBy}</if>
+        <if test="project != null and project.limitStart != null and project.limitEnd != null">limit #{project.limitStart}, #{project.limitEnd}</if>
+    </select>
+
+    <select id="count"  resultType="long">
+        select count(1) from project project
+        <include refid="joinTables"/>
+        <include refid="smallWhereCase"/>
+    </select>
+
+    <update id="updateByProject" >
+        <include refid="updateSql"/>
+        <include refid="smallWhereCase"/>
+    </update>
+
+    <update id="updateById">
+        <include refid="updateSql"/>
+        where id = #{project.id}
+    </update>
+
+    <delete id="removeByProject">
+        delete from project project <include refid="smallWhereCase"/>
+    </delete>
+
+    <select id="findByProject" resultMap="returnProject">
+        select <include refid="colList" /> from project project
+        <include refid="joinTables"/>
+        <include refid="smallWhereCase"/>
+        order by project.updateTime desc
+        <!--<if test="project != null and project.orderBy != null">order by #{project.orderBy}</if>-->
+        <if test="project != null and project.limitStart != null and project.limitEnd != null">limit #{project.limitStart}, #{project.limitEnd}</if>
+    </select>
+
+    <select id="countByProject"  resultType="long">
+        select count(1) from project project
+        <include refid="joinTables"/>
+        <include refid="smallWhereCase"/>
+    </select>
+
+    <select id="isExistProject"  resultType="long">
+        select count(1) from project project
+        where id = #{id} and (projectCode=#{projectCode})
+    </select>
+
+    <delete id="removeByIds">
+        delete from project where id in
+        <foreach item="item" collection="ids" open="(" separator="," close=")" >
+            #{item}
+        </foreach>
+
+    </delete>
+
+    <select id="getByCodeLike"  resultMap="returnProject">
+        select <include refid="colList" /> from project project where  project.productCode like concat('%',#{productCode},'%') limit 10
+    </select>
+</mapper>
