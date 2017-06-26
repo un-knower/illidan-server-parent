@@ -93,14 +93,14 @@ public class ProjectController extends Common {
     public void edit(@RequestBody Project project) {
         try {
             if(StringUtils.isEmpty(project)){
-                returnResult(false, "修改项目失败!!!");
+                returnResult(false, "淇敼椤圭洰澶辫触!!!");
             }
             projectService.updateById(project);
-            returnResult(true, "修改项目成功!!!");
+            returnResult(true, "淇敼椤圭洰鎴愬姛!!!");
         } catch (Exception e) {
             e.printStackTrace();
             logger.error(e.getMessage());
-            returnResult(false, "修改项目失败" + e.getMessage());
+            returnResult(false, "淇敼椤圭洰澶辫触" + e.getMessage());
         }
     }
 
@@ -118,14 +118,14 @@ public class ProjectController extends Common {
             project.setCreateTime(new Date());
             project.setUpdateTime(new Date());
             if(StringUtils.isEmpty(project)){
-                returnResult(false, "新增项目失败!!!");
+                returnResult(false, "鏂板椤圭洰澶辫触!!!");
             }
             projectService.insert(project);
-            returnResult(true, "新增项目成功!!!");
+            returnResult(true, "鏂板椤圭洰鎴愬姛!!!");
         } catch (Exception e) {
             e.printStackTrace();
             logger.error(e.getMessage());
-            returnResult(false, "新增项目失败: " + e.getMessage());
+            returnResult(false, "鏂板椤圭洰澶辫触: " + e.getMessage());
         }
     }
 
@@ -135,17 +135,17 @@ public class ProjectController extends Common {
         try {
             String ownerId = "1";
             if(StringUtils.isEmpty(ids)){
-                returnResult(false, "请选择要删除的记录");
+                returnResult(false, "璇烽�夋嫨瑕佸垹闄ょ殑璁板綍");
             }
             String[] idArray = ids.split(",");
             List<Long> idList = Arrays.asList(idArray).stream().map(x->Long.parseLong(x)).collect(Collectors.toList());
             projectService.removeByIds(idList);
-            logger.error(ownerId + "删除了项目：" + ids);
-            returnResult(true, "删除项目成功");
+            logger.error(ownerId + "鍒犻櫎浜嗛」鐩細" + ids);
+            returnResult(true, "鍒犻櫎椤圭洰鎴愬姛");
         } catch (Exception e) {
             e.printStackTrace();
             logger.error(e.getMessage());
-            returnResult(false, "删除项目失败:" + e.getMessage());
+            returnResult(false, "鍒犻櫎椤圭洰澶辫触:" + e.getMessage());
         }
     }
 

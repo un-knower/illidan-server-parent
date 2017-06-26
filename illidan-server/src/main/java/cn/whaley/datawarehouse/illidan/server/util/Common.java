@@ -18,7 +18,7 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * ¹²Í¬Àà
+ * å…±åŒç±»
  */
 public class Common {
     public static final String PWD_REG = "((?=.*\\d)(?=.*\\D)|(?=.*[a-zA-Z])(?=.*[^a-zA-Z]))^.{8,16}$";
@@ -164,9 +164,9 @@ public class Common {
 
 
     /**
-     * »ñÈ¡Ê¡id
+     * è·å–çœid
      *
-     * @return Ê¡id
+     * @return çœid
      */
     public int getProvinceId() {
         String provinceId = getCookieValue(PROVINCE_KEY);
@@ -177,10 +177,10 @@ public class Common {
     }
 
     /**
-     * »ñµÃcookie¶ÔÓ¦µÄÖµ
+     * è·å¾—cookieå¯¹åº”çš„å€¼
      *
-     * @param key ¶ÔÓ¦µÄ¼ü
-     * @return ·µ»ØÖµ
+     * @param key å¯¹åº”çš„é”®
+     * @return è¿”å›å€¼
      */
     public String getCookieValue(String key) {
         Cookie cookie = this.getCookie(key);
@@ -195,10 +195,10 @@ public class Common {
     }
 
     /**
-     * ¸ù¾İ¼ü»ñÈ¡¶ÔÓ¦µÄcookie¶ÔÏó
+     * æ ¹æ®é”®è·å–å¯¹åº”çš„cookieå¯¹è±¡
      *
-     * @param key ¶ÔÓ¦µÄkey
-     * @return key¶ÔÓ¦µÄcookieÖµ
+     * @param key å¯¹åº”çš„key
+     * @return keyå¯¹åº”çš„cookieå€¼
      */
     public Cookie getCookie(String key) {
         Cookie[] cookies = this.getRequest().getCookies();
@@ -275,15 +275,15 @@ public class Common {
 //        try{
 //            Field[] fields = object.getClass().getDeclaredFields();
 //            for(Field field : fields){
-//                field.setAccessible(true); //ÉèÖÃĞ©ÊôĞÔÊÇ¿ÉÒÔ·ÃÎÊµÄ
+//                field.setAccessible(true); //è®¾ç½®äº›å±æ€§æ˜¯å¯ä»¥è®¿é—®çš„
 //                FieldAttr fieldAttr = field.getAnnotation(FieldAttr.class);
 //                if(fieldAttr == null || !fieldAttr.required()){
 //                    continue;
 //                }
 //                if(field.get(object) == null){
-//                    return StringUtils.isEmpty(fieldAttr.desc())? field.getName() : fieldAttr.desc() + "±ØÌî";
+//                    return StringUtils.isEmpty(fieldAttr.desc())? field.getName() : fieldAttr.desc() + "å¿…å¡«";
 //                }else if(field.getType() == String.class && StringUtils.isEmpty(String.valueOf(field.get(object)))){
-//                    return StringUtils.isEmpty(fieldAttr.desc())? field.getName() : fieldAttr.desc() + "±ØÌî";
+//                    return StringUtils.isEmpty(fieldAttr.desc())? field.getName() : fieldAttr.desc() + "å¿…å¡«";
 //                }
 //            }
 //        }catch (Exception e){
@@ -292,7 +292,7 @@ public class Common {
 //        return "";
 //    }
 
-    //Dept×ªTreeNode
+    //Deptè½¬TreeNode
 //    public TreeNode transNode(Dept dept, int level){
 //        TreeNode node = new TreeNode();
 //        node.setId(dept.getId());
@@ -303,7 +303,7 @@ public class Common {
 //
 //        return node;
 //    }
-//    //Position×ªTreeNode
+//    //Positionè½¬TreeNode
 //    public TreeNode transNode(Position position, int level){
 //        TreeNode node = new TreeNode();
 //        node.setId(position.getId());
@@ -422,7 +422,7 @@ public class Common {
 //        }
 //    }
 //
-//    //ÌØÊâ·½·¨ Ö»Ìá¹©PCÓÃ
+//    //ç‰¹æ®Šæ–¹æ³• åªæä¾›PCç”¨
 //    public List<String> getAuthNames(){
 //        Sysuser su = getSysuserFromSession();
 //        if(spAuth(su)){
@@ -435,11 +435,11 @@ public class Common {
 //    public ReturnResult checkFileImg(File file){
 //        String name = file.getName();
 //        if(StringUtils.isEmpty(name)){
-//            return ReturnResult.fail("ÎÄ¼şÃû³ÆÎª¿Õ");
+//            return ReturnResult.fail("æ–‡ä»¶åç§°ä¸ºç©º");
 //        }
 //        int index = name.lastIndexOf(".");
 //        if(index < 0 || index >= name.length()){
-//            return ReturnResult.fail("ÎÄ¼şÃû³ÆÃ»ÓĞÀ©Õ¹Ãû");
+//            return ReturnResult.fail("æ–‡ä»¶åç§°æ²¡æœ‰æ‰©å±•å");
 //        }
 //        String suffix = name.substring(index+1);
 //        switch (suffix.toUpperCase()){
@@ -448,7 +448,7 @@ public class Common {
 //            case "PNG":
 //                return ReturnResult.succeed("OK");
 //            default:
-//                return ReturnResult.fail("²»ÊÇÍ¼Æ¬ÀàĞÍ");
+//                return ReturnResult.fail("ä¸æ˜¯å›¾ç‰‡ç±»å‹");
 //        }
 //    }
 //
@@ -463,7 +463,7 @@ public class Common {
 //    }
 //
 //    /**
-//     * ¹ıÂËÖ»Ê£ÏÂÁĞ±íÒ³Õ¹Ê¾µÄÊôĞÔ
+//     * è¿‡æ»¤åªå‰©ä¸‹åˆ—è¡¨é¡µå±•ç¤ºçš„å±æ€§
 //     *
 //     * @param map
 //     * @return
