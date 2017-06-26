@@ -25,5 +25,6 @@
     </settings>
     <typeAliases>
         <typeAlias alias="UserInfo" type="cn.whaley.datawarehouse.illidan.common.domain.user.UserInfo"/>
+        <typeAlias alias="Project" type="cn.whaley.datawarehouse.illidan.common.domain.project.Project"/>
     </typeAliases>
 </configuration>
