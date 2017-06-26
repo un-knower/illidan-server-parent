@@ -83,7 +83,7 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public List<Project> getByCodeLike(String username) {
-        return projectMapper.getByCodeLike(username);
+    public List<Project> getByCodeLike(String projectCode) {
+        return projectMapper.getByCodeLike(projectCode);
     }
 }

@@ -194,6 +194,6 @@
     </delete>
 
     <select id="getByCodeLike"  resultMap="returnProject">
-        select <include refid="colList" /> from project project where  project.productCode like concat('%',#{productCode},'%') limit 10
+        select <include refid="colList" /> from project project where  project.projectCode like concat('%',#{projectCode},'%') limit 10
     </select>
 </mapper>

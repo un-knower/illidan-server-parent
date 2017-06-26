@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="cn.whaley.datawarehouse.illidan.common.mapper.group.TaskGroupMapper">
+
+    <!--The user defined SQL!-->
+
+
+    <!--The user defined SQL!-->
+
+    <sql id="updateSql">
+        update task_group taskGroup
+        <set>
+            <if test="taskGroup.groupCode != null">
+                groupCode = #{taskGroup.groupCode},
+            </if>
+            <if test="taskGroup.groupDes != null">
+                groupDes = #{taskGroup.groupDes},
+            </if>
+            <if test="taskGroup.schedule != null">
+                schedule = #{taskGroup.schedule},
+            </if>
+            <if test="taskGroup.email != null">
+                email = #{taskGroup.email},
+            </if>
+            <if test="taskGroup.status != null">
+                status = #{taskGroup.status},
+            </if>
+            <if test="taskGroup.projectId != null">
+                projectId = #{taskGroup.projectId},
+            </if>
+            <if test="taskGroup.createTime != null">
+                createTime = #{taskGroup.createTime},
+            </if>
+            <if test="taskGroup.updateTime != null">
+                updateTime = #{taskGroup.updateTime},
+            </if>
+
+        </set>
+    </sql>
+
+    <sql id="joinTables">
+    </sql>
+
+    <sql id="colList">
+        <trim prefix="" prefixOverrides=",">
+            , taskGroup.groupCode AS groupCode
+            , taskGroup.groupDes AS groupDes
+            , taskGroup.schedule AS schedule
+            , taskGroup.email AS email
+            , taskGroup.status AS status
+            , taskGroup.projectId AS projectId
+            , taskGroup.createTime AS createTime
+            , taskGroup.updateTime AS updateTime
+            , taskGroup.id AS id
+
+        </trim>
+    </sql>
+
+    <sql id="whereCase">
+        <where>
+            1=1
+            <if test="taskGroup != null and taskGroup.id != null">and taskGroup.id = #{taskGroup.id}</if>
+            <if test="taskGroup != null and taskGroup.idGT != null">and taskGroup.id > #{taskGroup.idGT}</if><if test="idLT != null">and #{idLT} > taskGroup.id</if>
+            <if test="taskGroup != null and taskGroup.groupCode != null">and taskGroup.groupCode = #{taskGroup.groupCode}</if>
+            <if test="taskGroup != null and taskGroup.groupCodeLK != null">and taskGroup.groupCode LIKE #{taskGroup.groupCodeLK}</if>
+            <if test="taskGroup != null and taskGroup.groupDes != null">and taskGroup.groupDes = #{taskGroup.groupDes}</if>
+            <if test="taskGroup != null and taskGroup.groupDesLK != null">and taskGroup.groupDes LIKE #{taskGroup.groupDesLK}</if>
+            <if test="taskGroup != null and taskGroup.createTime != null">and taskGroup.createTime = #{taskGroup.createTime}</if>
+            <if test="taskGroup != null and taskGroup.updateTime != null">and taskGroup.updateTime = #{taskGroup.updateTime}</if>
+            <if test="taskGroup != null and taskGroup.schedule != null">and taskGroup.schedule = #{taskGroup.schedule}</if>
+            <if test="taskGroup != null and taskGroup.scheduleLK != null">and taskGroup.schedule LIKE #{taskGroup.scheduleLK}</if>
+            <if test="taskGroup != null and taskGroup.status != null">and taskGroup.status = #{taskGroup.status}</if>
+            <if test="taskGroup != null and taskGroup.statusLK != null">and taskGroup.status LIKE #{taskGroup.statusLK}</if>
+            <if test="taskGroup != null and taskGroup.email != null">and taskGroup.email = #{taskGroup.email}</if>
+            <if test="taskGroup != null and taskGroup.emailLK != null">and taskGroup.email LIKE #{taskGroup.emailLK}</if>
+            <if test="taskGroup != null and taskGroup.projectId != null">and taskGroup.projectId = #{taskGroup.projectId}</if>
+            <if test="taskGroup != null and taskGroup.projectIdLK != null">and taskGroup.projectId LIKE #{taskGroup.projectIdLK}</if>
+
+        </where>
+    </sql>
+
+    <sql id="smallWhereCase">
+        <where>
+            <if test="taskGroup != null and taskGroup.id != null">and taskGroup.id = #{taskGroup.id}</if>
+            <if test="taskGroup != null and taskGroup.groupCode != null">and taskGroup.groupCode = #{taskGroup.groupCode}</if>
+            <if test="taskGroup != null and taskGroup.groupDes != null">and taskGroup.groupDes = #{taskGroup.groupDes}</if>
+            <if test="taskGroup != null and taskGroup.createTime != null">and taskGroup.createTime = #{taskGroup.createTime}</if>
+            <if test="taskGroup != null and taskGroup.updateTime != null">and taskGroup.updateTime = #{taskGroup.updateTime}</if>
+            <if test="taskGroup != null and taskGroup.schedule != null">and taskGroup.schedule = #{taskGroup.schedule}</if>
+            <if test="taskGroup != null and taskGroup.status != null">and taskGroup.status = #{taskGroup.status}</if>
+            <if test="taskGroup != null and taskGroup.email != null">and taskGroup.email = #{taskGroup.email}</if>
+            <if test="taskGroup != null and taskGroup.projectId != null">and taskGroup.projectId = #{taskGroup.projectId}</if>
+        </where>
+    </sql>
+
+    <resultMap id="returnTaskGroup" type="cn.whaley.datawarehouse.illidan.common.domain.group.TaskGroup">
+        <id column="id" javaType="Long" jdbcType="BIGINT" property="id"/>
+        <result column="groupCode" javaType="String" jdbcType="VARCHAR" property="groupCode"/>
+        <result column="groupDes" javaType="String" jdbcType="VARCHAR" property="groupDes"/>
+        <result column="createTime" javaType="Date" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="updateTime" javaType="Date" jdbcType="TIMESTAMP" property="updateTime"/>
+        <result column="schedule" javaType="String" jdbcType="VARCHAR" property="schedule"/>
+        <result column="status" javaType="String" jdbcType="VARCHAR" property="status"/>
+        <result column="email" javaType="String" jdbcType="VARCHAR" property="email"/>
+        <result column="projectId" javaType="Long" jdbcType="BIGINT" property="projectId"/>
+
+    </resultMap>
+
+    <select id="get"  resultMap="returnTaskGroup">
+        select * from task_group taskGroup where  taskGroup.id = #{id}
+    </select>
+
+    <update id="update">
+        <include refid="updateSql"/>
+        <include refid="whereCase"/>
+    </update>
+
+    <insert id="insertBatch" >
+        insert into task_group
+        (
+        <trim prefix="" prefixOverrides=",">
+            ,groupCode,groupDes,createTime,updateTime,schedule,status,email,projectId
+        </trim>
+        ) values
+        <foreach collection="list" item="item" index="index" separator=",">
+            (
+            <trim prefix="" prefixOverrides=",">
+                ,#{groupCode} ,#{groupDes} ,#{createTime} ,#{updateTime} ,#{schedule} ,#{status} ,#{email} ,#{projectId}
+            </trim>
+            )
+        </foreach>
+    </insert>
+
+    <insert id="insert" parameterType="TaskGroup">
+        <selectKey resultType="long" keyProperty="id" order="AFTER">
+            SELECT
+            LAST_INSERT_ID()
+        </selectKey>
+        insert into task_group
+        (
+        <trim prefix="" prefixOverrides=",">
+            ,groupCode,groupDes,createTime,updateTime,schedule,status,email,projectId
+        </trim>
+        )values(
+        <trim prefix="" prefixOverrides=",">
+            ,#{taskGroup.groupCode},#{taskGroup.groupDes},#{taskGroup.createTime},#{taskGroup.updateTime},#{taskGroup.schedule},#{taskGroup.status},#{taskGroup.email},#{taskGroup.projectId}
+        </trim>
+        )
+    </insert>
+
+    <delete id="remove" >
+        delete taskGroup from task_group taskGroup <include refid="whereCase"/>
+    </delete>
+
+    <select id="find"  resultMap="returnTaskGroup">
+        select <include refid="colList" /> from task_group taskGroup
+        <include refid="joinTables"/>
+        <include refid="smallWhereCase"/>
+        <if test="taskGroup != null and taskGroup.orderBy != null">order by #{taskGroup.orderBy}</if>
+        <if test="taskGroup != null and taskGroup.limitStart != null and taskGroup.limitEnd != null">limit #{taskGroup.limitStart}, #{taskGroup.limitEnd}</if>
+    </select>
+
+    <select id="count"  resultType="long">
+        select count(1) from task_group taskGroup
+        <include refid="joinTables"/>
+        <include refid="smallWhereCase"/>
+    </select>
+
+    <update id="updateByTaskGroup" >
+        <include refid="updateSql"/>
+        <include refid="smallWhereCase"/>
+    </update>
+
+    <update id="updateById">
+        <include refid="updateSql"/>
+        where id = #{taskGroup.id}
+    </update>
+
+    <delete id="removeByTaskGroup">
+        delete from task_group taskGroup <include refid="smallWhereCase"/>
+    </delete>
+
+    <select id="findByTaskGroup" resultMap="returnTaskGroup">
+        select <include refid="colList" /> from task_group taskGroup
+        <include refid="joinTables"/>
+        <include refid="smallWhereCase"/>
+        order by taskGroup.updateTime desc
+        <if test="taskGroup != null and taskGroup.limitStart != null and taskGroup.limitEnd != null">limit #{taskGroup.limitStart}, #{taskGroup.limitEnd}</if>
+    </select>
+
+    <select id="countByTaskGroup"  resultType="long">
+        select count(1) from task_group taskGroup
+        <include refid="joinTables"/>
+        <include refid="smallWhereCase"/>
+    </select>
+
+    <select id="isExistTaskGroup"  resultType="long">
+        select count(1) from task_group taskGroup
+        where id = #{id} and (groupCode=#{groupCode})
+    </select>
+
+    <delete id="removeByIds">
+        delete from task_group where id in
+        <foreach item="item" collection="ids" open="(" separator="," close=")" >
+            #{item}
+        </foreach>
+
+    </delete>
+
+    <select id="getByCodeLike"  resultMap="returnTaskGroup">
+        select <include refid="colList" /> from task_group taskGroup where  taskGroup.groupCode like concat('%',#{groupCode},'%') limit 10
+    </select>
+</mapper>

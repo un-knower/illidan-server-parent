@@ -34,5 +34,5 @@ public interface ProjectService {
 
     Long removeByIds(final List<Long> ids);
 
-    List<Project> getByCodeLike(String name);
+    List<Project> getByCodeLike(String projectCode);
 }
