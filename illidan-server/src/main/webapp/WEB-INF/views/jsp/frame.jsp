@@ -1,55 +1,56 @@
 <%@ page language="java" import="java.util.*" pageEncoding="utf-8" %>
+<%
+    String path = request.getContextPath();
+%>
 <html  manifest="cache.appcache">
 <link rel="stylesheet" type="text/css" media="screen"
-      href="static/css/bootstrap-datetimepicker.css">
-<link rel="stylesheet" href="http://r.${resourceDomain}/qqy/bootstrap/css/bootstrap.min.css"/>
-<link rel="stylesheet" href="http://r.${resourceDomain}/qqy/bootstrap/css/bootstrap-theme.min.css">
-<link rel="stylesheet" href="http://s.${resourceDomain}/css/font-awesome.css"/>
-<link rel="stylesheet" href="http://r.${resourceDomain}/qqy/css/theme.css"/>
+      href="<%=path%>/static/css/bootstrap-datetimepicker.css">
+<link rel="stylesheet" href="<%=path%>/static/css/bootstrap.min.css"/>
+<link rel="stylesheet" href="<%=path%>/static/css/bootstrap-theme.min.css">
+<link rel="stylesheet" href="<%=path%>/static/css/font-awesome.css"/>
+<link rel="stylesheet" href="<%=path%>/static/css/theme.css"/>
+<link rel="stylesheet" href="<%=path%>/static/css/chosen.css"/>
 
 <%--<link rel="icon" href="//r.360img.cn/images/H5/common/favicon.ico" >--%>
 
-
-<script src="http://s.${resourceDomain}/js/ace-extra.js"></script>
+<script src="<%=path%>/static/js/ace-extra.js"></script>
 <!-- HTML5shiv and Respond.js for IE8 to support HTML5 elements and media queries -->
-<!--[if lte IE 8]>
-<script src="http://s.${resourceDomain}/js/html5shiv.js"></script>
-<script src="http://s.${resourceDomain}/js/respond.js"></script>
-<![endif]-->
-<script src="http://s.${resourceDomain}/js/jquery.js"></script>
-<!--[if IE]>
-<script type="text/javascript">
-    window.jQuery || document.write("<script src='http://s.${resourceDomain}/js/jquery1x.js'>" + "<" + "/script>");
-</script>
-<![endif]-->
-<script type="text/javascript">
-    if ('ontouchstart' in document.documentElement) document.write("<script src='http://s.${resourceDomain}/js/jquery.mobile.custom.js'>" + "<" + "/script>");
-</script>
-<script src="http://s.${resourceDomain}/js/bootstrap.js"></script>
-<script src="http://s.${resourceDomain}/js/date-time/moment.js"></script>
-<script src="http://s.${resourceDomain}/js/date-time/bootstrap-datetimepicker.js"></script>
+<%--<!--[if lte IE 8]>--%>
+<%--<script src="<%=path%>/static/js/html5shiv.js"></script>--%>
+<%--<script src="<%=path%>/static/js/respond.js"></script>--%>
+<%--<![endif]-->--%>
+<script src="<%=path%>/static/js/jquery.js"></script>
+<%--<!--[if IE]>--%>
+<%--<script type="text/javascript">--%>
+<%--window.jQuery || document.write("<script src='<%=path%>/static/js/jquery1x.js'>" + "<" + "/script>");--%>
+<%--</script>--%>
+<%--<![endif]-->--%>
+<%--<script type="text/javascript">--%>
+<%--if ('ontouchstart' in document.documentElement) document.write("<script src='<%=path%>/static/js/jquery.mobile.custom.js'>" + "<" + "/script>");--%>
+<%--</script>--%>
+<script src="<%=path%>/static/js/bootstrap.js"></script>
+<script src="<%=path%>/static/js/moment.js"></script>
+<script src="<%=path%>/static/js/bootstrap-datetimepicker.js"></script>
 <!-- page specific plugin scripts -->
-<script src="http://s.${resourceDomain}/js/dataTables/jquery.dataTables.js"></script>
-<script src="http://s.${resourceDomain}/js/dataTables/jquery.dataTables.bootstrap.js"></script>
-<script src="http://s.${resourceDomain}/js/dataTables/extensions/buttons/dataTables.buttons.js"></script>
-<script src="http://s.${resourceDomain}/js/dataTables/extensions/buttons/buttons.flash.js"></script>
-<script src="http://s.${resourceDomain}/js/dataTables/extensions/buttons/buttons.html5.js"></script>
-<script src="http://s.${resourceDomain}/js/dataTables/extensions/buttons/buttons.print.js"></script>
-<script src="http://s.${resourceDomain}/js/dataTables/extensions/buttons/buttons.colVis.js"></script>
-<script src="http://s.${resourceDomain}/js/dataTables/extensions/select/dataTables.select.js"></script>
-<script src="http://s.${resourceDomain}/js/jquery.form.3.46.0.js"></script>
-<script src="http://s.${resourceDomain}/js/popCommon.js"></script>
-<script src="http://r.${resourceDomain}/qqy/js/chosen.jquery.js"></script>
-<script src="/js/openWindow.js"></script>
-<script src="http://r.${resourceDomain}/qqy/js/jquery.autocomplete.min.js"></script>
-<script src="/js/selectize.min.js"></script>
-
-<script src="http://r.${resourceDomain}/qqy/js/ajaxfileupload.js"></script>
-<script src="http://r.${resourceDomain}/qqy/js/jquery.form.js"></script>
-<link rel="stylesheet" href="/css/chosen.css"/>
-<script src="http://r.360img.cn/pop/storefront/frontend/dist/lib/jquery-ui/jquery-ui.min.js"></script>
-<script src="http://r.360img.cn/pop/storefront/frontend/dist/lib/fileupload/jquery.iframe-transport.js"></script>
-<script src="http://r.360img.cn/pop/storefront/frontend/dist/lib/fileupload/jquery.fileupload.js"></script>
+<script src="<%=path%>/static/js/jquery.dataTables.js"></script>
+<script src="<%=path%>/static/js/jquery.dataTables.bootstrap.js"></script>
+<script src="<%=path%>/static/js/dataTables.buttons.js"></script>
+<script src="<%=path%>/static/js/buttons.flash.js"></script>
+<script src="<%=path%>/static/js/buttons.html5.js"></script>
+<script src="<%=path%>/static/js/buttons.print.js"></script>
+<script src="<%=path%>/static/js/buttons.colVis.js"></script>
+<script src="<%=path%>/static/js/dataTables.select.js"></script>
+<script src="<%=path%>/static/js/jquery.form.3.46.0.js"></script>
+<script src="<%=path%>/static/js/popCommon.js"></script>
+<script src="<%=path%>/static/js/chosen.jquery.js"></script>
+<script src="<%=path%>/static/js/openWindow.js"></script>
+<script src="<%=path%>/static/js/jquery.autocomplete.min.js"></script>
+<script src="<%=path%>/static/js/selectize.min.js"></script>
+<script src="<%=path%>/static/js/ajaxfileupload.js"></script>
+<script src="<%=path%>/static/js/jquery.form.js"></script>
+<script src="<%=path%>/static/js/jquery-ui.min.js"></script>
+<script src="<%=path%>/static/js/jquery.iframe-transport.js"></script>
+<script src="<%=path%>/static/js/jquery.fileupload.js"></script>
 
 <script type="text/javascript">
     jQuery(function($) {
@@ -117,39 +118,39 @@
         return param;
     }
 
-//    function initSelect() {
-//        var selects = $(".chosen-select");
-//        selects.each(function (i) {
-//            var id = $(this).attr("id");
-//            var value = $(this).attr("value");
-//            var placeholder = $(this).attr("data-placeholder");
-//            if($(this).attr("url") != null){
-//                $.ajax({
-//                    type: 'POST',
-//                    url: $(this).attr("url"),
-//                    dataType: 'json',
-//                    async: false,
-//                    success: function (data) {
-//                        if(data != null && data.length > 0){
-//                            if(placeholder != null){
-//                                $("#"+id).append("<option value=''>"+placeholder+"</option>");
-//                            }
-//                            var optionValue = $("#"+id).attr("optionValue") == null ? "id" : $("#"+id).attr("optionValue");
-//                            var optionText = $("#"+id).attr("optionText") == null ? "name" : $("#"+id).attr("optionText");
-//                            for(var j=0;j<data.length;j++){
-//                                $("#"+id).append("<option value='"+data[j][optionValue]+"'>"+data[j][optionText]+"</option>")
-//                            }
-//                            if(typeof(value) != "undefined"){
-//                                $("#"+id).val(value);
-//                            }
-//                            $("#"+id).trigger("chosen:updated");
-//                        }
-//
-//                    }
-//                });
-//            }
-//        })
-//    }
+    //    function initSelect() {
+    //        var selects = $(".chosen-select");
+    //        selects.each(function (i) {
+    //            var id = $(this).attr("id");
+    //            var value = $(this).attr("value");
+    //            var placeholder = $(this).attr("data-placeholder");
+    //            if($(this).attr("url") != null){
+    //                $.ajax({
+    //                    type: 'POST',
+    //                    url: $(this).attr("url"),
+    //                    dataType: 'json',
+    //                    async: false,
+    //                    success: function (data) {
+    //                        if(data != null && data.length > 0){
+    //                            if(placeholder != null){
+    //                                $("#"+id).append("<option value=''>"+placeholder+"</option>");
+    //                            }
+    //                            var optionValue = $("#"+id).attr("optionValue") == null ? "id" : $("#"+id).attr("optionValue");
+    //                            var optionText = $("#"+id).attr("optionText") == null ? "name" : $("#"+id).attr("optionText");
+    //                            for(var j=0;j<data.length;j++){
+    //                                $("#"+id).append("<option value='"+data[j][optionValue]+"'>"+data[j][optionText]+"</option>")
+    //                            }
+    //                            if(typeof(value) != "undefined"){
+    //                                $("#"+id).val(value);
+    //                            }
+    //                            $("#"+id).trigger("chosen:updated");
+    //                        }
+    //
+    //                    }
+    //                });
+    //            }
+    //        })
+    //    }
 
     function changeSelect(id,url,optionValueStr,optionTextStr) {
         var placeholder = $("#"+id).attr("data-placeholder");
