@@ -173,7 +173,7 @@ jQuery.extend({
             jQuery.globalEval( data );
         // Get the JavaScript object, if JSON is used.
         if ( type == "json" )
-            ////////////浠ヤ笅涓烘柊澧炰唬鐮侊紝瑙ｅ喅涓篸ataType=json鐨勬椂鍊欓亣鍒扮殑闂///////////////
+            ////////////以下为新增代码，解决为dataType=json的时候遇到的问题///////////////
             data = r.responseText;
             var start = data.indexOf(">");
             if(start != -1) {
@@ -182,7 +182,7 @@ jQuery.extend({
                     data = data.substring(start + 1, end);
                 }
             }
-            ///////////浠ヤ笂涓烘柊澧炰唬鐮�///////////////
+            ///////////以上为新增代码///////////////
             eval( "data = " + data );
         // evaluate scripts within html
         if ( type == "html" )
