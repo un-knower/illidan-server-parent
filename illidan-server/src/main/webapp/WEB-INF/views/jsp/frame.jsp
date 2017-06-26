@@ -1,7 +1,7 @@
 <%@ page language="java" import="java.util.*" pageEncoding="utf-8" %>
 <html  manifest="cache.appcache">
 <link rel="stylesheet" type="text/css" media="screen"
-      href="http://s.${resourceDomain}/css/bootstrap-datetimepicker.css">
+      href="static/css/bootstrap-datetimepicker.css">
 <link rel="stylesheet" href="http://r.${resourceDomain}/qqy/bootstrap/css/bootstrap.min.css"/>
 <link rel="stylesheet" href="http://r.${resourceDomain}/qqy/bootstrap/css/bootstrap-theme.min.css">
 <link rel="stylesheet" href="http://s.${resourceDomain}/css/font-awesome.css"/>

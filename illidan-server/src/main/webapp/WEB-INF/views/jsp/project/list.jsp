@@ -29,32 +29,6 @@
                 <input type="email" class="form-control" id="ownerId" name="ownerId" query="query" placeholder="所有者ID">
             </div>
 
-            <%--<div class="form-group">--%>
-            <%--<input class="form-control" id="supplier" name="supplier" query="query" placeholder="供应商">--%>
-            <%--</div>--%>
-            <%--<div class="form-group">--%>
-            <%--<select class="chosen-select form-control" name="supplier" data-placeholder="请选择供应商" id="supplier" query="query" url="/supplier/getSupplierList" optionValue = "id" optionText="organizationName">--%>
-            <%--</select>--%>
-            <%--</div>--%>
-
-            <%--<div class="form-group">--%>
-            <%--<div class="input-group common_date width-40 mr5 fl">--%>
-            <%--<input type="text" class="form-control" value=""--%>
-            <%--id="createTimeBegin" name="createTimeBegin" query="query" placeholder="创建时间开始"/>--%>
-            <%--<span class="input-group-addon">--%>
-            <%--<i class="fa fa-calendar bigger-110"></i>--%>
-            <%--</span>--%>
-            <%--</div>--%>
-            <%--</div>--%>
-            <%--<div class="form-group">--%>
-            <%--<div class="input-group common_date width-40 fl">--%>
-            <%--<input type="text" class="form-control" value="" id="createTimeEnd" name="createTimeEnd"--%>
-            <%--query="query" placeholder="创建时间结束"/>--%>
-            <%--<span class="input-group-addon">--%>
-            <%--<i class="fa fa-calendar bigger-110"></i>--%>
-            <%--</span>--%>
-            <%--</div>--%>
-            <%--</div>--%>
             <div class="text-center search-btns">
                 <button class="btn btn-info" onclick="searchList();">查询</button>
                 <button class="btn btn-default" onclick="clearCondition();">重置</button>
