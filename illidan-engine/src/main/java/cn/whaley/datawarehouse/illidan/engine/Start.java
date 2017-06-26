@@ -1,6 +1,8 @@
 package cn.whaley.datawarehouse.illidan.engine;
 
-import cn.whaley.datawarehouse.illidan.common.service.UserService;
+import cn.whaley.datawarehouse.illidan.common.domain.group.TaskGroup;
+import cn.whaley.datawarehouse.illidan.common.service.group.TaskGroupService;
+import cn.whaley.datawarehouse.illidan.common.service.user.UserService;
 import cn.whaley.datawarehouse.illidan.engine.service.HiveService;
 import org.springframework.context.support.GenericXmlApplicationContext;
 
@@ -13,8 +15,14 @@ public class Start {
         context.setValidating(false);
         context.load("classpath*:spring/application-illidan-*.xml");
         context.refresh();
-        UserService userService = context.getBean(UserService.class);
-        System.out.println(userService.findAll().size());
+
+//        UserService userService = context.getBean(UserService.class);
+//        System.out.println(userService.findAll().size());
+
+        TaskGroup taskGroup = new TaskGroup();
+        TaskGroupService taskGroupService = context.getBean(TaskGroupService.class);
+        System.out.println("task group count: " + +taskGroupService.findByTaskGroup(taskGroup).size());
+
         HiveService hiveService = context.getBean(HiveService.class);
         System.out.println(hiveService.queryForCount("select count(1) from default.eagle_live_statistics"));
     }

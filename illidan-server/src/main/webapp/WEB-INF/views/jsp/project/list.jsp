@@ -17,7 +17,7 @@
     <div class="page-header objhid">
         <div class="form-inline ">
             <div class="form-group">
-            <input type="email" class="form-control" id="id" name="id" query="query" placeholder="项目ID">
+                <input type="email" class="form-control" id="id" name="id" query="query" placeholder="项目ID">
             </div>
             <div class="form-group">
                 <input type="email" class="form-control" id="projectCode" name="projectCode" query="query" placeholder="项目code">
@@ -38,22 +38,22 @@
             <%--</div>--%>
 
             <%--<div class="form-group">--%>
-                <%--<div class="input-group common_date width-40 mr5 fl">--%>
-                    <%--<input type="text" class="form-control" value=""--%>
-                           <%--id="createTimeBegin" name="createTimeBegin" query="query" placeholder="创建时间开始"/>--%>
-                    <%--<span class="input-group-addon">--%>
-												<%--<i class="fa fa-calendar bigger-110"></i>--%>
-											<%--</span>--%>
-                <%--</div>--%>
+            <%--<div class="input-group common_date width-40 mr5 fl">--%>
+            <%--<input type="text" class="form-control" value=""--%>
+            <%--id="createTimeBegin" name="createTimeBegin" query="query" placeholder="创建时间开始"/>--%>
+            <%--<span class="input-group-addon">--%>
+            <%--<i class="fa fa-calendar bigger-110"></i>--%>
+            <%--</span>--%>
+            <%--</div>--%>
             <%--</div>--%>
             <%--<div class="form-group">--%>
-                <%--<div class="input-group common_date width-40 fl">--%>
-                    <%--<input type="text" class="form-control" value="" id="createTimeEnd" name="createTimeEnd"--%>
-                           <%--query="query" placeholder="创建时间结束"/>--%>
-                    <%--<span class="input-group-addon">--%>
-												<%--<i class="fa fa-calendar bigger-110"></i>--%>
-											<%--</span>--%>
-                <%--</div>--%>
+            <%--<div class="input-group common_date width-40 fl">--%>
+            <%--<input type="text" class="form-control" value="" id="createTimeEnd" name="createTimeEnd"--%>
+            <%--query="query" placeholder="创建时间结束"/>--%>
+            <%--<span class="input-group-addon">--%>
+            <%--<i class="fa fa-calendar bigger-110"></i>--%>
+            <%--</span>--%>
+            <%--</div>--%>
             <%--</div>--%>
             <div class="text-center search-btns">
                 <button class="btn btn-info" onclick="searchList();">查询</button>
