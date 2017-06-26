@@ -1,7 +1,7 @@
 package cn.whaley.datawarehouse.illidan.test;
 
-import cn.whaley.datawarehouse.illidan.common.domain.UserInfo;
-import cn.whaley.datawarehouse.illidan.common.service.UserService;
+import cn.whaley.datawarehouse.illidan.common.domain.user.UserInfo;
+import cn.whaley.datawarehouse.illidan.common.service.user.UserService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
