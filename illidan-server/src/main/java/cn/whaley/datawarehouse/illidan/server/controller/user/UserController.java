@@ -1,7 +1,7 @@
-package cn.whaley.datawarehouse.illidan.server.controller;
+package cn.whaley.datawarehouse.illidan.server.controller.user;
 
-import cn.whaley.datawarehouse.illidan.common.domain.UserInfo;
-import cn.whaley.datawarehouse.illidan.common.service.UserService;
+import cn.whaley.datawarehouse.illidan.common.domain.user.UserInfo;
+import cn.whaley.datawarehouse.illidan.common.service.user.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +29,7 @@ public class UserController {
         List<UserInfo> userInfoList = userService.findAll();
         model.addAttribute("userInfos",userInfoList);
         logger.info("获取成功===============");
-        return "findUser";
+        return "user/findUser";
 	}
 	
 	/**
@@ -41,7 +41,7 @@ public class UserController {
 	public String findById(@PathVariable int id, Model model) {
 	    UserInfo userInfo = userService.findOne(id);
 	    model.addAttribute("userInfo", userInfo);
-	    return "userDetail";
+	    return "user/userDetail";
 //		return JSON.toJSONString(userService.findOne(id));
 	}
 
@@ -54,7 +54,7 @@ public class UserController {
     public String findByName(UserInfo userInfo, Model model) {
         UserInfo user = userService.findByName(userInfo.getName());
         model.addAttribute("userInfo", user);
-        return "userDetail";
+        return "user/userDetail";
     }
 
     /**
@@ -62,7 +62,7 @@ public class UserController {
      */
     @RequestMapping("/addUser")
     public String addUser(){
-        return "addUser";
+        return "user/addUser";
     }
 
     @RequestMapping("/addUserCommit")
