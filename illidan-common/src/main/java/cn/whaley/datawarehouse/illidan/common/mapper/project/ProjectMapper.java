@@ -39,5 +39,5 @@ public interface ProjectMapper {
 
     Long removeByIds(@Param("ids") final List<Long> ids);
 
-    List<Project> getByCodeLike(@Param("name") final String name);
+    List<Project> getByCodeLike(@Param("projectCode") final String projectCode);
 }
