@@ -27,5 +27,6 @@
         <typeAlias alias="UserInfo" type="cn.whaley.datawarehouse.illidan.common.domain.user.UserInfo"/>
         <typeAlias alias="Project" type="cn.whaley.datawarehouse.illidan.common.domain.project.Project"/>
         <typeAlias alias="TaskGroup" type="cn.whaley.datawarehouse.illidan.common.domain.group.TaskGroup"/>
+        <typeAlias alias="Task" type="cn.whaley.datawarehouse.illidan.common.domain.task.Task"/>
     </typeAliases>
 </configuration>

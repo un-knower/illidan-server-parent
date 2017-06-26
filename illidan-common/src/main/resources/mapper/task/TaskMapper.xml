@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="cn.whaley.datawarehouse.illidan.common.mapper.task.TaskMapper">
+
+    <!--The user defined SQL!-->
+
+
+    <!--The user defined SQL!-->
+
+    <sql id="updateSql">
+        update task task
+        <set>
+            <if test="task.taskCode != null">
+                taskCode = #{task.taskCode},
+            </if>
+            <if test="task.taskDes != null">
+                taskDes = #{task.taskDes},
+            </if>
+            <if test="task.content != null">
+                content = #{task.content},
+            </if>
+            <if test="task.addUser != null">
+                addUser = #{task.addUser},
+            </if>
+            <if test="task.executeType != null">
+                executeType = #{task.executeType},
+            </if>
+            <if test="task.status != null">
+                status = #{task.status},
+            </if>
+            <if test="task.tableId != null">
+                tableId = #{task.tableId},
+            </if>
+            <if test="task.createTime != null">
+                createTime = #{task.createTime},
+            </if>
+            <if test="task.updateTime != null">
+                updateTime = #{task.updateTime},
+            </if>
+
+        </set>
+    </sql>
+
+    <sql id="joinTables">
+    </sql>
+
+    <sql id="colList">
+        <trim prefix="" prefixOverrides=",">
+            , task.taskCode AS taskCode
+            , task.taskDes AS taskDes
+            , task.content AS content
+            , task.addUser AS addUser
+            , task.executeType AS executeType
+            , task.status AS status
+            , task.tableId AS tableId
+            , task.createTime AS createTime
+            , task.updateTime AS updateTime
+            , task.id AS id
+
+        </trim>
+    </sql>
+
+    <sql id="whereCase">
+        <where>
+            1=1
+            <if test="task != null and task.id != null">and task.id = #{task.id}</if>
+            <if test="task != null and task.idGT != null">and task.id > #{task.idGT}</if><if test="idLT != null">and #{idLT} > task.id</if>
+            <if test="task != null and task.taskCode != null">and task.taskCode = #{task.taskCode}</if>
+            <if test="task != null and task.taskCodeLK != null">and task.taskCode LIKE #{task.taskCodeLK}</if>
+            <if test="task != null and task.taskDes != null">and task.taskDes = #{task.taskDes}</if>
+            <if test="task != null and task.taskDesLK != null">and task.taskDes LIKE #{task.taskDesLK}</if>
+            <if test="task != null and task.createTime != null">and task.createTime = #{task.createTime}</if>
+            <if test="task != null and task.updateTime != null">and task.updateTime = #{task.updateTime}</if>
+            <if test="task != null and task.content != null">and task.content = #{task.content}</if>
+            <if test="task != null and task.contentLK != null">and task.content LIKE #{task.contentLK}</if>
+            <if test="task != null and task.status != null">and task.status = #{task.status}</if>
+            <if test="task != null and task.statusLK != null">and task.status LIKE #{task.statusLK}</if>
+            <if test="task != null and task.addUser != null">and task.addUser = #{task.addUser}</if>
+            <if test="task != null and task.addUserLK != null">and task.addUser LIKE #{task.addUserLK}</if>
+            <if test="task != null and task.tableId != null">and task.tableId = #{task.tableId}</if>
+            <if test="task != null and task.tableIdLK != null">and task.tableId LIKE #{task.tableIdLK}</if>
+            <if test="task != null and task.executeType != null">and task.executeType = #{task.executeType}</if>
+            <if test="task != null and task.executeTypeLK != null">and task.executeType LIKE #{task.executeTypeLK}</if>
+
+        </where>
+    </sql>
+
+    <sql id="smallWhereCase">
+        <where>
+            <if test="task != null and task.id != null">and task.id = #{task.id}</if>
+            <if test="task != null and task.taskCode != null">and task.taskCode = #{task.taskCode}</if>
+            <if test="task != null and task.taskDes != null">and task.taskDes = #{task.taskDes}</if>
+            <if test="task != null and task.createTime != null">and task.createTime = #{task.createTime}</if>
+            <if test="task != null and task.updateTime != null">and task.updateTime = #{task.updateTime}</if>
+            <if test="task != null and task.content != null">and task.content = #{task.content}</if>
+            <if test="task != null and task.status != null">and task.status = #{task.status}</if>
+            <if test="task != null and task.addUser != null">and task.addUser = #{task.addUser}</if>
+            <if test="task != null and task.tableId != null">and task.tableId = #{task.tableId}</if>
+            <if test="task != null and task.executeType != null">and task.executeType = #{task.executeType}</if>
+        </where>
+    </sql>
+
+    <resultMap id="returnTask" type="cn.whaley.datawarehouse.illidan.common.domain.task.Task">
+        <id column="id" javaType="Long" jdbcType="BIGINT" property="id"/>
+        <result column="taskCode" javaType="String" jdbcType="VARCHAR" property="taskCode"/>
+        <result column="taskDes" javaType="String" jdbcType="VARCHAR" property="taskDes"/>
+        <result column="createTime" javaType="Date" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="updateTime" javaType="Date" jdbcType="TIMESTAMP" property="updateTime"/>
+        <result column="content" javaType="String" jdbcType="VARCHAR" property="content"/>
+        <result column="status" javaType="String" jdbcType="VARCHAR" property="status"/>
+        <result column="addUser" javaType="String" jdbcType="VARCHAR" property="addUser"/>
+        <result column="tableId" javaType="Long" jdbcType="BIGINT" property="tableId"/>
+        <result column="executeType" javaType="String" jdbcType="VARCHAR" property="executeType"/>
+
+    </resultMap>
+
+    <select id="get"  resultMap="returnTask">
+        select * from task task where  task.id = #{id}
+    </select>
+
+    <update id="update">
+        <include refid="updateSql"/>
+        <include refid="whereCase"/>
+    </update>
+
+    <insert id="insertBatch" >
+        insert into task
+        (
+        <trim prefix="" prefixOverrides=",">
+            ,taskCode,taskDes,createTime,updateTime,content,status,addUser,tableId,executeType
+        </trim>
+        ) values
+        <foreach collection="list" item="item" index="index" separator=",">
+            (
+            <trim prefix="" prefixOverrides=",">
+                ,#{taskCode} ,#{taskDes} ,#{createTime} ,#{updateTime} ,#{content} ,#{status} ,#{addUser} ,#{tableId} ,#{executeType}
+            </trim>
+            )
+        </foreach>
+    </insert>
+
+    <insert id="insert" parameterType="Task">
+        <selectKey resultType="long" keyProperty="id" order="AFTER">
+            SELECT
+            LAST_INSERT_ID()
+        </selectKey>
+        insert into task
+        (
+        <trim prefix="" prefixOverrides=",">
+            ,taskCode,taskDes,createTime,updateTime,content,status,addUser,tableId,executeType
+        </trim>
+        )values(
+        <trim prefix="" prefixOverrides=",">
+            ,#{task.taskCode},#{task.taskDes},#{task.createTime},#{task.updateTime},#{task.content},#{task.status},#{task.addUser},#{task.tableId},#{task.executeType}
+        </trim>
+        )
+    </insert>
+
+    <delete id="remove" >
+        delete task from task task <include refid="whereCase"/>
+    </delete>
+
+    <select id="find"  resultMap="returnTask">
+        select <include refid="colList" /> from task task
+        <include refid="joinTables"/>
+        <include refid="smallWhereCase"/>
+        <if test="task != null and task.orderBy != null">order by #{task.orderBy}</if>
+        <if test="task != null and task.limitStart != null and task.limitEnd != null">limit #{task.limitStart}, #{task.limitEnd}</if>
+    </select>
+
+    <select id="count"  resultType="long">
+        select count(1) from task task
+        <include refid="joinTables"/>
+        <include refid="smallWhereCase"/>
+    </select>
+
+    <update id="updateByTask" >
+        <include refid="updateSql"/>
+        <include refid="smallWhereCase"/>
+    </update>
+
+    <update id="updateById">
+        <include refid="updateSql"/>
+        where id = #{task.id}
+    </update>
+
+    <delete id="removeByTask">
+        delete from task task <include refid="smallWhereCase"/>
+    </delete>
+
+    <select id="findByTask" resultMap="returnTask">
+        select <include refid="colList" /> from task task
+        <include refid="joinTables"/>
+        <include refid="smallWhereCase"/>
+        order by task.updateTime desc
+        <if test="task != null and task.limitStart != null and task.limitEnd != null">limit #{task.limitStart}, #{task.limitEnd}</if>
+    </select>
+
+    <select id="countByTask"  resultType="long">
+        select count(1) from task task
+        <include refid="joinTables"/>
+        <include refid="smallWhereCase"/>
+    </select>
+
+    <select id="isExistTask"  resultType="long">
+        select count(1) from task task
+        where id = #{id} and (taskCode=#{taskCode})
+    </select>
+
+    <delete id="removeByIds">
+        delete from task where id in
+        <foreach item="item" collection="ids" open="(" separator="," close=")" >
+            #{item}
+        </foreach>
+
+    </delete>
+
+    <select id="getByCodeLike"  resultMap="returnTask">
+        select <include refid="colList" /> from task task where  task.taskCode like concat('%',#{taskCode},'%') limit 10
+    </select>
+</mapper>
