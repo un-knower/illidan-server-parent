@@ -1,6 +1,7 @@
 package cn.whaley.datawarehouse.illidan.server.controller.project;
 
 import cn.whaley.datawarehouse.illidan.common.domain.project.Project;
+import cn.whaley.datawarehouse.illidan.common.domain.project.ProjectQuery;
 import cn.whaley.datawarehouse.illidan.common.service.project.ProjectService;
 import cn.whaley.datawarehouse.illidan.server.util.Common;
 import org.slf4j.Logger;
@@ -45,13 +46,13 @@ public class ProjectController extends Common {
 
 
     @RequestMapping("projectList")
-    public void projectList(Integer start, Integer length, @ModelAttribute("project") Project project) {
+    public void projectList(Integer start, Integer length, @ModelAttribute("project") ProjectQuery project) {
         try {
             HashMap<String, String> map = new HashMap<String, String>();
             map.put("1", "有效");
             map.put("0", "无效");
             if (project == null) {
-                project = new Project();
+                project = new ProjectQuery();
             }
             project.setLimitStart(start);
             project.setPageSize(length);
