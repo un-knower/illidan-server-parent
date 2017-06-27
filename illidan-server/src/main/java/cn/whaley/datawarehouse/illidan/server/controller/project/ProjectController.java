@@ -18,6 +18,7 @@ import org.springframework.web.servlet.ModelAndView;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -46,13 +47,20 @@ public class ProjectController extends Common {
     @RequestMapping("projectList")
     public void projectList(Integer start, Integer length, @ModelAttribute("project") Project project) {
         try {
+            HashMap<String, String> map = new HashMap<String, String>();
+            map.put("1", "有效");
+            map.put("0", "无效");
             if (project == null) {
                 project = new Project();
             }
             project.setLimitStart(start);
             project.setPageSize(length);
+            project.setStatus(map.get(project.getStatus()));
             Long count = projectService.countByProject(project);
             List<Project> projects = projectService.findByProject(project);
+            for (int i=0;i<=projects.size()-1;++i){
+                projects.get(i).setStatus(map.get(projects.get(i).getStatus()));
+            }
             outputTemplateJson(projects, count);
         } catch (Exception e) {
             e.printStackTrace();
@@ -114,7 +122,7 @@ public class ProjectController extends Common {
     @ResponseBody
     public void add(@RequestBody Project project) {
         try {
-            project.setOwnerId("1");
+//            project.setOwnerId("1");
             project.setCreateTime(new Date());
             project.setUpdateTime(new Date());
             if(StringUtils.isEmpty(project)){
@@ -133,20 +141,26 @@ public class ProjectController extends Common {
     @ResponseBody
     public void delete(String ids) {
         try {
-            String ownerId = "1";
+//            String ownerId = "1";
             if(StringUtils.isEmpty(ids)){
                 returnResult(false, "请选择要删除的记录");
             }
             String[] idArray = ids.split(",");
             List<Long> idList = Arrays.asList(idArray).stream().map(x->Long.parseLong(x)).collect(Collectors.toList());
             projectService.removeByIds(idList);
-            logger.error(ownerId + "删除了项目：" + ids);
+            logger.error("删除了项目：" + ids);
             returnResult(true, "删除项目成功");
         } catch (Exception e) {
             e.printStackTrace();
             logger.error(e.getMessage());
             returnResult(false, "删除项目失败:" + e.getMessage());
         }
+    }
+
+    @RequestMapping("test")
+    public ModelAndView test(){
+        ModelAndView modelAndView = new ModelAndView("/project/test");
+        return modelAndView;
     }
 
 }

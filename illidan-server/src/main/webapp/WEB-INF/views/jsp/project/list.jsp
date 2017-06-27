@@ -38,7 +38,7 @@
     </div>
     <button type="button" class="btn btn-success" onclick="add()">新增</button>
     <button type="button" class="btn btn-danger" onclick="remove();">删除</button>
-    <table id="dynamic-table" class="table table-striped table-hover table-bordered">
+    <table id="dynamic-table" name="dynamic-table" class="table table-striped table-hover table-bordered">
         <thead>
         <tr>
             <th class="center"><label class="pos-rel">
@@ -110,7 +110,7 @@
                     },
                     {
                         data: function (row) {
-                            return "<a href='javascript:void(0);' onclick='project_detail(" + row.id + ");'>查看</a> <a href='javascript:void(0);' onclick='edit(" + row.id + ");'>编辑</a>";
+                            return "<a href='javascript:void(0);' onclick='edit(" + row.id + ");'>编辑</a>";
                         }
                     },
                     {data: "projectCode"},
@@ -214,11 +214,11 @@
     }
 
     function add() {
-        modalWindow("/project/toAdd", "新增项目", 600, 700);
+        modalWindow("/project/toAdd", "新增项目", 410, 350);
     }
 
     function edit(id) {
-        modalWindow("/project/toEdit?id=" + id, "编辑项目", 450, 700);
+        modalWindow("/project/toEdit?id=" + id, "编辑项目", 410, 350);
     }
 
     function project_detail(id){
