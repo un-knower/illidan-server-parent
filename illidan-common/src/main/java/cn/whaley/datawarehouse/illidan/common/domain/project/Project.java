@@ -1,15 +1,16 @@
 package cn.whaley.datawarehouse.illidan.common.domain.project;
 
-import cn.whaley.datawarehouse.illidan.common.domain.BaseEntity;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
+import java.io.Serializable;
 import java.util.Date;
 
 /**
  * Created by wujiulin on 2017/6/22.
  */
-public class Project extends BaseEntity<Long, Project> {
+public class Project implements Serializable {
     private static final long serialVersionUID = 1L;
+    private Long id;
     /**
      * 工程code
      */
@@ -35,8 +36,12 @@ public class Project extends BaseEntity<Long, Project> {
      */
     private Date updateTime;
 
-    public static long getSerialVersionUID() {
-        return serialVersionUID;
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getProjectCode() {

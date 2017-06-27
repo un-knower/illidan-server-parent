@@ -1,15 +1,16 @@
 package cn.whaley.datawarehouse.illidan.common.domain.task;
 
-import cn.whaley.datawarehouse.illidan.common.domain.BaseEntity;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
+import java.io.Serializable;
 import java.util.Date;
 
 /**
  * Created by wujiulin on 2017/6/26.
  */
-public class Task extends BaseEntity<Long, Task> {
+public class Task implements Serializable {
     private static final long serialVersionUID = 1L;
+    private Long id;
     /**
      * 任务code
      */
@@ -46,6 +47,14 @@ public class Task extends BaseEntity<Long, Task> {
      * 修改时间
      */
     private Date updateTime;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 
     public String getTaskCode() {
         return taskCode;
