@@ -1,6 +1,7 @@
 package cn.whaley.datawarehouse.illidan.common.mapper.task;
 
 import cn.whaley.datawarehouse.illidan.common.domain.task.Task;
+import cn.whaley.datawarehouse.illidan.common.domain.task.TaskQuery;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Component;
@@ -29,15 +30,15 @@ public interface TaskMapper {
 
     Long count(@Param("task") final Map<String, String> params);
 
-    Long countByTask(@Param("task") final Task task);
+    Long countByTask(@Param("task") final TaskQuery task);
 
     Long updateByTask(@Param("task") final Task task);
 
     Long updateById(@Param("task") final Task task);
 
-    Long removeByTask(@Param("task") final Task task);
+    Long removeByTask(@Param("task") final TaskQuery task);
 
-    List<Task> findByTask(@Param("task") final Task task);
+    List<Task> findByTask(@Param("task") final TaskQuery task);
 
     Long isExistTask(@Param("taskCode") String taskCode, @Param("id") Long id);
 

@@ -1,6 +1,7 @@
 package cn.whaley.datawarehouse.illidan.common.mapper.project;
 
 import cn.whaley.datawarehouse.illidan.common.domain.project.Project;
+import cn.whaley.datawarehouse.illidan.common.domain.project.ProjectQuery;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Component;
@@ -25,15 +26,15 @@ public interface ProjectMapper {
 
     Long count(@Param("project") final Map<String, String> params);
 
-    Long countByProject(@Param("project") final Project project);
+    Long countByProject(@Param("project") final ProjectQuery project);
 
     Long updateByProject(@Param("project") final Project project);
 
     Long updateById(@Param("project") final Project project);
 
-    Long removeByProject(@Param("project") final Project project);
+    Long removeByProject(@Param("project") final ProjectQuery project);
 
-    List<Project> findByProject(@Param("project") final Project project);
+    List<Project> findByProject(@Param("project") final ProjectQuery project);
 
     Long isExistProject(@Param("projectCode") String projectCode, @Param("id") Long id);
 

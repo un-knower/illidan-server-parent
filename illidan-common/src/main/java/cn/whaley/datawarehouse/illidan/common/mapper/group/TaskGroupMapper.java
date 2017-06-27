@@ -1,6 +1,7 @@
 package cn.whaley.datawarehouse.illidan.common.mapper.group;
 
 import cn.whaley.datawarehouse.illidan.common.domain.group.TaskGroup;
+import cn.whaley.datawarehouse.illidan.common.domain.group.TaskGroupQuery;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Component;
@@ -29,15 +30,15 @@ public interface TaskGroupMapper {
 
     Long count(@Param("taskGroup") final Map<String, String> params);
 
-    Long countByTaskGroup(@Param("taskGroup") final TaskGroup taskGroup);
+    Long countByTaskGroup(@Param("taskGroup") final TaskGroupQuery taskGroup);
 
     Long updateByTaskGroup(@Param("taskGroup") final TaskGroup taskGroup);
 
     Long updateById(@Param("taskGroup") final TaskGroup taskGroup);
 
-    Long removeByTaskGroup(@Param("taskGroup") final TaskGroup taskGroup);
+    Long removeByTaskGroup(@Param("taskGroup") final TaskGroupQuery taskGroup);
 
-    List<TaskGroup> findByTaskGroup(@Param("taskGroup") final TaskGroup taskGroup);
+    List<TaskGroup> findByTaskGroup(@Param("taskGroup") final TaskGroupQuery taskGroup);
 
     Long isExistTaskGroup(@Param("groupCode") String groupCode, @Param("id") Long id);
 
