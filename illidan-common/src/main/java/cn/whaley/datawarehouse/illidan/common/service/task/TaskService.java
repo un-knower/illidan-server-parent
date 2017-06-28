@@ -2,6 +2,7 @@ package cn.whaley.datawarehouse.illidan.common.service.task;
 
 
 import cn.whaley.datawarehouse.illidan.common.domain.task.Task;
+import cn.whaley.datawarehouse.illidan.common.domain.task.TaskQuery;
 
 import java.util.List;
 import java.util.Map;
@@ -11,6 +12,9 @@ import java.util.Map;
  */
 public interface TaskService {
     Task get(final Long id);
+
+//    TaskFull getTask(final Long id);
+
 
     Long insert(final Task task) throws Exception;
 
@@ -24,15 +28,15 @@ public interface TaskService {
 
     Long count(final Map<String, String> params);
 
-    Long countByTask(final Task task);
+    Long countByTask(final TaskQuery task);
 
     Long updateByTask(final Task task);
 
     Long updateById(final Task task);
 
-    Long removeByTask(final Task task);
+    Long removeByTask(final TaskQuery task);
 
-    List<Task> findByTask(final Task task);
+    List<Task> findByTask(final TaskQuery task);
 
     Long removeByIds(final List<Long> ids);
 

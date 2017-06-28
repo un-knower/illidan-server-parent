@@ -1,6 +1,7 @@
 package cn.whaley.datawarehouse.illidan.common.service.project;
 
 import cn.whaley.datawarehouse.illidan.common.domain.project.Project;
+import cn.whaley.datawarehouse.illidan.common.domain.project.ProjectQuery;
 import cn.whaley.datawarehouse.illidan.common.mapper.project.ProjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -47,7 +48,7 @@ public class ProjectServiceImpl implements ProjectService {
         return projectMapper.count(params);
     }
 
-    public Long countByProject(final Project project) {
+    public Long countByProject(final ProjectQuery project) {
         return projectMapper.countByProject(project);
     }
 
@@ -59,15 +60,15 @@ public class ProjectServiceImpl implements ProjectService {
         return projectMapper.updateById(project);
     }
 
-    public Long removeByProject(final Project project) {
+    public Long removeByProject(final ProjectQuery project) {
         return projectMapper.removeByProject(project);
     }
 
-    public List<Project> findByProject(final Project project) {
+    public List<Project> findByProject(final ProjectQuery project) {
         return projectMapper.findByProject(project);
     }
 
-    public Project findOne(final Project project) {
+    public Project findOne(final ProjectQuery project) {
         project.setLimitStart(0);
         project.setLimitEnd(1);
         List<Project> datas = projectMapper.findByProject(project);

@@ -1,6 +1,7 @@
 package cn.whaley.datawarehouse.illidan.common.service.task;
 
 import cn.whaley.datawarehouse.illidan.common.domain.task.Task;
+import cn.whaley.datawarehouse.illidan.common.domain.task.TaskQuery;
 import cn.whaley.datawarehouse.illidan.common.mapper.task.TaskMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -50,7 +51,7 @@ public class TaskServiceImpl implements TaskService {
         return taskMapper.count(params);
     }
 
-    public Long countByTask(final Task task) {
+    public Long countByTask(final TaskQuery task) {
         return taskMapper.countByTask(task);
     }
 
@@ -62,15 +63,15 @@ public class TaskServiceImpl implements TaskService {
         return taskMapper.updateById(task);
     }
 
-    public Long removeByTask(final Task task) {
+    public Long removeByTask(final TaskQuery task) {
         return taskMapper.removeByTask(task);
     }
 
-    public List<Task> findByTask(final Task task) {
+    public List<Task> findByTask(final TaskQuery task) {
         return taskMapper.findByTask(task);
     }
 
-    public Task findOne(final Task task) {
+    public Task findOne(final TaskQuery task) {
         task.setLimitStart(0);
         task.setLimitEnd(1);
         List<Task> datas = taskMapper.findByTask(task);

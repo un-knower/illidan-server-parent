@@ -1,6 +1,7 @@
 package cn.whaley.datawarehouse.illidan.common.service.group;
 
 import cn.whaley.datawarehouse.illidan.common.domain.group.TaskGroup;
+import cn.whaley.datawarehouse.illidan.common.domain.group.TaskGroupQuery;
 import cn.whaley.datawarehouse.illidan.common.mapper.group.TaskGroupMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -50,7 +51,7 @@ public class TaskGroupServiceImpl implements TaskGroupService {
         return taskGroupMapper.count(params);
     }
 
-    public Long countByTaskGroup(final TaskGroup taskGroup) {
+    public Long countByTaskGroup(final TaskGroupQuery taskGroup) {
         return taskGroupMapper.countByTaskGroup(taskGroup);
     }
 
@@ -62,15 +63,15 @@ public class TaskGroupServiceImpl implements TaskGroupService {
         return taskGroupMapper.updateById(taskGroup);
     }
 
-    public Long removeByTaskGroup(final TaskGroup taskGroup) {
+    public Long removeByTaskGroup(final TaskGroupQuery taskGroup) {
         return taskGroupMapper.removeByTaskGroup(taskGroup);
     }
 
-    public List<TaskGroup> findByTaskGroup(final TaskGroup taskGroup) {
+    public List<TaskGroup> findByTaskGroup(final TaskGroupQuery taskGroup) {
         return taskGroupMapper.findByTaskGroup(taskGroup);
     }
 
-    public TaskGroup findOne(final TaskGroup taskGroup) {
+    public TaskGroup findOne(final TaskGroupQuery taskGroup) {
         taskGroup.setLimitStart(0);
         taskGroup.setLimitEnd(1);
         List<TaskGroup> datas = taskGroupMapper.findByTaskGroup(taskGroup);
