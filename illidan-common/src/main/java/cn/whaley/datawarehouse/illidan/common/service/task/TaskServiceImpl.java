@@ -7,6 +7,9 @@ import cn.whaley.datawarehouse.illidan.common.domain.table.TableWithField;
 import cn.whaley.datawarehouse.illidan.common.domain.task.Task;
 import cn.whaley.datawarehouse.illidan.common.domain.task.TaskFull;
 import cn.whaley.datawarehouse.illidan.common.domain.task.TaskQuery;
+import cn.whaley.datawarehouse.illidan.common.mapper.db.DbInfoMapper;
+import cn.whaley.datawarehouse.illidan.common.mapper.field.FieldInfoMapper;
+import cn.whaley.datawarehouse.illidan.common.mapper.table.TableInfoMapper;
 import cn.whaley.datawarehouse.illidan.common.mapper.task.TaskMapper;
 import cn.whaley.datawarehouse.illidan.common.service.db.DbInfoServiceImpl;
 import cn.whaley.datawarehouse.illidan.common.service.field.FieldInfoService;
@@ -28,6 +31,12 @@ import java.util.Map;
 public class TaskServiceImpl implements TaskService {
     @Autowired
     private TaskMapper taskMapper;
+    @Autowired
+    private TableInfoMapper tableInfoMapper;
+    @Autowired
+    private DbInfoMapper dbInfoMapper;
+    @Autowired
+    private FieldInfoMapper fieldInfoMapper;
     @Autowired
     private TableInfoService tableInfoService;
     @Autowired
@@ -109,35 +118,48 @@ public class TaskServiceImpl implements TaskService {
     }
 
     public TaskFull getFullTaskByCode(final String taskCode){
-        TaskFull taskFull = null;
-        TableWithField tableWithField = null;
-
-        TaskQuery taskQuery = null;
-        TableInfoServiceImpl tableInfoService = new TableInfoServiceImpl();
-        DbInfoServiceImpl dbInfoService = new DbInfoServiceImpl();
-        FieldInfoServiceImpl fieldInfoService = new FieldInfoServiceImpl();
-
-        taskQuery.setTaskCode(taskCode);
-
-        Task task = findOne(taskQuery);
-
-        TableInfo tableInfo = tableInfoService.get(task.getTableId());
-
-        DbInfo dbInfo = dbInfoService.get(tableInfo.getDbId());
-
-        List<FieldInfo> fieldInfoList = fieldInfoService.getByTableId(tableInfo.getId());
-
-        tableWithField.setDbInfo(dbInfo);
-        tableWithField.setFieldList(fieldInfoList);
-
-        taskFull.setTable(tableWithField);
-
-        return taskFull;
+        return getFullTaskBy(taskCode, null);
     }
 
     @Override
     public TaskFull getFullTask(Long id) {
-        return null;
+        return getFullTaskBy(null,id);
+    }
+
+    public TaskFull getFullTaskBy(String taskCode, Long id){
+        TaskFull taskFull = null;
+        TableWithField tableWithField = new TableWithField();
+        TaskQuery taskQuery = new TaskQuery();
+
+        try {
+            if (taskCode != null){
+                taskQuery.setTaskCode(taskCode);
+            }
+            if (id != null){
+                taskQuery.setId(id);
+            }
+            Task task = findOne(taskQuery);
+            if (task != null){
+                List<String> executeTypeList = java.util.Arrays.asList(task.getExecuteType().split(","));
+                //目标表实体
+                TableInfo tableInfo = tableInfoMapper.get(task.getTableId());
+                //目标数据库实体
+                DbInfo dbInfo = dbInfoMapper.get(tableInfo.getDbId());
+                //列名实体
+                List<FieldInfo> fieldInfoList = fieldInfoMapper.getByTableId(tableInfo.getId());
+                tableWithField.setDbInfo(dbInfo);
+                tableWithField.setFieldList(fieldInfoList);
+
+                taskFull = new TaskFull();
+                taskFull.setTable(tableWithField);
+                taskFull.setExecuteTypeList(executeTypeList);
+            }
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+        return taskFull;
     }
 
     @Override

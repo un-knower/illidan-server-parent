@@ -99,7 +99,7 @@
         <result column="colName" javaType="String" jdbcType="VARCHAR" property="colName"/>
         <result column="colType" javaType="String" jdbcType="VARCHAR" property="colType"/>
         <result column="colDes" javaType="String" jdbcType="VARCHAR" property="colDes"/>
-        <result column="colIndex" javaType="Long" jdbcType="BIGINT" property="colIndex"/>
+        <result column="colIndex" javaType="int" jdbcType="BIGINT" property="colIndex"/>
         <result column="isPartitionCol" javaType="String" jdbcType="VARCHAR" property="isPartitionCol"/>
         <result column="tableId" javaType="Long" jdbcType="BIGINT" property="tableId"/>
         <result column="createTime" javaType="Date" jdbcType="TIMESTAMP" property="createTime"/>

@@ -204,7 +204,7 @@
 
     <select id="isExistTaskGroup"  resultType="long">
         select count(1) from task_group taskGroup
-        where id = #{id} and (groupCode=#{groupCode})
+        where status = #{status} and (groupCode=#{groupCode})
     </select>
 
     <delete id="removeByIds">
