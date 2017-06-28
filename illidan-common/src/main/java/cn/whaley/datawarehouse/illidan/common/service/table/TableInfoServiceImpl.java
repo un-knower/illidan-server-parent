@@ -22,7 +22,7 @@ public class TableInfoServiceImpl implements TableInfoService {
     public Long insert(TableInfo tableInfo)  throws Exception{
         Long count = tableInfoMapper.isExistTableInfo(tableInfo.getTableCode());
         if (count >0 ){
-            throw new Exception("项目已经存在不能重复新增");
+            throw new Exception("表已经存在不能重复新增");
         }
         return tableInfoMapper.insert(tableInfo);
     }

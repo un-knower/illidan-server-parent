@@ -205,7 +205,7 @@
 
     <select id="isExistTask"  resultType="long">
         select count(1) from task task
-        where id = #{id} and (taskCode=#{taskCode})
+        where taskCode = #{taskCode} and (status=#{status})
     </select>
 
     <delete id="removeByIds">

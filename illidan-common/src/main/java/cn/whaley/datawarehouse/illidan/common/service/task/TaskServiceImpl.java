@@ -10,7 +10,9 @@ import cn.whaley.datawarehouse.illidan.common.domain.task.TaskQuery;
 import cn.whaley.datawarehouse.illidan.common.mapper.task.TaskMapper;
 import cn.whaley.datawarehouse.illidan.common.service.db.DbInfoServiceImpl;
 import cn.whaley.datawarehouse.illidan.common.service.field.FieldInfoServiceImpl;
+import cn.whaley.datawarehouse.illidan.common.service.table.TableInfoService;
 import cn.whaley.datawarehouse.illidan.common.service.table.TableInfoServiceImpl;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -25,13 +27,15 @@ import java.util.Map;
 public class TaskServiceImpl implements TaskService {
     @Autowired
     private TaskMapper taskMapper;
+    @Autowired
+    private TableInfoService tableInfoService;
 
     public Task get(final Long id) {
         return taskMapper.get(id);
     }
 
     public Long insert(final Task task) throws Exception{
-        Long count = taskMapper.isExistTask(task.getTaskCode(),task.getId());
+        Long count = taskMapper.isExistTask(task.getTaskCode(),task.getStatus());
         if(count > 0){
             throw new Exception("任务已经存在不能重复新增");
         }
@@ -132,16 +136,24 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public Long insertFullTask(TaskFull task) throws Exception {
-        TableWithField table = task.getTable();
-        
-
-
-        return null;
+    public Long insertFullTask(TaskFull taskFull) throws Exception {
+        TableWithField tableInfo = taskFull.getTable();
+        //判断task是否存在
+        Long count = taskMapper.isExistTask(taskFull.getTaskCode(),taskFull.getStatus());
+        if(count >0 ){
+            throw new Exception("任务已经存在不能重复新增");
+        }
+        //插入表信息,并返回其主键id
+        Long tableId = tableInfoService.insert(tableInfo);
+        //插入task信息
+        Task task = new Task();
+        BeanUtils.copyProperties(taskFull,task);
+        task.setTableId(tableId);
+        return taskMapper.insert(task);
     }
 
     @Override
-    public Long updateFullTask(TaskFull task) {
+    public Long updateFullTask(TaskFull taskFull) {
         return null;
     }
 
