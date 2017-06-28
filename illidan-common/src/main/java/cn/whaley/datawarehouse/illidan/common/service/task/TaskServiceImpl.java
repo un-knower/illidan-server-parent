@@ -134,7 +134,7 @@ public class TaskServiceImpl implements TaskService {
                 taskQuery.setId(id);
             }
             Task task = findOne(taskQuery);
-            if (task !=null){
+            if (task != null){
                 List<String> executeTypeList = java.util.Arrays.asList(task.getExecuteType().split(","));
                 //目标表实体
                 TableInfo tableInfo = tableInfoMapper.get(task.getTableId());
