@@ -28,5 +28,9 @@
         <typeAlias alias="Project" type="cn.whaley.datawarehouse.illidan.common.domain.project.Project"/>
         <typeAlias alias="TaskGroup" type="cn.whaley.datawarehouse.illidan.common.domain.group.TaskGroup"/>
         <typeAlias alias="Task" type="cn.whaley.datawarehouse.illidan.common.domain.task.Task"/>
+        <typeAlias alias="DbInfo" type="cn.whaley.datawarehouse.illidan.common.domain.db.DbInfo"/>
+        <typeAlias alias="TableInfo" type="cn.whaley.datawarehouse.illidan.common.domain.table.TableInfo"/>
+        <typeAlias alias="Owner" type="cn.whaley.datawarehouse.illidan.common.domain.owner.Owner"/>
+        <typeAlias alias="FieldInfo" type="cn.whaley.datawarehouse.illidan.common.domain.field.FieldInfo"/>
     </typeAliases>
 </configuration>
