@@ -36,7 +36,7 @@ public interface ProjectMapper {
 
     List<Project> findByProject(@Param("project") final ProjectQuery project);
 
-    Long isExistProject(@Param("projectCode") String projectCode, @Param("id") Long id);
+    Long isExistProject(@Param("projectCode") String projectCode);
 
     Long removeByIds(@Param("ids") final List<Long> ids);
 
