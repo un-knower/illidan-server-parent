@@ -1,6 +1,7 @@
 package cn.whaley.datawarehouse.illidan.common.service.task;
 
 import cn.whaley.datawarehouse.illidan.common.domain.task.Task;
+import cn.whaley.datawarehouse.illidan.common.domain.task.TaskFull;
 import cn.whaley.datawarehouse.illidan.common.domain.task.TaskQuery;
 import cn.whaley.datawarehouse.illidan.common.mapper.task.TaskMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -90,4 +91,9 @@ public class TaskServiceImpl implements TaskService {
     public List<Task> getByCodeLike(String taskCode) {
         return taskMapper.getByCodeLike(taskCode);
     }
+
+    public TaskFull getFullTaskByCode(final String taskCode){
+        return null;
+    }
+
 }

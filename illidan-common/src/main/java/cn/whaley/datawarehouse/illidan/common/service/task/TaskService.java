@@ -2,6 +2,7 @@ package cn.whaley.datawarehouse.illidan.common.service.task;
 
 
 import cn.whaley.datawarehouse.illidan.common.domain.task.Task;
+import cn.whaley.datawarehouse.illidan.common.domain.task.TaskFull;
 import cn.whaley.datawarehouse.illidan.common.domain.task.TaskQuery;
 
 import java.util.List;
@@ -12,9 +13,6 @@ import java.util.Map;
  */
 public interface TaskService {
     Task get(final Long id);
-
-//    TaskFull getTask(final Long id);
-
 
     Long insert(final Task task) throws Exception;
 
@@ -41,4 +39,7 @@ public interface TaskService {
     Long removeByIds(final List<Long> ids);
 
     List<Task> getByCodeLike(String taskCode);
+
+    TaskFull getFullTaskByCode(final String taskCode);
+
 }
