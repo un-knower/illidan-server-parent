@@ -93,6 +93,15 @@ public class TaskGroupServiceImpl implements TaskGroupService {
 
     @Override
     public List<TaskGroup> findTaskGroupByProjectId(Long projectId) {
-        return null;
+        List<TaskGroup> taskGroupList = null;
+        try {
+            TaskGroupQuery taskGroup = new TaskGroupQuery();
+            taskGroup.setProjectId(projectId);
+            taskGroupList = findByTaskGroup(taskGroup);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+        return taskGroupList;
     }
 }

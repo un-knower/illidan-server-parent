@@ -44,6 +44,10 @@ public class TaskGroupQuery extends BaseQueryEntity {
      * 修改时间
      */
     private Date updateTime;
+    /**
+     * 调度的id号，设置调度成功后，生成
+     */
+    private String scheduleId;
     private String createTimeBegin;
     private String createTimeEnd;
 
@@ -133,6 +137,14 @@ public class TaskGroupQuery extends BaseQueryEntity {
 
     public void setCreateTimeEnd(String createTimeEnd) {
         this.createTimeEnd = createTimeEnd;
+    }
+
+    public String getScheduleId() {
+        return scheduleId;
+    }
+
+    public void setScheduleId(String scheduleId) {
+        this.scheduleId = scheduleId;
     }
 
     @Override
