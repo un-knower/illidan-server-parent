@@ -20,7 +20,7 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     public Long insert(final Project project) throws Exception{
-        Long count = projectMapper.isExistProject(project.getProjectCode());
+        Long count = projectMapper.isExistProject(project.getProjectCode(), project.getStatus());
         if(count > 0){
             throw new Exception("项目已经存在不能重复新增");
         }

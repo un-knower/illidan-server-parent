@@ -23,7 +23,7 @@ public class TaskGroupServiceImpl implements TaskGroupService {
     }
 
     public Long insert(final TaskGroup taskGroup) throws Exception{
-        Long count = taskGroupMapper.isExistTaskGroup(taskGroup.getGroupCode());
+        Long count = taskGroupMapper.isExistTaskGroup(taskGroup.getGroupCode(), taskGroup.getStatus());
         if(count > 0){
             throw new Exception("任务组已经存在不能重复新增");
         }

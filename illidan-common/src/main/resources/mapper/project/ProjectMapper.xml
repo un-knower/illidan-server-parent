@@ -189,7 +189,7 @@
 
     <select id="isExistProject"  resultType="long">
         select count(1) from project project
-        where projectCode=#{projectCode}
+        where status = #{status} and (projectCode=#{projectCode})
     </select>
 
     <delete id="removeByIds">
