@@ -9,6 +9,7 @@ import cn.whaley.datawarehouse.illidan.common.domain.task.TaskFull;
 import cn.whaley.datawarehouse.illidan.common.domain.task.TaskQuery;
 import cn.whaley.datawarehouse.illidan.common.mapper.task.TaskMapper;
 import cn.whaley.datawarehouse.illidan.common.service.db.DbInfoServiceImpl;
+import cn.whaley.datawarehouse.illidan.common.service.field.FieldInfoService;
 import cn.whaley.datawarehouse.illidan.common.service.field.FieldInfoServiceImpl;
 import cn.whaley.datawarehouse.illidan.common.service.table.TableInfoService;
 import cn.whaley.datawarehouse.illidan.common.service.table.TableInfoServiceImpl;
@@ -29,6 +30,10 @@ public class TaskServiceImpl implements TaskService {
     private TaskMapper taskMapper;
     @Autowired
     private TableInfoService tableInfoService;
+    @Autowired
+    private FieldInfoService fieldInfoService;
+
+
 
     public Task get(final Long id) {
         return taskMapper.get(id);
@@ -145,6 +150,21 @@ public class TaskServiceImpl implements TaskService {
         }
         //插入表信息,并返回其主键id
         Long tableId = tableInfoService.insert(tableInfo);
+        //插入字段到field_info
+        List<FieldInfo> fieldInfos = taskFull.getTable().getFieldList();
+        for(FieldInfo f:fieldInfos ){
+            FieldInfo fieldInfo = new FieldInfo();
+            BeanUtils.copyProperties(f,fieldInfo);
+            fieldInfo.setTableId(tableId);
+        }
+
+        //批量插入fieldInfos
+        //1.删除历史记录
+        fieldInfoService.removeByTableId(tableId);
+        //2.批量插入
+        fieldInfoService.insertBatch(fieldInfos);
+
+
         //插入task信息
         Task task = new Task();
         BeanUtils.copyProperties(taskFull,task);

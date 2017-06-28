@@ -23,4 +23,14 @@ public class FieldInfoServiceImpl implements FieldInfoService {
     public List<FieldInfo> getByTableId(final Long tableId) {
         return fieldInfoMapper.getByTableId(tableId);
     }
+
+    @Override
+    public void insertBatch(List<FieldInfo> list) {
+        fieldInfoMapper.insertBatch(list);
+    }
+
+    @Override
+    public void removeByTableId(Long tableId) {
+        fieldInfoMapper.removeByTableId(tableId);
+    }
 }
