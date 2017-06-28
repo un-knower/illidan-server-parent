@@ -40,7 +40,7 @@ public interface TaskGroupMapper {
 
     List<TaskGroup> findByTaskGroup(@Param("taskGroup") final TaskGroupQuery taskGroup);
 
-    Long isExistTaskGroup(@Param("groupCode") String groupCode, @Param("id") Long id);
+    Long isExistTaskGroup(@Param("groupCode") String groupCode);
 
     Long removeByIds(@Param("ids") final List<Long> ids);
 
