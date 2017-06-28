@@ -35,6 +35,10 @@ public class ProjectQuery extends BaseQueryEntity {
      * 修改时间
      */
     private Date updateTime;
+    /**
+     * 发布状态(0：未发布，1已发布)
+     */
+    private String isPublish;
     private String createTimeBegin;
     private String createTimeEnd;
 
@@ -108,6 +112,14 @@ public class ProjectQuery extends BaseQueryEntity {
 
     public void setCreateTimeEnd(String createTimeEnd) {
         this.createTimeEnd = createTimeEnd;
+    }
+
+    public String getIsPublish() {
+        return isPublish;
+    }
+
+    public void setIsPublish(String isPublish) {
+        this.isPublish = isPublish;
     }
 
     @Override

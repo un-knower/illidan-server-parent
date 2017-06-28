@@ -35,6 +35,10 @@ public class Project implements Serializable {
      * 修改时间
      */
     private Date updateTime;
+    /**
+     * 发布状态(0：未发布，1已发布)
+     */
+    private String isPublish;
 
     public Long getId() {
         return id;
@@ -90,6 +94,14 @@ public class Project implements Serializable {
 
     public void setUpdateTime(Date updateTime) {
         this.updateTime = updateTime;
+    }
+
+    public String getIsPublish() {
+        return isPublish;
+    }
+
+    public void setIsPublish(String isPublish) {
+        this.isPublish = isPublish;
     }
 
     @Override

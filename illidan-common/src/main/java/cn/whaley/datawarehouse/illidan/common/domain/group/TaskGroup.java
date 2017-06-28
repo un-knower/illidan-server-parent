@@ -44,6 +44,10 @@ public class TaskGroup implements Serializable {
      * 修改时间
      */
     private Date updateTime;
+    /**
+     * 调度的id号，设置调度成功后，生成
+     */
+    private String scheduleId;
 
     public Long getId() {
         return id;
@@ -115,6 +119,14 @@ public class TaskGroup implements Serializable {
 
     public void setUpdateTime(Date updateTime) {
         this.updateTime = updateTime;
+    }
+
+    public String getScheduleId() {
+        return scheduleId;
+    }
+
+    public void setScheduleId(String scheduleId) {
+        this.scheduleId = scheduleId;
     }
 
     @Override
