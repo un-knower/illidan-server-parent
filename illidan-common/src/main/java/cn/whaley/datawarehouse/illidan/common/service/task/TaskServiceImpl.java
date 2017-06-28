@@ -133,6 +133,10 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public Long insertFullTask(TaskFull task) throws Exception {
+        TableWithField table = task.getTable();
+        
+
+
         return null;
     }
 

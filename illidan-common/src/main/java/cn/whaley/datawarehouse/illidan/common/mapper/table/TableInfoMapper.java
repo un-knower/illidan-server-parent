@@ -13,4 +13,6 @@ import org.springframework.stereotype.Component;
 @Component
 public interface TableInfoMapper {
     TableInfo get(@Param("id") final Long id);
+    Long insert(@Param("table") final TableInfo tableInfo);
+    Long isExistTableInfo(@Param("tableCode") String tableCode);
 }
