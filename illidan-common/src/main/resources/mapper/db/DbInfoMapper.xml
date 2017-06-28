@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="cn.whaley.datawarehouse.illidan.common.mapper.db.DbInfoMapper">
+
+    <!--The user defined SQL!-->
+
+
+    <!--The user defined SQL!-->
+
+    <sql id="updateSql">
+        update db_info dbInfo
+        <set>
+            <if test="dbInfo.dbCode != null">
+                dbCode = #{dbInfo.dbCode},
+            </if>
+            <if test="dbInfo.dbDes != null">
+                dbDes = #{dbInfo.dbDes},
+            </if>
+            <if test="dbInfo.status != null">
+                status = #{dbInfo.status},
+            </if>
+            <if test="dbInfo.createTime != null">
+                createTime = #{dbInfo.createTime},
+            </if>
+            <if test="dbInfo.updateTime != null">
+                updateTime = #{dbInfo.updateTime},
+            </if>
+
+        </set>
+    </sql>
+
+    <sql id="joinTables">
+    </sql>
+
+    <sql id="colList">
+        <trim prefix="" prefixOverrides=",">
+            , dbInfo.dbCode AS dbCode
+            , dbInfo.dbDes AS dbDes
+            , dbInfo.status AS status
+            , dbInfo.createTime AS createTime
+            , dbInfo.updateTime AS updateTime
+            , dbInfo.id AS id
+
+        </trim>
+    </sql>
+
+    <sql id="whereCase">
+        <where>
+            1=1
+            <if test="dbInfo != null and dbInfo.id != null">and dbInfo.id = #{dbInfo.id}</if>
+            <if test="dbInfo != null and dbInfo.idGT != null">and dbInfo.id > #{dbInfo.idGT}</if><if test="idLT != null">and #{idLT} > dbInfo.id</if>
+            <if test="dbInfo != null and dbInfo.dbCode != null">and dbInfo.dbCode = #{dbInfo.dbCode}</if>
+            <if test="dbInfo != null and dbInfo.dbCodeLK != null">and dbInfo.dbCode LIKE #{dbInfo.dbCodeLK}</if>
+            <if test="dbInfo != null and dbInfo.dbDes != null">and dbInfo.dbDes = #{dbInfo.dbDes}</if>
+            <if test="dbInfo != null and dbInfo.dbDesLK != null">and dbInfo.dbDes LIKE #{dbInfo.dbDesLK}</if>
+            <if test="dbInfo != null and dbInfo.createTime != null">and dbInfo.createTime = #{dbInfo.createTime}</if>
+            <if test="dbInfo != null and dbInfo.updateTime != null">and dbInfo.updateTime = #{dbInfo.updateTime}</if>
+            <if test="dbInfo != null and dbInfo.status != null">and dbInfo.status = #{dbInfo.status}</if>
+            <if test="dbInfo != null and dbInfo.statusLK != null">and dbInfo.status LIKE #{dbInfo.statusLK}</if>
+
+        </where>
+    </sql>
+
+    <sql id="smallWhereCase">
+        <where>
+            <if test="dbInfo != null and dbInfo.id != null">and dbInfo.id = #{dbInfo.id}</if>
+            <if test="dbInfo != null and dbInfo.dbCode != null">and dbInfo.dbCode = #{dbInfo.dbCode}</if>
+            <if test="dbInfo != null and dbInfo.dbDes != null">and dbInfo.dbDes = #{dbInfo.dbDes}</if>
+            <if test="dbInfo != null and dbInfo.createTime != null">and dbInfo.createTime = #{dbInfo.createTime}</if>
+            <if test="dbInfo != null and dbInfo.updateTime != null">and dbInfo.updateTime = #{dbInfo.updateTime}</if>
+            <if test="dbInfo != null and dbInfo.status != null">and dbInfo.status = #{dbInfo.status}</if>
+        </where>
+    </sql>
+
+    <resultMap id="returnDbInfo" type="cn.whaley.datawarehouse.illidan.common.domain.db.DbInfo">
+        <id column="id" javaType="Long" jdbcType="BIGINT" property="id"/>
+        <result column="dbCode" javaType="String" jdbcType="VARCHAR" property="dbCode"/>
+        <result column="dbDes" javaType="String" jdbcType="VARCHAR" property="dbDes"/>
+        <result column="createTime" javaType="Date" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="updateTime" javaType="Date" jdbcType="TIMESTAMP" property="updateTime"/>
+        <result column="status" javaType="String" jdbcType="VARCHAR" property="status"/>
+    </resultMap>
+
+    <select id="get"  resultMap="returnDbInfo">
+        select * from db_info dbInfo where  dbInfo.id = #{id}
+    </select>
+
+    <update id="update">
+        <include refid="updateSql"/>
+        <include refid="whereCase"/>
+    </update>
+
+    <insert id="insertBatch" >
+        insert into db_info
+        (
+        <trim prefix="" prefixOverrides=",">
+            ,dbCode,dbDes,createTime,updateTime,status
+        </trim>
+        ) values
+        <foreach collection="list" item="item" index="index" separator=",">
+            (
+            <trim prefix="" prefixOverrides=",">
+                ,#{dbCode} ,#{dbDes} ,#{createTime} ,#{updateTime} ,#{status}
+            </trim>
+            )
+        </foreach>
+    </insert>
+
+    <insert id="insert" parameterType="DbInfo">
+        <selectKey resultType="long" keyProperty="id" order="AFTER">
+            SELECT
+            LAST_INSERT_ID()
+        </selectKey>
+        insert into db_info
+        (
+        <trim prefix="" prefixOverrides=",">
+            ,dbCode,dbDes,createTime,updateTime,status
+        </trim>
+        )values(
+        <trim prefix="" prefixOverrides=",">
+            ,#{dbInfo.dbCode},#{dbInfo.dbDes},#{dbInfo.createTime},#{dbInfo.updateTime},#{dbInfo.status}
+        </trim>
+        )
+    </insert>
+
+    <delete id="remove" >
+        delete dbInfo from db_info dbInfo <include refid="whereCase"/>
+    </delete>
+
+    <select id="find"  resultMap="returnDbInfo">
+        select <include refid="colList" /> from db_info dbInfo
+        <include refid="joinTables"/>
+        <include refid="smallWhereCase"/>
+        <if test="dbInfo != null and dbInfo.orderBy != null">order by #{dbInfo.orderBy}</if>
+        <if test="dbInfo != null and dbInfo.limitStart != null and dbInfo.limitEnd != null">limit #{dbInfo.limitStart}, #{dbInfo.limitEnd}</if>
+    </select>
+
+    <select id="count"  resultType="long">
+        select count(1) from db_info dbInfo
+        <include refid="joinTables"/>
+        <include refid="smallWhereCase"/>
+    </select>
+
+    <update id="updateByDbInfo" >
+        <include refid="updateSql"/>
+        <include refid="smallWhereCase"/>
+    </update>
+
+    <update id="updateById">
+        <include refid="updateSql"/>
+        where id = #{dbInfo.id}
+    </update>
+
+    <delete id="removeByDbInfo">
+        delete from db_info dbInfo <include refid="smallWhereCase"/>
+    </delete>
+
+    <select id="findByDbInfo" resultMap="returnDbInfo">
+        select <include refid="colList" /> from db_info dbInfo
+        <include refid="joinTables"/>
+        <include refid="smallWhereCase"/>
+        order by dbInfo.updateTime desc
+        <if test="dbInfo != null and dbInfo.limitStart != null and dbInfo.limitEnd != null">limit #{dbInfo.limitStart}, #{dbInfo.limitEnd}</if>
+    </select>
+
+    <select id="countByDbInfo"  resultType="long">
+        select count(1) from db_info dbInfo
+        <include refid="joinTables"/>
+        <include refid="smallWhereCase"/>
+    </select>
+
+    <select id="isExistDbInfo"  resultType="long">
+        select count(1) from db_info dbInfo
+        where id = #{id} and (dbCode=#{dbCode})
+    </select>
+
+    <delete id="removeByIds">
+        delete from db_info where id in
+        <foreach item="item" collection="ids" open="(" separator="," close=")" >
+            #{item}
+        </foreach>
+
+    </delete>
+
+    <select id="getByCodeLike"  resultMap="returnDbInfo">
+        select <include refid="colList" /> from db_info dbInfo where  dbInfo.dbCode like concat('%',#{dbCode},'%') limit 10
+    </select>
+</mapper>

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="cn.whaley.datawarehouse.illidan.common.mapper.project.ProjectMapper">
+<mapper namespace="cn.whaley.datawarehouse.illidan.common.mapper.owner.OwnerMapper">
 
     <!--The user defined SQL!-->
 
@@ -29,9 +29,6 @@
             <if test="project.updateTime != null">
                 updateTime = #{project.updateTime},
             </if>
-            <if test="project.isPublish != null">
-                isPublish = #{project.isPublish},
-            </if>
 
         </set>
     </sql>
@@ -47,7 +44,6 @@
             , project.status AS status
             , project.createTime AS createTime
             , project.updateTime AS updateTime
-            , project.isPublish AS isPublish
             , project.id AS id
 
         </trim>
@@ -68,8 +64,7 @@
             <if test="project != null and project.ownerIdLK != null">and project.ownerId LIKE #{project.ownerIdLK}</if>
             <if test="project != null and project.status != null">and project.status = #{project.status}</if>
             <if test="project != null and project.statusLK != null">and project.status LIKE #{project.statusLK}</if>
-            <if test="project != null and project.isPublish != null">and project.isPublish = #{project.isPublish}</if>
-            <if test="project != null and project.isPublishLK != null">and project.isPublish LIKE #{project.isPublishLK}</if>
+
         </where>
     </sql>
 
@@ -82,7 +77,6 @@
             <if test="project != null and project.updateTime != null">and project.updateTime = #{project.updateTime}</if>
             <if test="project != null and project.ownerId != null">and project.ownerId = #{project.ownerId}</if>
             <if test="project != null and project.status != null">and project.status = #{project.status}</if>
-            <if test="project != null and project.isPublish != null">and project.isPublish = #{project.isPublish}</if>
         </where>
     </sql>
 
@@ -94,7 +88,6 @@
         <result column="updateTime" javaType="Date" jdbcType="TIMESTAMP" property="updateTime"/>
         <result column="ownerId" javaType="String" jdbcType="VARCHAR" property="ownerId"/>
         <result column="status" javaType="String" jdbcType="VARCHAR" property="status"/>
-        <result column="isPublish" javaType="String" jdbcType="VARCHAR" property="isPublish"/>
 
     </resultMap>
 
@@ -111,13 +104,13 @@
         insert into project
         (
         <trim prefix="" prefixOverrides=",">
-            ,projectCode,projectDes,createTime,updateTime,ownerId,status,isPublish
+            ,projectCode,projectDes,createTime,updateTime,ownerId,status
         </trim>
         ) values
         <foreach collection="list" item="item" index="index" separator=",">
             (
             <trim prefix="" prefixOverrides=",">
-                ,#{projectCode} ,#{projectDes} ,#{createTime} ,#{updateTime} ,#{ownerId} ,#{status} ,#{isPublish}
+                ,#{projectCode} ,#{projectDes} ,#{createTime} ,#{updateTime} ,#{ownerId} ,#{status}
             </trim>
             )
         </foreach>
@@ -131,11 +124,11 @@
         insert into project
         (
         <trim prefix="" prefixOverrides=",">
-            ,projectCode,projectDes,createTime,updateTime,ownerId,status,isPublish
+            ,projectCode,projectDes,createTime,updateTime,ownerId,status
         </trim>
         )values(
         <trim prefix="" prefixOverrides=",">
-            ,#{project.projectCode},#{project.projectDes},#{project.createTime},#{project.updateTime},#{project.ownerId},#{project.status},#{project.isPublish}
+            ,#{project.projectCode},#{project.projectDes},#{project.createTime},#{project.updateTime},#{project.ownerId},#{project.status}
         </trim>
         )
     </insert>

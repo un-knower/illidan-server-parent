@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="cn.whaley.datawarehouse.illidan.common.mapper.field.FieldInfoMapper">
+
+    <!--The user defined SQL!-->
+
+
+    <!--The user defined SQL!-->
+
+    <sql id="updateSql">
+        update field_info fieldInfo
+        <set>
+            <if test="fieldInfo.colName != null">
+                colName = #{fieldInfo.colName},
+            </if>
+            <if test="fieldInfo.colType != null">
+                colType = #{fieldInfo.colType},
+            </if>
+            <if test="fieldInfo.colDes != null">
+                colDes = #{fieldInfo.colDes},
+            </if>
+            <if test="fieldInfo.colIndex != null">
+                colIndex = #{fieldInfo.colIndex},
+            </if>
+            <if test="fieldInfo.isPartitionCol != null">
+                isPartitionCol = #{fieldInfo.isPartitionCol},
+            </if>
+            <if test="fieldInfo.tableId != null">
+                tableId = #{fieldInfo.tableId},
+            </if>
+            <if test="fieldInfo.createTime != null">
+                createTime = #{fieldInfo.createTime},
+            </if>
+            <if test="fieldInfo.updateTime != null">
+                updateTime = #{fieldInfo.updateTime},
+            </if>
+
+        </set>
+    </sql>
+
+    <sql id="joinTables">
+    </sql>
+
+    <sql id="colList">
+        <trim prefix="" prefixOverrides=",">
+            , fieldInfo.colName AS colName
+            , fieldInfo.colType AS colType
+            , fieldInfo.colDes AS colDes
+            , fieldInfo.colIndex AS colIndex
+            , fieldInfo.isPartitionCol AS isPartitionCol
+            , fieldInfo.tableId AS tableId
+            , fieldInfo.createTime AS createTime
+            , fieldInfo.updateTime AS updateTime
+            , fieldInfo.id AS id
+
+        </trim>
+    </sql>
+
+    <sql id="whereCase">
+        <where>
+            1=1
+            <if test="fieldInfo != null and fieldInfo.id != null">and fieldInfo.id = #{fieldInfo.id}</if>
+            <if test="fieldInfo != null and fieldInfo.idGT != null">and fieldInfo.id > #{fieldInfo.idGT}</if><if test="idLT != null">and #{idLT} > fieldInfo.id</if>
+            <if test="fieldInfo != null and fieldInfo.colName != null">and fieldInfo.colName = #{fieldInfo.colName}</if>
+            <if test="fieldInfo != null and fieldInfo.colNameLK != null">and fieldInfo.colName LIKE #{fieldInfo.colNameLK}</if>
+            <if test="fieldInfo != null and fieldInfo.colType != null">and fieldInfo.colType = #{fieldInfo.colType}</if>
+            <if test="fieldInfo != null and fieldInfo.colTypeLK != null">and fieldInfo.colType LIKE #{fieldInfo.colTypeLK}</if>
+            <if test="fieldInfo != null and fieldInfo.colDes != null">and fieldInfo.colDes = #{fieldInfo.colDes}</if>
+            <if test="fieldInfo != null and fieldInfo.colDesLK != null">and fieldInfo.colDes LIKE #{fieldInfo.colDesLK}</if>
+            <if test="fieldInfo != null and fieldInfo.colIndex != null">and fieldInfo.colIndex = #{fieldInfo.colIndex}</if>
+            <if test="fieldInfo != null and fieldInfo.colIndexLK != null">and fieldInfo.colIndex LIKE #{fieldInfo.colIndexLK}</if>
+            <if test="fieldInfo != null and fieldInfo.isPartitionCol != null">and fieldInfo.isPartitionCol = #{fieldInfo.isPartitionCol}</if>
+            <if test="fieldInfo != null and fieldInfo.isPartitionColLK != null">and fieldInfo.isPartitionCol LIKE #{fieldInfo.isPartitionColLK}</if>
+            <if test="fieldInfo != null and fieldInfo.tableId != null">and fieldInfo.tableId = #{fieldInfo.tableId}</if>
+            <if test="fieldInfo != null and fieldInfo.tableIdLK != null">and fieldInfo.tableId LIKE #{fieldInfo.tableIdLK}</if>
+            <if test="fieldInfo != null and fieldInfo.createTime != null">and fieldInfo.createTime = #{fieldInfo.createTime}</if>
+            <if test="fieldInfo != null and fieldInfo.updateTime != null">and fieldInfo.updateTime = #{fieldInfo.updateTime}</if>
+
+        </where>
+    </sql>
+
+    <sql id="smallWhereCase">
+        <where>
+            <if test="fieldInfo != null and fieldInfo.id != null">and fieldInfo.id = #{fieldInfo.id}</if>
+            <if test="fieldInfo != null and fieldInfo.colName != null">and fieldInfo.colName = #{fieldInfo.colName}</if>
+            <if test="fieldInfo != null and fieldInfo.colType != null">and fieldInfo.colType = #{fieldInfo.colType}</if>
+            <if test="fieldInfo != null and fieldInfo.colDes != null">and fieldInfo.colDes = #{fieldInfo.colDes}</if>
+            <if test="fieldInfo != null and fieldInfo.colIndex != null">and fieldInfo.colIndex = #{fieldInfo.colIndex}</if>
+            <if test="fieldInfo != null and fieldInfo.isPartitionCol != null">and fieldInfo.isPartitionCol = #{fieldInfo.isPartitionCol}</if>
+            <if test="fieldInfo != null and fieldInfo.tableId != null">and fieldInfo.tableId = #{fieldInfo.tableId}</if>
+            <if test="fieldInfo != null and fieldInfo.createTime != null">and fieldInfo.createTime = #{fieldInfo.createTime}</if>
+            <if test="fieldInfo != null and fieldInfo.updateTime != null">and fieldInfo.updateTime = #{fieldInfo.updateTime}</if>
+        </where>
+    </sql>
+
+    <resultMap id="returnFieldInfo" type="cn.whaley.datawarehouse.illidan.common.domain.field.FieldInfo">
+        <id column="id" javaType="Long" jdbcType="BIGINT" property="id"/>
+        <result column="colName" javaType="String" jdbcType="VARCHAR" property="colName"/>
+        <result column="colType" javaType="String" jdbcType="VARCHAR" property="colType"/>
+        <result column="colDes" javaType="String" jdbcType="VARCHAR" property="colDes"/>
+        <result column="colIndex" javaType="Long" jdbcType="BIGINT" property="colIndex"/>
+        <result column="isPartitionCol" javaType="String" jdbcType="VARCHAR" property="isPartitionCol"/>
+        <result column="tableId" javaType="Long" jdbcType="BIGINT" property="tableId"/>
+        <result column="createTime" javaType="Date" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="updateTime" javaType="Date" jdbcType="TIMESTAMP" property="updateTime"/>
+    </resultMap>
+
+    <select id="get"  resultMap="returnFieldInfo">
+        select * from field_info fieldInfo where  fieldInfo.id = #{id}
+    </select>
+
+    <update id="update">
+        <include refid="updateSql"/>
+        <include refid="whereCase"/>
+    </update>
+
+    <insert id="insertBatch" >
+        insert into field_info
+        (
+        <trim prefix="" prefixOverrides=",">
+            ,colName,colType,colDes,colIndex,isPartitionCol,tableId,createTime,updateTime
+        </trim>
+        ) values
+        <foreach collection="list" item="item" index="index" separator=",">
+            (
+            <trim prefix="" prefixOverrides=",">
+                ,#{colName} ,#{colType},#{colDes},#{colIndex},#{isPartitionCol},#{tableId} ,#{createTime} ,#{updateTime}
+            </trim>
+            )
+        </foreach>
+    </insert>
+
+    <insert id="insert" parameterType="FieldInfo">
+        <selectKey resultType="long" keyProperty="id" order="AFTER">
+            SELECT
+            LAST_INSERT_ID()
+        </selectKey>
+        insert into field_info
+        (
+        <trim prefix="" prefixOverrides=",">
+            ,colName,colType,colDes,colIndex,isPartitionCol,tableId,createTime,updateTime
+        </trim>
+        )values(
+        <trim prefix="" prefixOverrides=",">
+            ,#{fieldInfo.colName},#{fieldInfo.colType},#{fieldInfo.colDes},#{fieldInfo.colIndex},#{fieldInfo.isPartitionCol},#{fieldInfo.tableId},#{fieldInfo.createTime},#{fieldInfo.updateTime}
+        </trim>
+        )
+    </insert>
+
+    <delete id="remove" >
+        delete fieldInfo from field_info fieldInfo <include refid="whereCase"/>
+    </delete>
+
+    <select id="find"  resultMap="returnFieldInfo">
+        select <include refid="colList" /> from field_info fieldInfo
+        <include refid="joinTables"/>
+        <include refid="smallWhereCase"/>
+        <if test="fieldInfo != null and fieldInfo.orderBy != null">order by #{fieldInfo.orderBy}</if>
+        <if test="fieldInfo != null and fieldInfo.limitStart != null and fieldInfo.limitEnd != null">limit #{fieldInfo.limitStart}, #{fieldInfo.limitEnd}</if>
+    </select>
+
+    <select id="count"  resultType="long">
+        select count(1) from field_info fieldInfo
+        <include refid="joinTables"/>
+        <include refid="smallWhereCase"/>
+    </select>
+
+    <update id="updateByFieldInfo" >
+        <include refid="updateSql"/>
+        <include refid="smallWhereCase"/>
+    </update>
+
+    <update id="updateById">
+        <include refid="updateSql"/>
+        where id = #{fieldInfo.id}
+    </update>
+
+    <delete id="removeByFieldInfo">
+        delete from field_info fieldInfo <include refid="smallWhereCase"/>
+    </delete>
+
+    <select id="findByFieldInfo" resultMap="returnFieldInfo">
+        select <include refid="colList" /> from field_info fieldInfo
+        <include refid="joinTables"/>
+        <include refid="smallWhereCase"/>
+        order by fieldInfo.updateTime desc
+        <if test="fieldInfo != null and fieldInfo.limitStart != null and fieldInfo.limitEnd != null">limit #{fieldInfo.limitStart}, #{fieldInfo.limitEnd}</if>
+    </select>
+
+    <select id="countByFieldInfo"  resultType="long">
+        select count(1) from field_info fieldInfo
+        <include refid="joinTables"/>
+        <include refid="smallWhereCase"/>
+    </select>
+
+    <select id="isExistFieldInfo"  resultType="long">
+        select count(1) from field_info fieldInfo
+        where id = #{id} and (colName=#{colName})
+    </select>
+
+    <delete id="removeByIds">
+        delete from field_info where id in
+        <foreach item="item" collection="ids" open="(" separator="," close=")" >
+            #{item}
+        </foreach>
+
+    </delete>
+
+    <select id="getByNameLike"  resultMap="returnFieldInfo">
+        select <include refid="colList" /> from field_info fieldInfo where  fieldInfo.colName like concat('%',#{colName},'%') limit 10
+    </select>
+</mapper>

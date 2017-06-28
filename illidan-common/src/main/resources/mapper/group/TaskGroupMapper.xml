@@ -35,6 +35,9 @@
             <if test="taskGroup.updateTime != null">
                 updateTime = #{taskGroup.updateTime},
             </if>
+            <if test="taskGroup.scheduleId != null">
+                scheduleId = #{taskGroup.scheduleId},
+            </if>
 
         </set>
     </sql>
@@ -52,6 +55,7 @@
             , taskGroup.projectId AS projectId
             , taskGroup.createTime AS createTime
             , taskGroup.updateTime AS updateTime
+            , taskGroup.scheduleId AS scheduleId
             , taskGroup.id AS id
 
         </trim>
@@ -76,7 +80,8 @@
             <if test="taskGroup != null and taskGroup.emailLK != null">and taskGroup.email LIKE #{taskGroup.emailLK}</if>
             <if test="taskGroup != null and taskGroup.projectId != null">and taskGroup.projectId = #{taskGroup.projectId}</if>
             <if test="taskGroup != null and taskGroup.projectIdLK != null">and taskGroup.projectId LIKE #{taskGroup.projectIdLK}</if>
-
+            <if test="taskGroup != null and taskGroup.scheduleId != null">and taskGroup.scheduleId = #{taskGroup.scheduleId}</if>
+            <if test="taskGroup != null and taskGroup.scheduleIdLK != null">and taskGroup.scheduleId LIKE #{taskGroup.scheduleIdLK}</if>
         </where>
     </sql>
 
@@ -91,6 +96,7 @@
             <if test="taskGroup != null and taskGroup.status != null">and taskGroup.status = #{taskGroup.status}</if>
             <if test="taskGroup != null and taskGroup.email != null">and taskGroup.email = #{taskGroup.email}</if>
             <if test="taskGroup != null and taskGroup.projectId != null">and taskGroup.projectId = #{taskGroup.projectId}</if>
+            <if test="taskGroup != null and taskGroup.scheduleId != null">and taskGroup.scheduleId = #{taskGroup.scheduleId}</if>
         </where>
     </sql>
 
@@ -104,6 +110,7 @@
         <result column="status" javaType="String" jdbcType="VARCHAR" property="status"/>
         <result column="email" javaType="String" jdbcType="VARCHAR" property="email"/>
         <result column="projectId" javaType="Long" jdbcType="BIGINT" property="projectId"/>
+        <result column="scheduleId" javaType="String" jdbcType="VARCHAR" property="scheduleId"/>
 
     </resultMap>
 
@@ -120,13 +127,13 @@
         insert into task_group
         (
         <trim prefix="" prefixOverrides=",">
-            ,groupCode,groupDes,createTime,updateTime,schedule,status,email,projectId
+            ,groupCode,groupDes,createTime,updateTime,schedule,status,email,projectId,scheduleId
         </trim>
         ) values
         <foreach collection="list" item="item" index="index" separator=",">
             (
             <trim prefix="" prefixOverrides=",">
-                ,#{groupCode} ,#{groupDes} ,#{createTime} ,#{updateTime} ,#{schedule} ,#{status} ,#{email} ,#{projectId}
+                ,#{groupCode} ,#{groupDes} ,#{createTime} ,#{updateTime} ,#{schedule} ,#{status} ,#{email} ,#{projectId} ,#{scheduleId}
             </trim>
             )
         </foreach>
@@ -140,11 +147,11 @@
         insert into task_group
         (
         <trim prefix="" prefixOverrides=",">
-            ,groupCode,groupDes,createTime,updateTime,schedule,status,email,projectId
+            ,groupCode,groupDes,createTime,updateTime,schedule,status,email,projectId,scheduleId
         </trim>
         )values(
         <trim prefix="" prefixOverrides=",">
-            ,#{taskGroup.groupCode},#{taskGroup.groupDes},#{taskGroup.createTime},#{taskGroup.updateTime},#{taskGroup.schedule},#{taskGroup.status},#{taskGroup.email},#{taskGroup.projectId}
+            ,#{taskGroup.groupCode},#{taskGroup.groupDes},#{taskGroup.createTime},#{taskGroup.updateTime},#{taskGroup.schedule},#{taskGroup.status},#{taskGroup.email},#{taskGroup.projectId},#{taskGroup.scheduleId}
         </trim>
         )
     </insert>
