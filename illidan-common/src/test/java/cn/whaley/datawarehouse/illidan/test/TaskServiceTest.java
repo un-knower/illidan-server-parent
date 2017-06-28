@@ -70,7 +70,7 @@ public class TaskServiceTest {
         tableInfo.setDataType("parquet");
         tableInfo.setDbId(1L);
         tableInfo.setCreateTime(new Date());
-        tableInfo.setUpdataTime(new Date());
+        tableInfo.setUpdateTime(new Date());
 
         DbInfo dbInfo = dbInfoService.get(1L);
 
