@@ -5,6 +5,8 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 /**
  * Created by wujiulin on 2017/6/28.
  */
@@ -13,4 +15,5 @@ import org.springframework.stereotype.Component;
 @Component
 public interface FieldInfoMapper {
     FieldInfo get(@Param("id") final Long id);
+    List<FieldInfo> getByTableId(@Param("tableId") final Long tableId);
 }

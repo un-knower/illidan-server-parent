@@ -38,4 +38,6 @@ public interface TaskGroupService {
     Long removeByIds(final List<Long> ids);
 
     List<TaskGroup> getByCodeLike(String groupCode);
+
+    List<TaskGroup> findTaskGroupByProjectId(final Long projectId);
 }

@@ -42,4 +42,15 @@ public interface TaskService {
 
     TaskFull getFullTaskByCode(final String taskCode);
 
+    TaskFull getFullTask(final Long id);
+
+    Long insertFullTask(final TaskFull task) throws Exception;
+
+    Long updateFullTask(final TaskFull task);
+
+    List<Task> findTaskByGroupId(final Long groupId);
+
+
+
+
 }

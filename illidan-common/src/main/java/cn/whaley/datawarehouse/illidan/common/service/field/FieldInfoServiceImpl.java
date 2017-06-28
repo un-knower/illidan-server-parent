@@ -5,6 +5,8 @@ import cn.whaley.datawarehouse.illidan.common.mapper.field.FieldInfoMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 /**
  * Created by wujiulin on 2017/6/28.
  */
@@ -16,5 +18,9 @@ public class FieldInfoServiceImpl implements FieldInfoService {
 
     public FieldInfo get(final Long id) {
         return fieldInfoMapper.get(id);
+    }
+
+    public List<FieldInfo> getByTableId(final Long tableId) {
+        return fieldInfoMapper.getByTableId(tableId);
     }
 }

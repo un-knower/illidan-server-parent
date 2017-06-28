@@ -110,6 +110,10 @@
         select * from field_info fieldInfo where  fieldInfo.id = #{id}
     </select>
 
+    <select id="getByTableId"  resultMap="returnFieldInfo">
+        select <include refid="colList" /> from field_info fieldInfo where fieldInfo.tableId = #{tableId}
+    </select>
+
     <update id="update">
         <include refid="updateSql"/>
         <include refid="whereCase"/>
