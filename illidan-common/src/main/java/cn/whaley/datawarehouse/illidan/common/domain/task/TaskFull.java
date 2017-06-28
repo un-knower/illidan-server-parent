@@ -27,4 +27,12 @@ public class TaskFull extends Task{
     public void setTable(TableWithField table) {
         this.table = table;
     }
+
+    public List<String> getExecuteTypeList() {
+        return executeTypeList;
+    }
+
+    public void setExecuteTypeList(List<String> executeTypeList) {
+        this.executeTypeList = executeTypeList;
+    }
 }
