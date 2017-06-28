@@ -179,7 +179,7 @@
 
     <select id="isExistTableInfo"  resultType="long">
         select count(1) from table_info tableInfo
-        where id = #{id} and (dbCode=#{dbCode})
+        where tableCode = #{tableCode}
     </select>
 
     <delete id="removeByIds">
