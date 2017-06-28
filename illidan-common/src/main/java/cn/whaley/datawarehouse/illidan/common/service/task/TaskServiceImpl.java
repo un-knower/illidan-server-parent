@@ -36,6 +36,8 @@ public class TaskServiceImpl implements TaskService {
     private DbInfoMapper dbInfoMapper;
     @Autowired
     private FieldInfoMapper fieldInfoMapper;
+    @Autowired
+    private TableInfoService tableInfoService;
 
     public Task get(final Long id) {
         return taskMapper.get(id);
@@ -153,11 +155,6 @@ public class TaskServiceImpl implements TaskService {
         }
 
         return taskFull;
-    }
-
-    @Override
-    public TaskFull getFullTask(Long id) {
-        return null;
     }
 
     @Override
