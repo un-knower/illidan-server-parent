@@ -9,25 +9,28 @@
     <!--The user defined SQL!-->
 
     <sql id="updateSql">
-        update project project
+        update owner owner
         <set>
-            <if test="project.projectCode != null">
-                projectCode = #{project.projectCode},
+            <if test="owner.ownerName != null">
+                ownerName = #{owner.ownerName},
             </if>
-            <if test="project.projectDes != null">
-                projectDes = #{project.projectDes},
+            <if test="owner.ownerDes != null">
+                ownerDes = #{owner.ownerDes},
             </if>
-            <if test="project.ownerId != null">
-                ownerId = #{project.ownerId},
+            <if test="owner.ownerPassword != null">
+                ownerPassword = #{owner.ownerPassword},
             </if>
-            <if test="project.status != null">
-                status = #{project.status},
+            <if test="owner.status != null">
+                status = #{owner.status},
             </if>
-            <if test="project.createTime != null">
-                createTime = #{project.createTime},
+            <if test="owner.isAdmin != null">
+                isAdmin = #{owner.isAdmin},
             </if>
-            <if test="project.updateTime != null">
-                updateTime = #{project.updateTime},
+            <if test="owner.createTime != null">
+                createTime = #{owner.createTime},
+            </if>
+            <if test="owner.updateTime != null">
+                updateTime = #{owner.updateTime},
             </if>
 
         </set>
@@ -38,61 +41,63 @@
 
     <sql id="colList">
         <trim prefix="" prefixOverrides=",">
-            , project.projectCode AS projectCode
-            , project.projectDes AS projectDes
-            , project.ownerId AS ownerId
-            , project.status AS status
-            , project.createTime AS createTime
-            , project.updateTime AS updateTime
-            , project.id AS id
+            , owner.ownerName AS ownerName
+            , owner.ownerDes AS ownerDes
+            , owner.ownerPassword AS ownerPassword
+            , owner.status AS status
+            , owner.isAdmin AS isAdmin
+            , owner.createTime AS createTime
+            , owner.updateTime AS updateTime
+            , owner.id AS id
 
         </trim>
     </sql>
 
     <sql id="whereCase">
         <where>
-            1=1
-            <if test="project != null and project.id != null">and project.id = #{project.id}</if>
-            <if test="project != null and project.idGT != null">and project.id > #{project.idGT}</if><if test="idLT != null">and #{idLT} > project.id</if>
-            <if test="project != null and project.projectCode != null">and project.projectCode = #{project.projectCode}</if>
-            <if test="project != null and project.projectCodeLK != null">and project.projectCode LIKE #{project.projectCodeLK}</if>
-            <if test="project != null and project.projectDes != null">and project.projectDes = #{project.projectDes}</if>
-            <if test="project != null and project.projectDesLK != null">and project.projectDes LIKE #{project.projectDesLK}</if>
-            <if test="project != null and project.createTime != null">and project.createTime = #{project.createTime}</if>
-            <if test="project != null and project.updateTime != null">and project.updateTime = #{project.updateTime}</if>
-            <if test="project != null and project.ownerId != null">and project.ownerId = #{project.ownerId}</if>
-            <if test="project != null and project.ownerIdLK != null">and project.ownerId LIKE #{project.ownerIdLK}</if>
-            <if test="project != null and project.status != null">and project.status = #{project.status}</if>
-            <if test="project != null and project.statusLK != null">and project.status LIKE #{project.statusLK}</if>
+            owner.status = '1'
+            <if test="owner != null and owner.id != null">and owner.id = #{owner.id}</if>
+            <if test="owner != null and owner.idGT != null">and owner.id > #{owner.idGT}</if><if test="idLT != null">and #{idLT} > owner.id</if>
+            <if test="owner != null and owner.ownerName != null">and owner.ownerName = #{owner.ownerName}</if>
+            <if test="owner != null and owner.ownerNameLK != null">and owner.ownerName LIKE #{owner.ownerNameLK}</if>
+            <if test="owner != null and owner.ownerDes != null">and owner.ownerDes = #{owner.ownerDes}</if>
+            <if test="owner != null and owner.ownerDesLK != null">and owner.ownerDes LIKE #{owner.ownerDesLK}</if>
+            <if test="owner != null and owner.createTime != null">and owner.createTime = #{owner.createTime}</if>
+            <if test="owner != null and owner.updateTime != null">and owner.updateTime = #{owner.updateTime}</if>
+            <if test="owner != null and owner.ownerPassword != null">and owner.ownerPassword = #{owner.ownerPassword}</if>
+            <if test="owner != null and owner.ownerPasswordLK != null">and owner.ownerPassword LIKE #{owner.ownerPasswordLK}</if>
+            <if test="owner != null and owner.isAdmin != null">and owner.isAdmin = #{owner.isAdmin}</if>
+            <if test="owner != null and owner.isAdminLK != null">and owner.isAdmin LIKE #{owner.isAdminLK}</if>
 
         </where>
     </sql>
 
     <sql id="smallWhereCase">
         <where>
-            <if test="project != null and project.id != null">and project.id = #{project.id}</if>
-            <if test="project != null and project.projectCode != null">and project.projectCode = #{project.projectCode}</if>
-            <if test="project != null and project.projectDes != null">and project.projectDes = #{project.projectDes}</if>
-            <if test="project != null and project.createTime != null">and project.createTime = #{project.createTime}</if>
-            <if test="project != null and project.updateTime != null">and project.updateTime = #{project.updateTime}</if>
-            <if test="project != null and project.ownerId != null">and project.ownerId = #{project.ownerId}</if>
-            <if test="project != null and project.status != null">and project.status = #{project.status}</if>
+            owner.status = '1'
+            <if test="owner != null and owner.id != null">and owner.id = #{owner.id}</if>
+            <if test="owner != null and owner.ownerName != null">and owner.ownerName = #{owner.ownerName}</if>
+            <if test="owner != null and owner.ownerDes != null">and owner.ownerDes = #{owner.ownerDes}</if>
+            <if test="owner != null and owner.createTime != null">and owner.createTime = #{owner.createTime}</if>
+            <if test="owner != null and owner.updateTime != null">and owner.updateTime = #{owner.updateTime}</if>
+            <if test="owner != null and owner.ownerPassword != null">and owner.ownerPassword = #{owner.ownerPassword}</if>
+            <if test="owner != null and owner.isAdmin != null">and owner.isAdmin = #{owner.isAdmin}</if>
         </where>
     </sql>
 
-    <resultMap id="returnProject" type="cn.whaley.datawarehouse.illidan.common.domain.project.Project">
+    <resultMap id="returnOwner" type="cn.whaley.datawarehouse.illidan.common.domain.owner.Owner">
         <id column="id" javaType="Long" jdbcType="BIGINT" property="id"/>
-        <result column="projectCode" javaType="String" jdbcType="VARCHAR" property="projectCode"/>
-        <result column="projectDes" javaType="String" jdbcType="VARCHAR" property="projectDes"/>
+        <result column="ownerName" javaType="String" jdbcType="VARCHAR" property="ownerName"/>
+        <result column="ownerDes" javaType="String" jdbcType="VARCHAR" property="ownerDes"/>
         <result column="createTime" javaType="Date" jdbcType="TIMESTAMP" property="createTime"/>
         <result column="updateTime" javaType="Date" jdbcType="TIMESTAMP" property="updateTime"/>
-        <result column="ownerId" javaType="String" jdbcType="VARCHAR" property="ownerId"/>
-        <result column="status" javaType="String" jdbcType="VARCHAR" property="status"/>
+        <result column="isAdmin" javaType="String" jdbcType="VARCHAR" property="isAdmin"/>
+        <result column="ownerPassword" javaType="String" jdbcType="VARCHAR" property="ownerPassword"/>
 
     </resultMap>
 
-    <select id="get"  resultMap="returnProject">
-        select * from project project where  project.id = #{id}
+    <select id="get"  resultMap="returnOwner">
+        select * from owner owner where owner.status = '1' AND owner.id = #{id}
     </select>
 
     <update id="update">
@@ -101,99 +106,105 @@
     </update>
 
     <insert id="insertBatch" >
-        insert into project
+        insert into owner
         (
         <trim prefix="" prefixOverrides=",">
-            ,projectCode,projectDes,createTime,updateTime,ownerId,status
+            ,ownerCode,ownerDes,createTime,updateTime,ownerId,status
         </trim>
         ) values
         <foreach collection="list" item="item" index="index" separator=",">
             (
             <trim prefix="" prefixOverrides=",">
-                ,#{projectCode} ,#{projectDes} ,#{createTime} ,#{updateTime} ,#{ownerId} ,#{status}
+                ,#{ownerCode} ,#{ownerDes} ,#{createTime} ,#{updateTime} ,#{ownerId} ,#{status}
             </trim>
             )
         </foreach>
     </insert>
 
-    <insert id="insert" parameterType="Project">
+    <insert id="insert" parameterType="Owner">
         <selectKey resultType="long" keyProperty="id" order="AFTER">
             SELECT
             LAST_INSERT_ID()
         </selectKey>
-        insert into project
+        insert into owner
         (
         <trim prefix="" prefixOverrides=",">
-            ,projectCode,projectDes,createTime,updateTime,ownerId,status
+            ,ownerCode,ownerDes,createTime,updateTime,ownerId,status
         </trim>
         )values(
         <trim prefix="" prefixOverrides=",">
-            ,#{project.projectCode},#{project.projectDes},#{project.createTime},#{project.updateTime},#{project.ownerId},#{project.status}
+            ,#{owner.ownerCode},#{owner.ownerDes},#{owner.createTime},#{owner.updateTime},#{owner.ownerId},#{owner.status}
         </trim>
         )
     </insert>
 
     <delete id="remove" >
-        delete project from project project <include refid="whereCase"/>
+        <!--delete owner from owner owner <include refid="whereCase"/>-->
+        UPDATE owner owner SET owner.status = '0' <include refid="whereCase"/>
     </delete>
 
-    <select id="find"  resultMap="returnProject">
-        select <include refid="colList" /> from project project
+    <select id="find"  resultMap="returnOwner">
+        select <include refid="colList" /> from owner owner
         <include refid="joinTables"/>
         <include refid="smallWhereCase"/>
-        <if test="project != null and project.orderBy != null">order by #{project.orderBy}</if>
-        <if test="project != null and project.limitStart != null and project.limitEnd != null">limit #{project.limitStart}, #{project.limitEnd}</if>
+        <if test="owner != null and owner.orderBy != null">order by #{owner.orderBy}</if>
+        <if test="owner != null and owner.limitStart != null and owner.limitEnd != null">limit #{owner.limitStart}, #{owner.limitEnd}</if>
     </select>
 
     <select id="count"  resultType="long">
-        select count(1) from project project
+        select count(1) from owner owner
         <include refid="joinTables"/>
         <include refid="smallWhereCase"/>
     </select>
 
-    <update id="updateByProject" >
+    <update id="updateByOwner" >
         <include refid="updateSql"/>
         <include refid="smallWhereCase"/>
     </update>
 
     <update id="updateById">
         <include refid="updateSql"/>
-        where id = #{project.id}
+        where status = '1' and id = #{owner.id}
     </update>
 
-    <delete id="removeByProject">
-        delete from project project <include refid="smallWhereCase"/>
+    <delete id="removeByOwner">
+        <!--delete from owner owner <include refid="smallWhereCase"/>-->
+        UPDATE owner owner SET owner.status = '0' <include refid="smallWhereCase"/>
     </delete>
 
-    <select id="findByProject" resultMap="returnProject">
-        select <include refid="colList" /> from project project
+    <select id="findByOwner" resultMap="returnOwner">
+        select <include refid="colList" /> from owner owner
         <include refid="joinTables"/>
         <include refid="smallWhereCase"/>
-        order by project.updateTime desc
-        <!--<if test="project != null and project.orderBy != null">order by #{project.orderBy}</if>-->
-        <if test="project != null and project.limitStart != null and project.limitEnd != null">limit #{project.limitStart}, #{project.limitEnd}</if>
+        order by owner.updateTime desc
+        <!--<if test="owner != null and owner.orderBy != null">order by #{owner.orderBy}</if>-->
+        <if test="owner != null and owner.limitStart != null and owner.limitEnd != null">limit #{owner.limitStart}, #{owner.limitEnd}</if>
     </select>
 
-    <select id="countByProject"  resultType="long">
-        select count(1) from project project
+    <select id="countByOwner"  resultType="long">
+        select count(1) from owner owner
         <include refid="joinTables"/>
         <include refid="smallWhereCase"/>
     </select>
 
-    <select id="isExistProject"  resultType="long">
-        select count(1) from project project
-        where id = #{id} and (projectCode=#{projectCode})
+    <select id="isExistOwner"  resultType="long">
+        select count(1) from owner owner
+        where status = #{status} and (ownerCode=#{ownerCode})
     </select>
 
     <delete id="removeByIds">
-        delete from project where id in
+        <!--delete from owner where status = '1' and id in
+        <foreach item="item" collection="ids" open="(" separator="," close=")" >
+            #{item}
+        </foreach>-->
+
+        UPDATE owner SET status = '0' where status = '1' and id in
         <foreach item="item" collection="ids" open="(" separator="," close=")" >
             #{item}
         </foreach>
-
     </delete>
 
-    <select id="getByCodeLike"  resultMap="returnProject">
-        select <include refid="colList" /> from project project where  project.projectCode like concat('%',#{projectCode},'%') limit 10
+    <select id="getByCodeLike"  resultMap="returnOwner">
+        select <include refid="colList" /> from owner owner where owner.status = '1' AND owner.ownerCode like concat('%',#{ownerCode},'%') limit 10
     </select>
 </mapper>

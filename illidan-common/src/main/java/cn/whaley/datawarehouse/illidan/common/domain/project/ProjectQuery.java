@@ -39,6 +39,10 @@ public class ProjectQuery extends BaseQueryEntity {
      * 发布状态(0：未发布，1已发布)
      */
     private String isPublish;
+    /**
+     * 发布时间
+     */
+    private Date publishTime;
     private String createTimeBegin;
     private String createTimeEnd;
 
@@ -120,6 +124,14 @@ public class ProjectQuery extends BaseQueryEntity {
 
     public void setIsPublish(String isPublish) {
         this.isPublish = isPublish;
+    }
+
+    public Date getPublishTime() {
+        return publishTime;
+    }
+
+    public void setPublishTime(Date publishTime) {
+        this.publishTime = publishTime;
     }
 
     @Override

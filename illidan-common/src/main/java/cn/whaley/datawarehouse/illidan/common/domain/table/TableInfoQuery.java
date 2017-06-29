@@ -34,7 +34,7 @@ public class TableInfoQuery extends BaseQueryEntity {
     /**
      * 修改时间
      */
-    private Date updataTime;
+    private Date updateTime;
     private String createTimeBegin;
     private String createTimeEnd;
 
@@ -86,12 +86,12 @@ public class TableInfoQuery extends BaseQueryEntity {
         this.createTime = createTime;
     }
 
-    public Date getUpdataTime() {
-        return updataTime;
+    public Date getUpdateTime() {
+        return updateTime;
     }
 
-    public void setUpdataTime(Date updataTime) {
-        this.updataTime = updataTime;
+    public void setUpdateTime(Date updateTime) {
+        this.updateTime = updateTime;
     }
 
     public String getCreateTimeBegin() {

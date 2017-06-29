@@ -47,7 +47,7 @@
 
     <sql id="whereCase">
         <where>
-            1=1
+            dbInfo.status = '1'
             <if test="dbInfo != null and dbInfo.id != null">and dbInfo.id = #{dbInfo.id}</if>
             <if test="dbInfo != null and dbInfo.idGT != null">and dbInfo.id > #{dbInfo.idGT}</if><if test="idLT != null">and #{idLT} > dbInfo.id</if>
             <if test="dbInfo != null and dbInfo.dbCode != null">and dbInfo.dbCode = #{dbInfo.dbCode}</if>
@@ -56,20 +56,18 @@
             <if test="dbInfo != null and dbInfo.dbDesLK != null">and dbInfo.dbDes LIKE #{dbInfo.dbDesLK}</if>
             <if test="dbInfo != null and dbInfo.createTime != null">and dbInfo.createTime = #{dbInfo.createTime}</if>
             <if test="dbInfo != null and dbInfo.updateTime != null">and dbInfo.updateTime = #{dbInfo.updateTime}</if>
-            <if test="dbInfo != null and dbInfo.status != null">and dbInfo.status = #{dbInfo.status}</if>
-            <if test="dbInfo != null and dbInfo.statusLK != null">and dbInfo.status LIKE #{dbInfo.statusLK}</if>
 
         </where>
     </sql>
 
     <sql id="smallWhereCase">
         <where>
+            dbInfo.status = '1'
             <if test="dbInfo != null and dbInfo.id != null">and dbInfo.id = #{dbInfo.id}</if>
             <if test="dbInfo != null and dbInfo.dbCode != null">and dbInfo.dbCode = #{dbInfo.dbCode}</if>
             <if test="dbInfo != null and dbInfo.dbDes != null">and dbInfo.dbDes = #{dbInfo.dbDes}</if>
             <if test="dbInfo != null and dbInfo.createTime != null">and dbInfo.createTime = #{dbInfo.createTime}</if>
             <if test="dbInfo != null and dbInfo.updateTime != null">and dbInfo.updateTime = #{dbInfo.updateTime}</if>
-            <if test="dbInfo != null and dbInfo.status != null">and dbInfo.status = #{dbInfo.status}</if>
         </where>
     </sql>
 
@@ -83,7 +81,7 @@
     </resultMap>
 
     <select id="get"  resultMap="returnDbInfo">
-        select * from db_info dbInfo where  dbInfo.id = #{id}
+        select * from db_info dbInfo where dbInfo.status = '1' and dbInfo.id = #{id}
     </select>
 
     <update id="update">
@@ -125,7 +123,8 @@
     </insert>
 
     <delete id="remove" >
-        delete dbInfo from db_info dbInfo <include refid="whereCase"/>
+        <!--delete dbInfo from db_info dbInfo <include refid="whereCase"/>-->
+        UPDATE db_info dbInfo SET dbInfo.status = '0' <include refid="whereCase"/>
     </delete>
 
     <select id="find"  resultMap="returnDbInfo">
@@ -149,11 +148,12 @@
 
     <update id="updateById">
         <include refid="updateSql"/>
-        where id = #{dbInfo.id}
+        where id = #{dbInfo.id} and status = '1'
     </update>
 
     <delete id="removeByDbInfo">
-        delete from db_info dbInfo <include refid="smallWhereCase"/>
+        <!--delete from db_info dbInfo <include refid="smallWhereCase"/>-->
+        UPDATE db_info dbInfo SET dbInfo.status = '0' <include refid="smallWhereCase"/>
     </delete>
 
     <select id="findByDbInfo" resultMap="returnDbInfo">
@@ -172,11 +172,16 @@
 
     <select id="isExistDbInfo"  resultType="long">
         select count(1) from db_info dbInfo
-        where id = #{id} and (dbCode=#{dbCode})
+        where status = #{status} and (dbCode=#{dbCode})
     </select>
 
     <delete id="removeByIds">
-        delete from db_info where id in
+        <!--delete from db_info where status = '1' and id in
+        <foreach item="item" collection="ids" open="(" separator="," close=")" >
+            #{item}
+        </foreach>-->
+
+        UPDATE db_info SET status = '0' where status = '1' and id in
         <foreach item="item" collection="ids" open="(" separator="," close=")" >
             #{item}
         </foreach>
@@ -184,6 +189,6 @@
     </delete>
 
     <select id="getByCodeLike"  resultMap="returnDbInfo">
-        select <include refid="colList" /> from db_info dbInfo where  dbInfo.dbCode like concat('%',#{dbCode},'%') limit 10
+        select <include refid="colList" /> from db_info dbInfo where dbInfo.status = '1' and dbInfo.dbCode like concat('%',#{dbCode},'%') limit 10
     </select>
 </mapper>

@@ -63,7 +63,7 @@
 
     <sql id="whereCase">
         <where>
-            1=1
+            taskGroup.status = '1'
             <if test="taskGroup != null and taskGroup.id != null">and taskGroup.id = #{taskGroup.id}</if>
             <if test="taskGroup != null and taskGroup.idGT != null">and taskGroup.id > #{taskGroup.idGT}</if><if test="idLT != null">and #{idLT} > taskGroup.id</if>
             <if test="taskGroup != null and taskGroup.groupCode != null">and taskGroup.groupCode = #{taskGroup.groupCode}</if>
@@ -74,8 +74,6 @@
             <if test="taskGroup != null and taskGroup.updateTime != null">and taskGroup.updateTime = #{taskGroup.updateTime}</if>
             <if test="taskGroup != null and taskGroup.schedule != null">and taskGroup.schedule = #{taskGroup.schedule}</if>
             <if test="taskGroup != null and taskGroup.scheduleLK != null">and taskGroup.schedule LIKE #{taskGroup.scheduleLK}</if>
-            <if test="taskGroup != null and taskGroup.status != null">and taskGroup.status = #{taskGroup.status}</if>
-            <if test="taskGroup != null and taskGroup.statusLK != null">and taskGroup.status LIKE #{taskGroup.statusLK}</if>
             <if test="taskGroup != null and taskGroup.email != null">and taskGroup.email = #{taskGroup.email}</if>
             <if test="taskGroup != null and taskGroup.emailLK != null">and taskGroup.email LIKE #{taskGroup.emailLK}</if>
             <if test="taskGroup != null and taskGroup.projectId != null">and taskGroup.projectId = #{taskGroup.projectId}</if>
@@ -87,13 +85,13 @@
 
     <sql id="smallWhereCase">
         <where>
+            taskGroup.status = '1'
             <if test="taskGroup != null and taskGroup.id != null">and taskGroup.id = #{taskGroup.id}</if>
             <if test="taskGroup != null and taskGroup.groupCode != null">and taskGroup.groupCode = #{taskGroup.groupCode}</if>
             <if test="taskGroup != null and taskGroup.groupDes != null">and taskGroup.groupDes = #{taskGroup.groupDes}</if>
             <if test="taskGroup != null and taskGroup.createTime != null">and taskGroup.createTime = #{taskGroup.createTime}</if>
             <if test="taskGroup != null and taskGroup.updateTime != null">and taskGroup.updateTime = #{taskGroup.updateTime}</if>
             <if test="taskGroup != null and taskGroup.schedule != null">and taskGroup.schedule = #{taskGroup.schedule}</if>
-            <if test="taskGroup != null and taskGroup.status != null">and taskGroup.status = #{taskGroup.status}</if>
             <if test="taskGroup != null and taskGroup.email != null">and taskGroup.email = #{taskGroup.email}</if>
             <if test="taskGroup != null and taskGroup.projectId != null">and taskGroup.projectId = #{taskGroup.projectId}</if>
             <if test="taskGroup != null and taskGroup.scheduleId != null">and taskGroup.scheduleId = #{taskGroup.scheduleId}</if>
@@ -115,7 +113,7 @@
     </resultMap>
 
     <select id="get"  resultMap="returnTaskGroup">
-        select * from task_group taskGroup where  taskGroup.id = #{id}
+        select * from task_group taskGroup where taskGroup.status = '1' and taskGroup.id = #{id}
     </select>
 
     <update id="update">
@@ -157,7 +155,8 @@
     </insert>
 
     <delete id="remove" >
-        delete taskGroup from task_group taskGroup <include refid="whereCase"/>
+        <!--delete taskGroup from task_group taskGroup <include refid="whereCase"/>-->
+        UPDATE task_group taskGroup SET taskGroup.status = '0' <include refid="whereCase"/>
     </delete>
 
     <select id="find"  resultMap="returnTaskGroup">
@@ -181,11 +180,12 @@
 
     <update id="updateById">
         <include refid="updateSql"/>
-        where id = #{taskGroup.id}
+        where id = #{taskGroup.id} and status = '1'
     </update>
 
     <delete id="removeByTaskGroup">
-        delete from task_group taskGroup <include refid="smallWhereCase"/>
+        <!--delete from task_group taskGroup <include refid="smallWhereCase"/>-->
+        UPDATE task_group taskGroup SET taskGroup.status = '0' <include refid="smallWhereCase"/>
     </delete>
 
     <select id="findByTaskGroup" resultMap="returnTaskGroup">
@@ -204,18 +204,22 @@
 
     <select id="isExistTaskGroup"  resultType="long">
         select count(1) from task_group taskGroup
-        where id = #{id} and (groupCode=#{groupCode})
+        where status = #{status} and (groupCode=#{groupCode})
     </select>
 
     <delete id="removeByIds">
-        delete from task_group where id in
+        <!--delete from task_group where status = '1' and id in
+        <foreach item="item" collection="ids" open="(" separator="," close=")" >
+            #{item}
+        </foreach>-->
+
+        UPDATE task_group SET status = '0' where status = '1' and id in
         <foreach item="item" collection="ids" open="(" separator="," close=")" >
             #{item}
         </foreach>
-
     </delete>
 
     <select id="getByCodeLike"  resultMap="returnTaskGroup">
-        select <include refid="colList" /> from task_group taskGroup where  taskGroup.groupCode like concat('%',#{groupCode},'%') limit 10
+        select <include refid="colList" /> from task_group taskGroup where taskGroup.status = '1' and taskGroup.groupCode like concat('%',#{groupCode},'%') limit 10
     </select>
 </mapper>

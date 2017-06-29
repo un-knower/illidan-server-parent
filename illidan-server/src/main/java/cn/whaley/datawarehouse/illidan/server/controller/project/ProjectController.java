@@ -1,7 +1,10 @@
 package cn.whaley.datawarehouse.illidan.server.controller.project;
 
+import cn.whaley.datawarehouse.illidan.common.domain.owner.Owner;
+import cn.whaley.datawarehouse.illidan.common.domain.owner.OwnerQuery;
 import cn.whaley.datawarehouse.illidan.common.domain.project.Project;
 import cn.whaley.datawarehouse.illidan.common.domain.project.ProjectQuery;
+import cn.whaley.datawarehouse.illidan.common.service.owner.OwnerService;
 import cn.whaley.datawarehouse.illidan.common.service.project.ProjectService;
 import cn.whaley.datawarehouse.illidan.server.util.Common;
 import org.slf4j.Logger;
@@ -33,6 +36,8 @@ public class ProjectController extends Common {
 
     @Autowired
     private ProjectService projectService;
+    @Autowired
+    private OwnerService ownerService;
 
     @RequestMapping("list")
     public String list(){
@@ -49,18 +54,18 @@ public class ProjectController extends Common {
     public void projectList(Integer start, Integer length, @ModelAttribute("project") ProjectQuery project) {
         try {
             HashMap<String, String> map = new HashMap<String, String>();
-            map.put("1", "有效");
-            map.put("0", "无效");
+            map.put("1", "已发布");
+            map.put("0", "未发布");
             if (project == null) {
                 project = new ProjectQuery();
             }
             project.setLimitStart(start);
             project.setPageSize(length);
-            project.setStatus(map.get(project.getStatus()));
             Long count = projectService.countByProject(project);
             List<Project> projects = projectService.findByProject(project);
             for (int i=0;i<=projects.size()-1;++i){
-                projects.get(i).setStatus(map.get(projects.get(i).getStatus()));
+                projects.get(i).setIsPublish(map.get(projects.get(i).getIsPublish()));
+                projects.get(i).setOwnerId(ownerService.get(Long.parseLong(projects.get(i).getOwnerId())).getOwnerName());
             }
             outputTemplateJson(projects, count);
         } catch (Exception e) {
@@ -90,11 +95,13 @@ public class ProjectController extends Common {
     }
 
     @RequestMapping("toEdit")
-    public ModelAndView toEdit(Long id, ModelMap modelMap) {
+    public ModelAndView toEdit(Long id, ModelAndView mav) {
+        mav.setViewName("/project/edit");
         Project project = projectService.get(id);
-        modelMap.addAttribute("project", project);
-        ModelAndView modelAndView = new ModelAndView("/project/edit");
-        return modelAndView;
+        List<Owner> ownerList = getOwner();
+        mav.addObject("project",project);
+        mav.addObject("owner",ownerList);
+        return mav;
     }
 
     @RequestMapping("edit")
@@ -103,9 +110,11 @@ public class ProjectController extends Common {
         try {
             if(StringUtils.isEmpty(project)){
                 returnResult(false, "修改项目失败!!!");
+            } else {
+                project.setUpdateTime(new Date());
+                projectService.updateById(project);
+                returnResult(true, "修改项目成功!!!");
             }
-            projectService.updateById(project);
-            returnResult(true, "修改项目成功!!!");
         } catch (Exception e) {
             e.printStackTrace();
             logger.error(e.getMessage());
@@ -116,6 +125,8 @@ public class ProjectController extends Common {
     @RequestMapping("toAdd")
     public ModelAndView toAdd(ModelAndView mav) {
         mav.setViewName("project/add");
+        List<Owner> ownerList = getOwner();
+        mav.addObject("owner",ownerList);
         return mav;
     }
 
@@ -123,14 +134,21 @@ public class ProjectController extends Common {
     @ResponseBody
     public void add(@RequestBody Project project) {
         try {
-//            project.setOwnerId("1");
+            //状态默认置成有效
+            project.setStatus("1");
+            //发布状态默认置成未发布
+            project.setIsPublish("0");
             project.setCreateTime(new Date());
             project.setUpdateTime(new Date());
+
             if(StringUtils.isEmpty(project)){
                 returnResult(false, "新增项目失败!!!");
+            } else if(project.getProjectCode() == null || project.getProjectCode().equals("")){
+                returnResult(false, "工程code不能为空!!!");
+            } else {
+                projectService.insert(project);
+                returnResult(true, "新增项目成功!!!");
             }
-            projectService.insert(project);
-            returnResult(true, "新增项目成功!!!");
         } catch (Exception e) {
             e.printStackTrace();
             logger.error(e.getMessage());
@@ -158,10 +176,14 @@ public class ProjectController extends Common {
         }
     }
 
-    @RequestMapping("test")
-    public ModelAndView test(){
-        ModelAndView modelAndView = new ModelAndView("/project/test");
-        return modelAndView;
+//    @RequestMapping("test")
+//    public ModelAndView test(){
+//        ModelAndView modelAndView = new ModelAndView("/project/test");
+//        return modelAndView;
+//    }
+
+    public List<Owner> getOwner(){
+        return ownerService.findByOwner(new OwnerQuery());
     }
 
 }

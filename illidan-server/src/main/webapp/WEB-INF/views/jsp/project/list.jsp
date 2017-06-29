@@ -16,18 +16,18 @@
 
     <div class="page-header objhid">
         <div class="form-inline ">
-            <div class="form-group">
-                <input type="email" class="form-control" id="id" name="id" query="query" placeholder="项目ID">
-            </div>
+            <%--<div class="form-group">--%>
+                <%--<input type="email" class="form-control" id="id" name="id" query="query" placeholder="项目ID">--%>
+            <%--</div>--%>
             <div class="form-group">
                 <input type="email" class="form-control" id="projectCode" name="projectCode" query="query" placeholder="项目code">
             </div>
             <div class="form-group">
                 <input type="email" class="form-control" id="projectDes" name="projectDes" query="query" placeholder="项目描述">
             </div>
-            <div class="form-group">
-                <input type="email" class="form-control" id="ownerId" name="ownerId" query="query" placeholder="所有者ID">
-            </div>
+            <%--<div class="form-group">--%>
+                <%--<input type="email" class="form-control" id="ownerId" name="ownerId" query="query" placeholder="所有者ID">--%>
+            <%--</div>--%>
 
             <div class="text-center search-btns">
                 <button class="btn btn-info" onclick="searchList();">查询</button>
@@ -38,6 +38,7 @@
     </div>
     <button type="button" class="btn btn-success" onclick="add()">新增</button>
     <button type="button" class="btn btn-danger" onclick="remove();">删除</button>
+    <button type="button" class="btn btn-primary" onclick="publish();">发布</button>
     <table id="dynamic-table" name="dynamic-table" class="table table-striped table-hover table-bordered">
         <thead>
         <tr>
@@ -49,9 +50,10 @@
             <th >项目code</th>
             <th >项目描述</th>
             <th >所有者</th>
-            <th >状态</th>
+            <th >发布状态</th>
             <th >创建时间</th>
             <th >更新时间</th>
+            <th >发布时间</th>
 
         </tr>
         </thead>
@@ -116,7 +118,7 @@
                     {data: "projectCode"},
                     {data: "projectDes"},
                     {data: "ownerId"},
-                    {data: "status"},
+                    {data: "isPublish"},
                     {
                         data: function (data) {
                             if (data.createTime != null) {
@@ -130,6 +132,15 @@
                         data: function (data) {
                             if (data.updateTime != null) {
                                 return formatDate(data.updateTime);
+                            } else {
+                                return "";
+                            }
+                        }
+                    },
+                    {
+                        data: function (data) {
+                            if (data.publishTime != null) {
+                                return formatDate(data.publishTime);
                             } else {
                                 return "";
                             }

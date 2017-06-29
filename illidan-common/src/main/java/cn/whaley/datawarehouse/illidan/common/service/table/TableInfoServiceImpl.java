@@ -17,4 +17,14 @@ public class TableInfoServiceImpl implements TableInfoService {
     public TableInfo get(final Long id) {
         return tableInfoMapper.get(id);
     }
+
+    @Override
+    public Long insert(TableInfo tableInfo)  throws Exception{
+        Long count = tableInfoMapper.isExistTableInfo(tableInfo.getTableCode());
+        if (count >0 ){
+            throw new Exception("表已经存在不能重复新增");
+        }
+        tableInfoMapper.insert(tableInfo);
+        return tableInfo.getId();
+    }
 }

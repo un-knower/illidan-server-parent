@@ -99,7 +99,7 @@
         <result column="colName" javaType="String" jdbcType="VARCHAR" property="colName"/>
         <result column="colType" javaType="String" jdbcType="VARCHAR" property="colType"/>
         <result column="colDes" javaType="String" jdbcType="VARCHAR" property="colDes"/>
-        <result column="colIndex" javaType="Long" jdbcType="BIGINT" property="colIndex"/>
+        <result column="colIndex" javaType="int" jdbcType="BIGINT" property="colIndex"/>
         <result column="isPartitionCol" javaType="String" jdbcType="VARCHAR" property="isPartitionCol"/>
         <result column="tableId" javaType="Long" jdbcType="BIGINT" property="tableId"/>
         <result column="createTime" javaType="Date" jdbcType="TIMESTAMP" property="createTime"/>
@@ -129,7 +129,7 @@
         <foreach collection="list" item="item" index="index" separator=",">
             (
             <trim prefix="" prefixOverrides=",">
-                ,#{colName} ,#{colType},#{colDes},#{colIndex},#{isPartitionCol},#{tableId} ,#{createTime} ,#{updateTime}
+                ,#{item.colName} ,#{item.colType},#{item.colDes},#{item.colIndex},#{item.isPartitionCol},#{item.tableId} ,#{item.createTime} ,#{item.updateTime}
             </trim>
             )
         </foreach>
@@ -155,6 +155,8 @@
     <delete id="remove" >
         delete fieldInfo from field_info fieldInfo <include refid="whereCase"/>
     </delete>
+
+
 
     <select id="find"  resultMap="returnFieldInfo">
         select <include refid="colList" /> from field_info fieldInfo
@@ -200,7 +202,7 @@
 
     <select id="isExistFieldInfo"  resultType="long">
         select count(1) from field_info fieldInfo
-        where id = #{id} and (colName=#{colName})
+        where colName = #{colName}
     </select>
 
     <delete id="removeByIds">
@@ -210,6 +212,11 @@
         </foreach>
 
     </delete>
+
+    <delete id="removeByTableId">
+        delete from field_info where tableId = #{tableId}
+    </delete>
+
 
     <select id="getByNameLike"  resultMap="returnFieldInfo">
         select <include refid="colList" /> from field_info fieldInfo where  fieldInfo.colName like concat('%',#{colName},'%') limit 10

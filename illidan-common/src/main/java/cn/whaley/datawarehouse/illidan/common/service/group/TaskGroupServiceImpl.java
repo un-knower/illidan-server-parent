@@ -23,12 +23,11 @@ public class TaskGroupServiceImpl implements TaskGroupService {
     }
 
     public Long insert(final TaskGroup taskGroup) throws Exception{
-        Long count = taskGroupMapper.isExistTaskGroup(taskGroup.getGroupCode(),taskGroup.getId());
+        Long count = taskGroupMapper.isExistTaskGroup(taskGroup.getGroupCode(), taskGroup.getStatus());
         if(count > 0){
             throw new Exception("任务组已经存在不能重复新增");
         }
-        taskGroupMapper.insert(taskGroup);
-        return taskGroup.getId();
+        return taskGroupMapper.insert(taskGroup);
     }
 
     public Long insertBatch(final List<TaskGroup> list) {
@@ -93,6 +92,15 @@ public class TaskGroupServiceImpl implements TaskGroupService {
 
     @Override
     public List<TaskGroup> findTaskGroupByProjectId(Long projectId) {
-        return null;
+        List<TaskGroup> taskGroupList = null;
+        try {
+            TaskGroupQuery taskGroup = new TaskGroupQuery();
+            taskGroup.setProjectId(projectId);
+            taskGroupList = findByTaskGroup(taskGroup);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+        return taskGroupList;
     }
 }

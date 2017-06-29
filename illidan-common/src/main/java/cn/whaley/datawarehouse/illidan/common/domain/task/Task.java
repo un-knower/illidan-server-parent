@@ -32,6 +32,10 @@ public class Task implements Serializable {
      */
     private String executeType;
     /**
+     * task_group表主键
+     */
+    private Long groupId;
+    /**
      * 目标表主键
      */
     private Long tableId;
@@ -126,6 +130,14 @@ public class Task implements Serializable {
 
     public void setCreateTime(Date createTime) {
         this.createTime = createTime;
+    }
+
+    public Long getGroupId() {
+        return groupId;
+    }
+
+    public void setGroupId(Long groupId) {
+        this.groupId = groupId;
     }
 
     @Override

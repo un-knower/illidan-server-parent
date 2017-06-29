@@ -16,4 +16,6 @@ import java.util.List;
 public interface FieldInfoMapper {
     FieldInfo get(@Param("id") final Long id);
     List<FieldInfo> getByTableId(@Param("tableId") final Long tableId);
+    void insertBatch(@Param("list") final List<FieldInfo> fieldInfo);
+    void removeByTableId(@Param("tableId") final Long tableId);
 }

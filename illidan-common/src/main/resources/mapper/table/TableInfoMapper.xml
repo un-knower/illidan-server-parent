@@ -114,11 +114,8 @@
         </foreach>
     </insert>
 
-    <insert id="insert" parameterType="TableInfo">
-        <selectKey resultType="long" keyProperty="id" order="AFTER">
-            SELECT
-            LAST_INSERT_ID()
-        </selectKey>
+    <insert id="insert" parameterType="TableInfo" useGeneratedKeys="true" keyProperty="tableInfo.id" >
+
         insert into table_info
         (
         <trim prefix="" prefixOverrides=",">
@@ -129,6 +126,7 @@
             ,#{tableInfo.tableCode},#{tableInfo.tableDes},#{tableInfo.createTime},#{tableInfo.updateTime},#{tableInfo.dataType},#{tableInfo.dbId}
         </trim>
         )
+
     </insert>
 
     <delete id="remove" >
@@ -179,7 +177,7 @@
 
     <select id="isExistTableInfo"  resultType="long">
         select count(1) from table_info tableInfo
-        where id = #{id} and (dbCode=#{dbCode})
+        where tableCode = #{tableCode}
     </select>
 
     <delete id="removeByIds">
