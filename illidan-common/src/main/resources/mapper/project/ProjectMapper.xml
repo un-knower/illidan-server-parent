@@ -55,7 +55,7 @@
 
     <sql id="whereCase">
         <where>
-            1=1
+            project.status = '1'
             <if test="project != null and project.id != null">and project.id = #{project.id}</if>
             <if test="project != null and project.idGT != null">and project.id > #{project.idGT}</if><if test="idLT != null">and #{idLT} > project.id</if>
             <if test="project != null and project.projectCode != null">and project.projectCode = #{project.projectCode}</if>
@@ -66,8 +66,6 @@
             <if test="project != null and project.updateTime != null">and project.updateTime = #{project.updateTime}</if>
             <if test="project != null and project.ownerId != null">and project.ownerId = #{project.ownerId}</if>
             <if test="project != null and project.ownerIdLK != null">and project.ownerId LIKE #{project.ownerIdLK}</if>
-            <if test="project != null and project.status != null">and project.status = #{project.status}</if>
-            <if test="project != null and project.statusLK != null">and project.status LIKE #{project.statusLK}</if>
             <if test="project != null and project.isPublish != null">and project.isPublish = #{project.isPublish}</if>
             <if test="project != null and project.isPublishLK != null">and project.isPublish LIKE #{project.isPublishLK}</if>
         </where>
@@ -75,13 +73,13 @@
 
     <sql id="smallWhereCase">
         <where>
+            project.status = '1'
             <if test="project != null and project.id != null">and project.id = #{project.id}</if>
             <if test="project != null and project.projectCode != null">and project.projectCode = #{project.projectCode}</if>
             <if test="project != null and project.projectDes != null">and project.projectDes = #{project.projectDes}</if>
             <if test="project != null and project.createTime != null">and project.createTime = #{project.createTime}</if>
             <if test="project != null and project.updateTime != null">and project.updateTime = #{project.updateTime}</if>
             <if test="project != null and project.ownerId != null">and project.ownerId = #{project.ownerId}</if>
-            <if test="project != null and project.status != null">and project.status = #{project.status}</if>
             <if test="project != null and project.isPublish != null">and project.isPublish = #{project.isPublish}</if>
         </where>
     </sql>
@@ -99,7 +97,7 @@
     </resultMap>
 
     <select id="get"  resultMap="returnProject">
-        select * from project project where  project.id = #{id}
+        select * from project project where project.status = '1' and project.id = #{id}
     </select>
 
     <update id="update">
@@ -165,7 +163,7 @@
 
     <update id="updateById">
         <include refid="updateSql"/>
-        where id = #{project.id}
+        where id = #{project.id} AND status = '1'
     </update>
 
     <delete id="removeByProject">
@@ -193,7 +191,7 @@
     </select>
 
     <delete id="removeByIds">
-        delete from project where id in
+        delete from project where status = '1' AND id in
         <foreach item="item" collection="ids" open="(" separator="," close=")" >
             #{item}
         </foreach>
@@ -201,6 +199,6 @@
     </delete>
 
     <select id="getByCodeLike"  resultMap="returnProject">
-        select <include refid="colList" /> from project project where  project.projectCode like concat('%',#{projectCode},'%') limit 10
+        select <include refid="colList" /> from project project where status = '1' AND project.projectCode like concat('%',#{projectCode},'%') and project.status='1' limit 10
     </select>
 </mapper>

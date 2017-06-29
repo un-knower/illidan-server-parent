@@ -63,7 +63,7 @@
 
     <sql id="whereCase">
         <where>
-            1=1
+            task.status = '1'
             <if test="task != null and task.id != null">and task.id = #{task.id}</if>
             <if test="task != null and task.idGT != null">and task.id > #{task.idGT}</if><if test="idLT != null">and #{idLT} > task.id</if>
             <if test="task != null and task.taskCode != null">and task.taskCode = #{task.taskCode}</if>
@@ -74,8 +74,6 @@
             <if test="task != null and task.updateTime != null">and task.updateTime = #{task.updateTime}</if>
             <if test="task != null and task.content != null">and task.content = #{task.content}</if>
             <if test="task != null and task.contentLK != null">and task.content LIKE #{task.contentLK}</if>
-            <if test="task != null and task.status != null">and task.status = #{task.status}</if>
-            <if test="task != null and task.statusLK != null">and task.status LIKE #{task.statusLK}</if>
             <if test="task != null and task.addUser != null">and task.addUser = #{task.addUser}</if>
             <if test="task != null and task.addUserLK != null">and task.addUser LIKE #{task.addUserLK}</if>
             <if test="task != null and task.tableId != null">and task.tableId = #{task.tableId}</if>
@@ -88,13 +86,13 @@
 
     <sql id="smallWhereCase">
         <where>
+            task.status = '1'
             <if test="task != null and task.id != null">and task.id = #{task.id}</if>
             <if test="task != null and task.taskCode != null">and task.taskCode = #{task.taskCode}</if>
             <if test="task != null and task.taskDes != null">and task.taskDes = #{task.taskDes}</if>
             <if test="task != null and task.createTime != null">and task.createTime = #{task.createTime}</if>
             <if test="task != null and task.updateTime != null">and task.updateTime = #{task.updateTime}</if>
             <if test="task != null and task.content != null">and task.content = #{task.content}</if>
-            <if test="task != null and task.status != null">and task.status = #{task.status}</if>
             <if test="task != null and task.addUser != null">and task.addUser = #{task.addUser}</if>
             <if test="task != null and task.tableId != null">and task.tableId = #{task.tableId}</if>
             <if test="task != null and task.executeType != null">and task.executeType = #{task.executeType}</if>
@@ -116,7 +114,7 @@
     </resultMap>
 
     <select id="get"  resultMap="returnTask">
-        select * from task task where  task.id = #{id}
+        select * from task task where task.status = '1' and task.id = #{id}
     </select>
 
     <update id="update">
@@ -182,7 +180,7 @@
 
     <update id="updateById">
         <include refid="updateSql"/>
-        where id = #{task.id}
+        where id = #{task.id} AND status = '1'
     </update>
 
     <delete id="removeByTask">
@@ -209,7 +207,7 @@
     </select>
 
     <delete id="removeByIds">
-        delete from task where id in
+        delete from task where status = '1' AND id in
         <foreach item="item" collection="ids" open="(" separator="," close=")" >
             #{item}
         </foreach>
@@ -217,6 +215,6 @@
     </delete>
 
     <select id="getByCodeLike"  resultMap="returnTask">
-        select <include refid="colList" /> from task task where  task.taskCode like concat('%',#{taskCode},'%') limit 10
+        select <include refid="colList" /> from task task where task.status = '1' and task.taskCode like concat('%',#{taskCode},'%') limit 10
     </select>
 </mapper>
