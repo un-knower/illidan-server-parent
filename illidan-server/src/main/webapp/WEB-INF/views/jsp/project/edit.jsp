@@ -20,17 +20,18 @@
                 <div class="form-group">
                     <label for="projectCode" class="col-md-2 control-label">工程code</label>
                     <div class="col-md-6">
-                        <input class="form-control" id="projectCode" placeholder="请输入工程code" value="${project.projectCode}">
+                        <input disabled="disabled" class="form-control" id="projectCode" placeholder="请输入工程code" value="${project.projectCode}">
                     </div>
                 </div>
             </div>
             <div class="col-sm-6">
                 <div class="form-group">
-                    <label for="status" class="col-md-2 control-label">状态</label>
+                    <label for="ownerId" class="col-md-2 control-label">所有者</label>
                     <div class="col-md-6">
-                        <select class="form-control" id="status" name="status" data-placeholder="">
-                            <option value ="1">有效</option>
-                            <option value ="0">无效</option>
+                        <select class="form-control" id="ownerId" name="ownerId" data-placeholder="" disabled="disabled">
+                            <c:forEach begin="0" end="${owner.size()-1}"  var="index">
+                                <option value ="${owner.get(index).id}" >${owner.get(index).ownerName}</option>
+                            </c:forEach>
                         </select>
                     </div>
                 </div>

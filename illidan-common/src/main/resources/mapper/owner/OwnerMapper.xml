@@ -121,7 +121,7 @@
         </foreach>
     </insert>
 
-    <insert id="insert" parameterType="owner">
+    <insert id="insert" parameterType="Owner">
         <selectKey resultType="long" keyProperty="id" order="AFTER">
             SELECT
             LAST_INSERT_ID()
@@ -157,7 +157,7 @@
         <include refid="smallWhereCase"/>
     </select>
 
-    <update id="updateByowner" >
+    <update id="updateByOwner" >
         <include refid="updateSql"/>
         <include refid="smallWhereCase"/>
     </update>
@@ -167,12 +167,12 @@
         where status = '1' and id = #{owner.id}
     </update>
 
-    <delete id="removeByowner">
+    <delete id="removeByOwner">
         <!--delete from owner owner <include refid="smallWhereCase"/>-->
         UPDATE owner owner SET owner.status = '0' <include refid="smallWhereCase"/>
     </delete>
 
-    <select id="findByowner" resultMap="returnOwner">
+    <select id="findByOwner" resultMap="returnOwner">
         select <include refid="colList" /> from owner owner
         <include refid="joinTables"/>
         <include refid="smallWhereCase"/>
@@ -181,13 +181,13 @@
         <if test="owner != null and owner.limitStart != null and owner.limitEnd != null">limit #{owner.limitStart}, #{owner.limitEnd}</if>
     </select>
 
-    <select id="countByowner"  resultType="long">
+    <select id="countByOwner"  resultType="long">
         select count(1) from owner owner
         <include refid="joinTables"/>
         <include refid="smallWhereCase"/>
     </select>
 
-    <select id="isExistowner"  resultType="long">
+    <select id="isExistOwner"  resultType="long">
         select count(1) from owner owner
         where status = #{status} and (ownerCode=#{ownerCode})
     </select>

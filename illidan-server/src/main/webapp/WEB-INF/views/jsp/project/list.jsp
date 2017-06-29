@@ -38,6 +38,7 @@
     </div>
     <button type="button" class="btn btn-success" onclick="add()">新增</button>
     <button type="button" class="btn btn-danger" onclick="remove();">删除</button>
+    <button type="button" class="btn btn-primary" onclick="publish();">发布</button>
     <table id="dynamic-table" name="dynamic-table" class="table table-striped table-hover table-bordered">
         <thead>
         <tr>
@@ -49,7 +50,7 @@
             <th >项目code</th>
             <th >项目描述</th>
             <th >所有者</th>
-            <th >状态</th>
+            <th >发布状态</th>
             <th >创建时间</th>
             <th >更新时间</th>
 
@@ -116,7 +117,7 @@
                     {data: "projectCode"},
                     {data: "projectDes"},
                     {data: "ownerId"},
-                    {data: "status"},
+                    {data: "isPublish"},
                     {
                         data: function (data) {
                             if (data.createTime != null) {
