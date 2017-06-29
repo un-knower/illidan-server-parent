@@ -164,16 +164,19 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public Long insertFullTask(TaskFull taskFull) throws Exception {
-        TableWithField tableInfo = taskFull.getTable();
+        TableWithField tableWithField = taskFull.getTable();
         //判断task是否存在
         Long count = taskMapper.isExistTask(taskFull.getTaskCode(),taskFull.getStatus());
         if(count >0 ){
             throw new Exception("任务已经存在不能重复新增");
         }
         //插入表信息,并返回其主键id
+        TableInfo tableInfo = new TableInfo();
+        //复制tableWithField信息到tableInfo中
+        BeanUtils.copyProperties(tableWithField,tableInfo);
         Long tableId = tableInfoService.insert(tableInfo);
         //插入字段到field_info
-        List<FieldInfo> fieldInfos = taskFull.getTable().getFieldList();
+        List<FieldInfo> fieldInfos = tableWithField.getFieldList();
         for(FieldInfo f:fieldInfos ){
             FieldInfo fieldInfo = new FieldInfo();
             BeanUtils.copyProperties(f,fieldInfo);
