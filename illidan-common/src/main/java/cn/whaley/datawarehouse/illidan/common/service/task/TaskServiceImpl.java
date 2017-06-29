@@ -53,8 +53,7 @@ public class TaskServiceImpl implements TaskService {
         if(count > 0){
             throw new Exception("任务已经存在不能重复新增");
         }
-        taskMapper.insert(task);
-        return task.getId();
+        return taskMapper.insert(task);
     }
 
     public Long insertBatch(final List<Task> list) {

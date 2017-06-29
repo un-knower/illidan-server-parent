@@ -9,5 +9,5 @@ import org.apache.ibatis.annotations.Param;
 public interface TableInfoService {
     TableInfo get(final Long id);
 
-    Long insert(@Param("table") final TableInfo tableInfo) throws Exception;
+    Long insert(final TableInfo tableInfo) throws Exception;
 }
