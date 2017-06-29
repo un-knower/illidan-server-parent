@@ -4,12 +4,15 @@ import cn.whaley.datawarehouse.illidan.common.domain.db.DbInfo;
 import cn.whaley.datawarehouse.illidan.common.domain.field.FieldInfo;
 import cn.whaley.datawarehouse.illidan.common.domain.table.TableInfo;
 import cn.whaley.datawarehouse.illidan.common.domain.table.TableWithField;
+import cn.whaley.datawarehouse.illidan.common.domain.task.Task;
 import cn.whaley.datawarehouse.illidan.common.domain.task.TaskFull;
 import cn.whaley.datawarehouse.illidan.common.service.db.DbInfoService;
+import cn.whaley.datawarehouse.illidan.common.service.table.TableInfoService;
 import cn.whaley.datawarehouse.illidan.common.service.task.TaskService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -25,11 +28,15 @@ import java.util.List;
 @ContextConfiguration(locations = {
         "classpath*:spring/application-illidan-*.xml"})
 public class TaskServiceTest {
+    @Autowired
     private TaskService taskService ;
+    @Autowired
     private DbInfoService dbInfoService;
+    @Autowired
+    private TableInfoService tableInfoService;
 
     @Test
-    public void insertFullTaskTask(){
+    public void insertFullTaskTask() throws Exception {
         TaskFull taskFull = new TaskFull();
 
         List<FieldInfo> fieldInfos = new ArrayList<FieldInfo>();
@@ -72,6 +79,9 @@ public class TaskServiceTest {
         tableInfo.setCreateTime(new Date());
         tableInfo.setUpdateTime(new Date());
 
+        tableInfoService.insert(tableInfo);
+
+
         DbInfo dbInfo = dbInfoService.get(1L);
 
         TableWithField tableWithField = new TableWithField();
@@ -79,10 +89,26 @@ public class TaskServiceTest {
         tableWithField.setFieldList(fieldInfos);
         tableWithField.setDbInfo(dbInfo);
 
+        Task task = new Task();
+        task.setAddUser("郭浩");
+        task.setTaskCode("taskCode1");
+        task.setTaskDes("task测试");
+        task.setContent("select * from test");
+        task.setExecuteType("day,month");
+        task.setStatus("1");
+        task.setCreateTime(new Date());
+        task.setUpdateTime(new Date());
+
+        BeanUtils.copyProperties(task,taskFull);
+        taskFull.setTable(tableWithField);
+        ArrayList<String> executeTypeList = new ArrayList<String>();
+        executeTypeList.add("day");
+        executeTypeList.add("month");
+        taskFull.setExecuteTypeList(executeTypeList);
 
 
 
-        System.out.println(tableWithField.toString());
+//        taskService.insertFullTask(taskFull);
 
 
 
