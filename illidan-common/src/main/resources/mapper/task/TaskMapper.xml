@@ -29,6 +29,9 @@
             <if test="task.status != null">
                 status = #{task.status},
             </if>
+            <if test="task.groupId != null">
+                groupId = #{task.groupId},
+            </if>
             <if test="task.tableId != null">
                 tableId = #{task.tableId},
             </if>
@@ -53,6 +56,7 @@
             , task.addUser AS addUser
             , task.executeType AS executeType
             , task.status AS status
+            , task.groupId AS groupId
             , task.tableId AS tableId
             , task.createTime AS createTime
             , task.updateTime AS updateTime
@@ -76,6 +80,8 @@
             <if test="task != null and task.contentLK != null">and task.content LIKE #{task.contentLK}</if>
             <if test="task != null and task.addUser != null">and task.addUser = #{task.addUser}</if>
             <if test="task != null and task.addUserLK != null">and task.addUser LIKE #{task.addUserLK}</if>
+            <if test="task != null and task.groupId != null">and task.groupId = #{task.groupId}</if>
+            <if test="task != null and task.groupIdLK != null">and task.groupId LIKE #{task.groupIdLK}</if>
             <if test="task != null and task.tableId != null">and task.tableId = #{task.tableId}</if>
             <if test="task != null and task.tableIdLK != null">and task.tableId LIKE #{task.tableIdLK}</if>
             <if test="task != null and task.executeType != null">and task.executeType = #{task.executeType}</if>
@@ -94,6 +100,7 @@
             <if test="task != null and task.updateTime != null">and task.updateTime = #{task.updateTime}</if>
             <if test="task != null and task.content != null">and task.content = #{task.content}</if>
             <if test="task != null and task.addUser != null">and task.addUser = #{task.addUser}</if>
+            <if test="task != null and task.groupId != null">and task.groupId = #{task.groupId}</if>
             <if test="task != null and task.tableId != null">and task.tableId = #{task.tableId}</if>
             <if test="task != null and task.executeType != null">and task.executeType = #{task.executeType}</if>
         </where>
@@ -108,6 +115,7 @@
         <result column="content" javaType="String" jdbcType="VARCHAR" property="content"/>
         <result column="status" javaType="String" jdbcType="VARCHAR" property="status"/>
         <result column="addUser" javaType="String" jdbcType="VARCHAR" property="addUser"/>
+        <result column="groupId" javaType="Long" jdbcType="BIGINT" property="groupId"/>
         <result column="tableId" javaType="Long" jdbcType="BIGINT" property="tableId"/>
         <result column="executeType" javaType="String" jdbcType="VARCHAR" property="executeType"/>
 
@@ -126,31 +134,27 @@
         insert into task
         (
         <trim prefix="" prefixOverrides=",">
-            ,taskCode,taskDes,createTime,updateTime,content,status,addUser,tableId,executeType
+            ,taskCode,taskDes,createTime,updateTime,content,status,addUser,groupId,tableId,executeType
         </trim>
         ) values
         <foreach collection="list" item="item" index="index" separator=",">
             (
             <trim prefix="" prefixOverrides=",">
-                ,#{taskCode} ,#{taskDes} ,#{createTime} ,#{updateTime} ,#{content} ,#{status} ,#{addUser} ,#{tableId} ,#{executeType}
+                ,#{taskCode} ,#{taskDes} ,#{createTime} ,#{updateTime} ,#{content} ,#{status} ,#{addUser} ,#{groupId},#{tableId} ,#{executeType}
             </trim>
             )
         </foreach>
     </insert>
 
-    <insert id="insert" parameterType="Task">
-        <selectKey resultType="long" keyProperty="id" order="AFTER">
-            SELECT
-            LAST_INSERT_ID()
-        </selectKey>
+    <insert id="insert" parameterType="Task" useGeneratedKeys="true" keyProperty="task.id">
         insert into task
         (
         <trim prefix="" prefixOverrides=",">
-            ,taskCode,taskDes,createTime,updateTime,content,status,addUser,tableId,executeType
+            ,taskCode,taskDes,createTime,updateTime,content,status,addUser,groupId,tableId,executeType
         </trim>
         )values(
         <trim prefix="" prefixOverrides=",">
-            ,#{task.taskCode},#{task.taskDes},#{task.createTime},#{task.updateTime},#{task.content},#{task.status},#{task.addUser},#{task.tableId},#{task.executeType}
+            ,#{task.taskCode},#{task.taskDes},#{task.createTime},#{task.updateTime},#{task.content},#{task.status},#{task.addUser},#{task.groupId},#{task.tableId},#{task.executeType}
         </trim>
         )
     </insert>

@@ -43,8 +43,6 @@ public class TaskServiceImpl implements TaskService {
     @Autowired
     private FieldInfoService fieldInfoService;
 
-
-
     public Task get(final Long id) {
         return taskMapper.get(id);
     }
@@ -184,7 +182,6 @@ public class TaskServiceImpl implements TaskService {
             fieldInfo.setTableId(tableId);
             fieldInfos.add(fieldInfo);
         }
-
         //批量插入fieldInfos
         //1.删除历史记录
         fieldInfoService.removeByTableId(tableId);
@@ -194,7 +191,8 @@ public class TaskServiceImpl implements TaskService {
         Task task = new Task();
         BeanUtils.copyProperties(taskFull,task);
         task.setTableId(tableId);
-        return taskMapper.insert(task);
+        taskMapper.insert(task);
+        return task.getId();
     }
 
     @Override
@@ -206,4 +204,5 @@ public class TaskServiceImpl implements TaskService {
     public List<Task> findTaskByGroupId(Long groupId) {
         return null;
     }
+
 }

@@ -72,7 +72,7 @@ public class TaskServiceTest {
         fieldInfos.add(fieldInfo3);
 
         TableInfo tableInfo = new TableInfo();
-        tableInfo.setTableCode("tableCode1");
+        tableInfo.setTableCode("tableCode2");
         tableInfo.setTableDes("tableCode1");
         tableInfo.setDataType("parquet");
         tableInfo.setDbId(1L);
@@ -88,10 +88,11 @@ public class TaskServiceTest {
 
         Task task = new Task();
         task.setAddUser("郭浩");
-        task.setTaskCode("taskCode1");
+        task.setTaskCode("taskCode2");
         task.setTaskDes("task测试");
         task.setContent("select * from test");
         task.setExecuteType("day,month");
+        task.setGroupId(1L);
         task.setStatus("1");
         task.setCreateTime(new Date());
         task.setUpdateTime(new Date());
