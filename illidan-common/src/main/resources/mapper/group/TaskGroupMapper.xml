@@ -155,7 +155,8 @@
     </insert>
 
     <delete id="remove" >
-        delete taskGroup from task_group taskGroup <include refid="whereCase"/>
+        <!--delete taskGroup from task_group taskGroup <include refid="whereCase"/>-->
+        UPDATE task_group taskGroup SET taskGroup.status = '0' <include refid="whereCase"/>
     </delete>
 
     <select id="find"  resultMap="returnTaskGroup">
@@ -183,7 +184,8 @@
     </update>
 
     <delete id="removeByTaskGroup">
-        delete from task_group taskGroup <include refid="smallWhereCase"/>
+        <!--delete from task_group taskGroup <include refid="smallWhereCase"/>-->
+        UPDATE task_group taskGroup SET taskGroup.status = '0' <include refid="smallWhereCase"/>
     </delete>
 
     <select id="findByTaskGroup" resultMap="returnTaskGroup">
@@ -206,11 +208,15 @@
     </select>
 
     <delete id="removeByIds">
-        delete from task_group where status = '1' and id in
+        <!--delete from task_group where status = '1' and id in
+        <foreach item="item" collection="ids" open="(" separator="," close=")" >
+            #{item}
+        </foreach>-->
+
+        UPDATE task_group SET status = '0' where status = '1' and id in
         <foreach item="item" collection="ids" open="(" separator="," close=")" >
             #{item}
         </foreach>
-
     </delete>
 
     <select id="getByCodeLike"  resultMap="returnTaskGroup">
