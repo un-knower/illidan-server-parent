@@ -20,6 +20,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -175,11 +176,13 @@ public class TaskServiceImpl implements TaskService {
         BeanUtils.copyProperties(tableWithField,tableInfo);
         Long tableId = tableInfoService.insert(tableInfo);
         //插入字段到field_info
-        List<FieldInfo> fieldInfos = tableWithField.getFieldList();
-        for(FieldInfo f:fieldInfos ){
+        List<FieldInfo> fieldInfoList = tableWithField.getFieldList();
+        List<FieldInfo> fieldInfos = new ArrayList<FieldInfo>();
+        for(FieldInfo f:fieldInfoList ){
             FieldInfo fieldInfo = new FieldInfo();
             BeanUtils.copyProperties(f,fieldInfo);
             fieldInfo.setTableId(tableId);
+            fieldInfos.add(fieldInfo);
         }
 
         //批量插入fieldInfos
@@ -187,8 +190,6 @@ public class TaskServiceImpl implements TaskService {
         fieldInfoService.removeByTableId(tableId);
         //2.批量插入
         fieldInfoService.insertBatch(fieldInfos);
-
-
         //插入task信息
         Task task = new Task();
         BeanUtils.copyProperties(taskFull,task);

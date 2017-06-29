@@ -129,7 +129,7 @@
         <foreach collection="list" item="item" index="index" separator=",">
             (
             <trim prefix="" prefixOverrides=",">
-                ,#{colName} ,#{colType},#{colDes},#{colIndex},#{isPartitionCol},#{tableId} ,#{createTime} ,#{updateTime}
+                ,#{item.colName} ,#{item.colType},#{item.colDes},#{item.colIndex},#{item.isPartitionCol},#{item.tableId} ,#{item.createTime} ,#{item.updateTime}
             </trim>
             )
         </foreach>

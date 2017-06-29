@@ -79,9 +79,6 @@ public class TaskServiceTest {
         tableInfo.setCreateTime(new Date());
         tableInfo.setUpdateTime(new Date());
 
-        tableInfoService.insert(tableInfo);
-
-
         DbInfo dbInfo = dbInfoService.get(1L);
 
         TableWithField tableWithField = new TableWithField();
@@ -108,7 +105,7 @@ public class TaskServiceTest {
 
 
 
-//        taskService.insertFullTask(taskFull);
+        taskService.insertFullTask(taskFull);
 
 
 
