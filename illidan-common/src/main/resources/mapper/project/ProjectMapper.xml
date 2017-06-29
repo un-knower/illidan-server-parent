@@ -139,7 +139,8 @@
     </insert>
 
     <delete id="remove" >
-        delete project from project project <include refid="whereCase"/>
+        <!--delete project from project project <include refid="whereCase"/>-->
+        UPDATE project project SET project.status = '0' <include refid="whereCase"/>
     </delete>
 
     <select id="find"  resultMap="returnProject">
@@ -167,7 +168,8 @@
     </update>
 
     <delete id="removeByProject">
-        delete from project project <include refid="smallWhereCase"/>
+        <!--delete from project project <include refid="smallWhereCase"/>-->
+        UPDATE project project SET project.status = '0' <include refid="smallWhereCase"/>
     </delete>
 
     <select id="findByProject" resultMap="returnProject">
@@ -191,11 +193,14 @@
     </select>
 
     <delete id="removeByIds">
-        delete from project where status = '1' AND id in
+        <!--delete from project where status = '1' AND id in
+        <foreach item="item" collection="ids" open="(" separator="," close=")" >
+            #{item}
+        </foreach>-->
+        UPDATE project SET status = '0' where status = '1' AND id in
         <foreach item="item" collection="ids" open="(" separator="," close=")" >
             #{item}
         </foreach>
-
     </delete>
 
     <select id="getByCodeLike"  resultMap="returnProject">

@@ -139,7 +139,8 @@
     </insert>
 
     <delete id="remove" >
-        delete owner from owner owner <include refid="whereCase"/>
+        <!--delete owner from owner owner <include refid="whereCase"/>-->
+        UPDATE owner owner SET owner.status = '0' <include refid="whereCase"/>
     </delete>
 
     <select id="find"  resultMap="returnOwner">
@@ -167,7 +168,8 @@
     </update>
 
     <delete id="removeByowner">
-        delete from owner owner <include refid="smallWhereCase"/>
+        <!--delete from owner owner <include refid="smallWhereCase"/>-->
+        UPDATE owner owner SET owner.status = '0' <include refid="smallWhereCase"/>
     </delete>
 
     <select id="findByowner" resultMap="returnOwner">
@@ -191,11 +193,15 @@
     </select>
 
     <delete id="removeByIds">
-        delete from owner where status = '1' and id in
+        <!--delete from owner where status = '1' and id in
+        <foreach item="item" collection="ids" open="(" separator="," close=")" >
+            #{item}
+        </foreach>-->
+
+        UPDATE owner SET status = '0' where status = '1' and id in
         <foreach item="item" collection="ids" open="(" separator="," close=")" >
             #{item}
         </foreach>
-
     </delete>
 
     <select id="getByCodeLike"  resultMap="returnOwner">

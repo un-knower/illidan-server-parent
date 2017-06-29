@@ -156,7 +156,8 @@
     </insert>
 
     <delete id="remove" >
-        delete task from task task <include refid="whereCase"/>
+        <!--delete task from task task <include refid="whereCase"/>-->
+        UPDATE task task SET task.status = '0' <include refid="whereCase"/>
     </delete>
 
     <select id="find"  resultMap="returnTask">
@@ -184,7 +185,8 @@
     </update>
 
     <delete id="removeByTask">
-        delete from task task <include refid="smallWhereCase"/>
+        <!--delete from task task <include refid="smallWhereCase"/>-->
+        UPDATE task task SET task.status = '0' <include refid="smallWhereCase"/>
     </delete>
 
     <select id="findByTask" resultMap="returnTask">
@@ -207,11 +209,15 @@
     </select>
 
     <delete id="removeByIds">
-        delete from task where status = '1' AND id in
+        <!--delete from task where status = '1' AND id in
+        <foreach item="item" collection="ids" open="(" separator="," close=")" >
+            #{item}
+        </foreach>-->
+
+        UPDATE task SET status = '0' where status = '1' AND id in
         <foreach item="item" collection="ids" open="(" separator="," close=")" >
             #{item}
         </foreach>
-
     </delete>
 
     <select id="getByCodeLike"  resultMap="returnTask">

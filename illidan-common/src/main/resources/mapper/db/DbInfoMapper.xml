@@ -123,7 +123,8 @@
     </insert>
 
     <delete id="remove" >
-        delete dbInfo from db_info dbInfo <include refid="whereCase"/>
+        <!--delete dbInfo from db_info dbInfo <include refid="whereCase"/>-->
+        UPDATE db_info dbInfo SET dbInfo.status = '0' <include refid="whereCase"/>
     </delete>
 
     <select id="find"  resultMap="returnDbInfo">
@@ -151,7 +152,8 @@
     </update>
 
     <delete id="removeByDbInfo">
-        delete from db_info dbInfo <include refid="smallWhereCase"/>
+        <!--delete from db_info dbInfo <include refid="smallWhereCase"/>-->
+        UPDATE db_info dbInfo SET dbInfo.status = '0' <include refid="smallWhereCase"/>
     </delete>
 
     <select id="findByDbInfo" resultMap="returnDbInfo">
@@ -174,7 +176,12 @@
     </select>
 
     <delete id="removeByIds">
-        delete from db_info where status = '1' and id in
+        <!--delete from db_info where status = '1' and id in
+        <foreach item="item" collection="ids" open="(" separator="," close=")" >
+            #{item}
+        </foreach>-->
+
+        UPDATE db_info SET status = '0' where status = '1' and id in
         <foreach item="item" collection="ids" open="(" separator="," close=")" >
             #{item}
         </foreach>
