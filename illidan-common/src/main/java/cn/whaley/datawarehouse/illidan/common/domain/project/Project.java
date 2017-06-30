@@ -22,7 +22,8 @@ public class Project implements Serializable {
     /**
      * azkaban中所属用户
      */
-    private String ownerId;
+    private Long ownerId;
+    private String ownerName;
     /**
      * 状态（1：有效，0无效）
      */
@@ -68,11 +69,11 @@ public class Project implements Serializable {
         this.projectDes = projectDes;
     }
 
-    public String getOwnerId() {
+    public Long getOwnerId() {
         return ownerId;
     }
 
-    public void setOwnerId(String ownerId) {
+    public void setOwnerId(Long ownerId) {
         this.ownerId = ownerId;
     }
 
@@ -114,6 +115,14 @@ public class Project implements Serializable {
 
     public void setPublishTime(Date publishTime) {
         this.publishTime = publishTime;
+    }
+
+    public String getOwnerName() {
+        return ownerName;
+    }
+
+    public void setOwnerName(String ownerName) {
+        this.ownerName = ownerName;
     }
 
     @Override

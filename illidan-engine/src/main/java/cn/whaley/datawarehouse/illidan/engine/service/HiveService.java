@@ -18,4 +18,17 @@ public class HiveService {
     public int queryForCount(String sql) {
         return this.jdbcTemplate.queryForObject(sql, Integer.class);
     }
+
+    public int update(String sql) {
+        if (sql == null) {
+            return -1;
+        }
+        if (!sql.contains(";")) {
+            return this.jdbcTemplate.update(sql);
+        } else {
+            String[] sqls = sql.split(";");
+            int[] results = this.jdbcTemplate.batchUpdate(sqls);
+            return results[results.length - 1];
+        }
+    }
 }

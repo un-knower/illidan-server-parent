@@ -26,7 +26,7 @@ import static cn.whaley.datawarehouse.illidan.engine.param.DateParam.findByParam
 @Service
 public class SubmitService {
 
-    Logger logger = LoggerFactory.getLogger(SubmitService.class);
+    private Logger logger = LoggerFactory.getLogger(SubmitService.class);
 
     @Autowired
     private HiveService hiveService;
@@ -84,12 +84,97 @@ public class SubmitService {
             String completeSql = parseSqlParams(executeSql, dataDueTime, paramMap);
 
             //执行sql
-            int result = hiveService.queryForCount(completeSql);
+            hiveService.update(completeSql);
         }
 
         return true;
     }
 
+    /**
+     * 根据配置的执行周期，生成多条执行sql。
+     * 并且将统配参数${start_time}和${end_time}替换成具体的时间参数
+     * @param selectSql
+     * @param executeTypeList
+     * @param dateDueTime
+     * @return
+     */
+    private Map<String, String> parseTimeInterval(String selectSql, List<String> executeTypeList, Date dateDueTime) {
+        Map<String, String> result = new HashMap<>();
+        if (selectSql.contains("${start_time}") || selectSql.contains("${end_time}")) {
+            if (executeTypeList == null) {
+                executeTypeList = new ArrayList<>();
+            }
+            if (executeTypeList.isEmpty()) {
+                executeTypeList.add(ExecuteIntervalType.DAY.getName());
+            }
+            for (String executeType : executeTypeList) {
+                ExecuteIntervalType intervalType = ExecuteIntervalType.getByName(executeType);
+                if (intervalType == null) {
+                    continue;
+                }
+                if (!intervalType.shouldExecute(dateDueTime)) {
+                    continue;
+                }
+                String sql = selectSql.replace("${start_time}", "${" + intervalType.getStartParam().getParamName() + "}");
+                sql = sql.replace("${end_time}", "${" + intervalType.getEndParam().getParamName() + "}");
+                result.put(executeType, sql);
+            }
+        } else {
+            result.put(ExecuteIntervalType.DAY.getName(), selectSql);
+        }
+        return result;
+    }
+
+    /**
+     * 根据select语句补充insert overwrite
+     * @param selectSql
+     * @param task
+     * @param executeType
+     * @return
+     */
+    private String getExecuteSql(String selectSql, TaskFull task, String executeType) {
+        String tableName = task.getTable().getDbInfo().getDbCode() + "." + task.getTable().getTableCode();
+
+        List<String> partitionFields = fieldInfoService.findPartitionFields(task.getTableId());
+        if (partitionFields == null || partitionFields.isEmpty()) {
+            throw new RuntimeException("未获取到分区字段， task=" + task.getTaskCode());
+        }
+
+        String insertStatement = "insert overwrite table " + tableName + " partition(";
+        for (int i = 0; i < partitionFields.size(); i++) {
+            String field = partitionFields.get(i);
+            if (field.equalsIgnoreCase("date_type")) {
+                insertStatement += "date_type='" + executeType + "'";
+            } else if (field.equalsIgnoreCase("product_line")) {
+                insertStatement += "product_line='${product_line}'";
+            } else {
+                if (DateParam.findByParamName(field) != null) {
+                    insertStatement += field + "='${" + field+ "}'";
+                }else {
+                    throw new RuntimeException("未知的分区字段" + field + "， task=" + task.getTaskCode());
+                }
+            }
+            if (i < partitionFields.size() - 1) {
+                insertStatement += ",";
+            } else {
+                insertStatement += ")";
+            }
+        }
+
+        String tezStatement = "set tez.queue.name=bi;\n" +
+                "set tez.am.resource.memory.mb=4096;\n" +
+                "set hive.tez.container.size=4096;\n";
+
+        return tezStatement + insertStatement +  " " + selectSql;
+    }
+
+    /**
+     * 替换sql中的时间参数
+     * @param selectSql
+     * @param dataDueTime
+     * @param paramMap
+     * @return
+     */
     private String parseSqlParams(String selectSql, Date dataDueTime, Map<String, String> paramMap) {
 
         Pattern pattern = Pattern.compile(PARAM_REGEX);
@@ -159,32 +244,7 @@ public class SubmitService {
         return DateFormat.format(date, dateFormat);
     }
 
-    private Map<String, String> parseTimeInterval(String selectSql, List<String> executeTypeList, Date dateDueTime) {
-        Map<String, String> result = new HashMap<>();
-        if (selectSql.contains("${start_time}") || selectSql.contains("${end_time}")) {
-            if (executeTypeList == null) {
-                executeTypeList = new ArrayList<>();
-            }
-            if (executeTypeList.isEmpty()) {
-                executeTypeList.add(ExecuteIntervalType.DAY.getName());
-            }
-            for (String executeType : executeTypeList) {
-                ExecuteIntervalType intervalType = ExecuteIntervalType.getByName(executeType);
-                if (intervalType == null) {
-                    continue;
-                }
-                if (!intervalType.shouldExecute(dateDueTime)) {
-                    continue;
-                }
-                String sql = selectSql.replace("${start_time}", "${" + intervalType.getStartParam().getParamName() + "}");
-                sql = sql.replace("${end_time}", "${" + intervalType.getEndParam().getParamName() + "}");
-                result.put(executeType, sql);
-            }
-        } else {
-            result.put(ExecuteIntervalType.DAY.getName(), selectSql);
-        }
-        return result;
-    }
+
 
     private String parseCustomParams(String sql, Map<String, String> paramMap) {
         String result = sql;
@@ -197,35 +257,4 @@ public class SubmitService {
         return result;
     }
 
-    private String getExecuteSql(String selectSql, TaskFull task, String executeType) {
-        String tableName = task.getTable().getDbInfo().getDbCode() + "." + task.getTable().getTableCode();
-
-        List<String> partitionFields = fieldInfoService.findPartitionFields(task.getTableId());
-        if (partitionFields == null || partitionFields.isEmpty()) {
-            throw new RuntimeException("未获取到分区字段， task=" + task.getTaskCode());
-        }
-
-        String insertStatement = "insert overwrite table " + tableName + " partition(";
-        for (int i = 0; i < partitionFields.size(); i++) {
-            String field = partitionFields.get(i);
-            if (field.equalsIgnoreCase("date_type")) {
-                insertStatement += "date_type=" + executeType;
-            } else if (field.equalsIgnoreCase("product_line")) {
-                insertStatement += "product_line=${product_line}";
-            } else {
-                if (DateParam.findByParamName(field) != null) {
-                    insertStatement += field + "=${" + field+ "}";
-                }else {
-                    throw new RuntimeException("未知的分区字段" + field + "， task=" + task.getTaskCode());
-                }
-            }
-            if (i < partitionFields.size() - 1) {
-                insertStatement += ",";
-            } else {
-                insertStatement += ")";
-            }
-        }
-
-        return insertStatement +  " " + selectSql;
-    }
 }

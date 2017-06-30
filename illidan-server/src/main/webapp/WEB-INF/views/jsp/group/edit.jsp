@@ -6,7 +6,7 @@
 <head>
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
     <meta charset="utf-8"/>
-    <title>编辑项目</title>
+    <title>编辑任务组</title>
     <meta name="description" content="overview &amp; stats"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
     <jsp:include page="../frame.jsp"/>
@@ -15,22 +15,22 @@
 <div class="container theme-showcase form-horizontal" role="main">
     <div class="panel panel-default">
         <div class="panel-body">
-            <input type="hidden" id="id" value="${project.id}"/>
+            <input type="hidden" id="id" value="${taskGroup.id}"/>
             <div class="col-sm-6">
                 <div class="form-group">
-                    <label for="projectCode" class="col-md-2 control-label">工程code</label>
+                    <label for="groupCode" class="col-md-2 control-label">任务组code</label>
                     <div class="col-md-6">
-                        <input disabled="disabled" class="form-control" id="projectCode" placeholder="请输入工程code" value="${project.projectCode}">
+                        <input disabled="disabled" class="form-control" id="groupCode" placeholder="请输入任务组code" value="${taskGroup.groupCode}">
                     </div>
                 </div>
             </div>
             <div class="col-sm-6">
                 <div class="form-group">
-                    <label for="ownerId" class="col-md-2 control-label">所有者</label>
+                    <label for="projectId" class="col-md-2 control-label">所属项目</label>
                     <div class="col-md-6">
-                        <select class="form-control" id="ownerId" name="ownerId" data-placeholder="" disabled="disabled">
-                            <c:forEach begin="0" end="${owner.size()-1}"  var="index">
-                                <option value ="${owner.get(index).id}" >${owner.get(index).ownerName}</option>
+                        <select class="form-control" id="projectId" name="projectId" data-placeholder="" disabled="disabled">
+                            <c:forEach begin="0" end="${project.size()-1}"  var="index">
+                                <option value ="${project.get(index).id}" >${project.get(index).projectCode}</option>
                             </c:forEach>
                         </select>
                     </div>
@@ -38,10 +38,26 @@
             </div>
             <div class="col-sm-6">
                 <div class="form-group">
-                    <label class="col-md-2 control-label">工程描述</label>
+                    <label for="email" class="col-md-2 control-label">任务失败邮件发送人</label>
                     <div class="col-md-6">
-                        <textarea id="projectDes" name="projectDes" cols="20" rows="4"
-                                  class="form-control">${project.projectDes}</textarea>
+                        <input class="form-control" id="email" placeholder="请输入任务失败邮件发送人" value="${taskGroup.email}">
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6">
+                <div class="form-group">
+                    <label for="schedule" class="col-md-2 control-label">调度策略</label>
+                    <div class="col-md-6">
+                        <input class="form-control" id="schedule" placeholder="调度策略" value="${taskGroup.schedule}">
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6">
+                <div class="form-group">
+                    <label class="col-md-2 control-label">任务组描述</label>
+                    <div class="col-md-6">
+                        <textarea id="groupDes" name="groupDes" cols="20" rows="4"
+                                  class="form-control">${taskGroup.groupDes}</textarea>
                     </div>
                 </div>
             </div>
@@ -55,19 +71,21 @@
 <script>
     jQuery(function($) {
 //        autocomplete("supplier", "/supplier/getSupplierList", 'organizationName', "id", "organizationName", 1);
-        $("#ownerId").find("option[value='${project.ownerId}']").attr("selected",true);
+        $("#projectId").find("option[value='${taskGroup.projectId}']").attr("selected",true);
     });
 
 
     function add() {
-        var project = {};
-        project.id = $("#id").val();
-        project.projectCode = $("#projectCode").val();
-        project.projectDes = $("#projectDes").val();
+        var group = {};
+        group.id = $("#id").val();
+        group.groupCode = $("#groupCode").val();
+        group.groupDes = $("#groupDes").val();
+        group.email = $("#email").val();
+        group.schedule = $("#schedule").val();
         $.ajax({
             type: 'POST',
-            url: '/project/edit',
-            data: JSON.stringify(project),
+            url: '/group/edit',
+            data: JSON.stringify(group),
             contentType: 'application/json', //设置请求头信息
             dataType: 'json',
             async: false,

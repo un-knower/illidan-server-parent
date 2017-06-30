@@ -5,7 +5,7 @@
 <head>
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
     <meta charset="utf-8"/>
-    <title>项目列表</title>
+    <title>任务组列表</title>
     <meta name="description" content="overview &amp; stats"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
     <jsp:include page="../frame.jsp"/>
@@ -16,17 +16,20 @@
 
     <div class="page-header objhid">
         <div class="form-inline ">
+            <div class="form-group">
+                <input class="form-control" type="hidden" id="projectId" name="projectId" query="query" value="${projectId}"/>
+            </div>
             <%--<div class="form-group">--%>
-                <%--<input class="form-control" id="id" name="id" query="query" placeholder="项目ID">--%>
+            <%--<input class="form-control" id="id" name="id" query="query" placeholder="任务组ID">--%>
             <%--</div>--%>
             <div class="form-group">
-                <input class="form-control" id="projectCode" name="projectCode" query="query" placeholder="项目code">
+                <input class="form-control" id="groupCode" name="groupCode" query="query" placeholder="任务组code">
             </div>
             <div class="form-group">
-                <input class="form-control" id="projectDes" name="projectDes" query="query" placeholder="项目描述">
+                <input class="form-control" id="groupDes" name="groupDes" query="query" placeholder="任务组描述">
             </div>
             <%--<div class="form-group">--%>
-                <%--<input class="form-control" id="ownerId" name="ownerId" query="query" placeholder="所有者ID">--%>
+            <%--<input class="form-control" id="ownerId" name="ownerId" query="query" placeholder="所有者ID">--%>
             <%--</div>--%>
 
             <div class="text-center search-btns">
@@ -38,7 +41,6 @@
     </div>
     <button type="button" class="btn btn-success" onclick="add()">新增</button>
     <button type="button" class="btn btn-danger" onclick="remove();">删除</button>
-    <%--<button type="button" class="btn btn-primary" onclick="publish();">发布</button>--%>
     <table id="dynamic-table" name="dynamic-table" class="table table-striped table-hover table-bordered">
         <thead>
         <tr>
@@ -47,13 +49,14 @@
                 <span class="lbl"></span> </label>
             </th>
             <th >操作</th>
-            <th >项目code</th>
-            <th >项目描述</th>
-            <th >所有者</th>
-            <th >发布状态</th>
+            <th >任务组code</th>
+            <th >所属项目</th>
+            <th >任务组描述</th>
+            <th >调度策略</th>
+            <th >任务失败邮件发送人</th>
+            <th >调度ID</th>
             <th >创建时间</th>
             <th >更新时间</th>
-            <th >发布时间</th>
 
         </tr>
         </thead>
@@ -99,7 +102,7 @@
                 bFilter: false,
                 bInfo: false,
                 ajax: {
-                    url: '/project/projectList',
+                    url: '/group/groupList',
                     type: 'POST',
                     dataType: 'json',
                     data: getParam()
@@ -112,13 +115,15 @@
                     },
                     {
                         data: function (row) {
-                            return "<a href='javascript:void(0);' onclick='edit(" + row.id + ");'>编辑</a> <a href='javascript:void(0);' onclick='publish(" + row.id + ");'>发布</a>";
+                            return "<a href='javascript:void(0);' onclick='edit(" + row.id + ");'>编辑</a> <a href='javascript:void(0);' onclick='publish(" + row.projectId + ");'>发布</a>";
                         }
                     },
+                    {data: "groupCode"},
                     {data: "projectCode"},
-                    {data: "projectDes"},
-                    {data: "ownerName"},
-                    {data: "isPublish"},
+                    {data: "groupDes"},
+                    {data: "schedule"},
+                    {data: "email"},
+                    {data: "scheduleId"},
                     {
                         data: function (data) {
                             if (data.createTime != null) {
@@ -136,27 +141,8 @@
                                 return "";
                             }
                         }
-                    },
-                    {
-                        data: function (data) {
-                            if (data.publishTime != null) {
-                                return formatDate(data.publishTime);
-                            } else {
-                                return "";
-                            }
-                        }
                     }
 
-                ],
-                "aoColumnDefs": [
-                    {
-                        "render": function(data, type, row, meta) {
-//                            return '<a href="javascript:void(0);" onclick="goToGroup(' + row.id + ');">' + row.projectCode + '</a>';
-                            return '<a href="/group/list?projectId=' + row.id + '">' + row.projectCode + '</a>';
-                        },
-                        //指定是第三列
-                        "targets": 2
-                    }
                 ],
                 "serverSide": true,
                 "aLengthMenu": [10, 25, 50, 100],
@@ -235,28 +221,24 @@
     }
 
     function add() {
-        modalWindow("/project/toAdd", "新增项目", 410, 350);
+        modalWindow("/group/toAdd", "新增任务组", 410, 350);
     }
 
     function edit(id) {
-        modalWindow("/project/toEdit?id=" + id, "编辑项目", 410, 350);
+        modalWindow("/group/toEdit?id=" + id, "编辑任务组", 410, 350);
     }
 
-    function project_detail(id){
-        modalWindow("/project/detail?id=" + id, "项目详情", 450, 700);
-    }
-    
-    function publish(id) {
+    function publish(projectId) {
         modalConfirm("提示", "你确定要发布吗?", function () {
-            publishProject(id)
+            publishProject(projectId)
         }, cancle);
     }
 
-    function publishProject(id) {
+    function publishProject(projectId) {
         $.ajax({
             type: 'POST',
             url: '/project/toPublishProject',
-            data: "id=" + id,
+            data: "id=" + projectId,
             dataType: 'json',
             async: false,
             success: function (data) {
@@ -267,6 +249,10 @@
                 }
             }
         });
+    }
+
+    function project_detail(id){
+        modalWindow("/group/detail?id=" + id, "任务组详情", 450, 700);
     }
 
     function remove() {
@@ -290,7 +276,7 @@
 
     function removeRecord(ids) {
         modalConfirm("提示", "你确定要删除记录吗?", function () {
-            deleteProject(ids)
+            deleteGroup(ids)
         }, cancle);
     }
 
@@ -298,10 +284,10 @@
         return false;
     }
 
-    function deleteProject(ids) {
+    function deleteGroup(ids) {
         $.ajax({
             type: 'POST',
-            url: '/project/delete',
+            url: '/group/delete',
             data: "ids=" + ids,
             dataType: 'json',
             async: false,
@@ -315,6 +301,9 @@
         });
     }
 
+    function exportExcel_f() {
+        $.download('/project/projectExportDate.xls',getParam(),'post' );
+    }
 </script>
 </body>
 </html>
