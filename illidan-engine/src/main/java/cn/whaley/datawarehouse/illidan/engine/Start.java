@@ -11,6 +11,8 @@ import cn.whaley.datawarehouse.illidan.common.service.user.UserService;
 import cn.whaley.datawarehouse.illidan.engine.service.HiveService;
 import org.springframework.context.support.GenericXmlApplicationContext;
 
+import java.util.List;
+
 /**
  * Created by lituo on 2017/6/22.
  */
@@ -42,6 +44,14 @@ public class Start {
         System.out.println("===="+taskFull.getTable().getDbInfo().getDbCode());
         System.out.println("****"+taskFull.getTable().getDbInfo().getDbDes());
         System.out.println("####"+taskFull.getTable().getFieldList().toString());
+
+//        Long projectId = 1L;
+//        TaskGroupService taskGroupService = context.getBean(TaskGroupService.class);
+//        List<TaskGroup> taskGroupList = taskGroupService.findTaskGroupByProjectId(projectId);
+//        System.out.println(taskGroupList.toString());
+//        System.out.println(taskGroupList.get(0).getGroupCode());
+//        System.out.println(taskGroupList.get(1).getGroupCode());
+
 
 //        HiveService hiveService = context.getBean(HiveService.class);
 //        System.out.println(hiveService.queryForCount("select count(1) from default.eagle_live_statistics"));
