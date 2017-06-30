@@ -36,4 +36,6 @@ public interface ProjectService {
     Long removeByIds(final List<Long> ids);
 
     List<Project> getByCodeLike(String projectCode);
+
+    void deleteById(Long id);
 }

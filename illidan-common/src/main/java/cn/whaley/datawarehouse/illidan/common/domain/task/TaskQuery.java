@@ -32,6 +32,10 @@ public class TaskQuery extends BaseQueryEntity {
      */
     private String executeType;
     /**
+     * task_group表主键
+     */
+    private Long groupId;
+    /**
      * 目标表主键
      */
     private Long tableId;
@@ -96,6 +100,14 @@ public class TaskQuery extends BaseQueryEntity {
 
     public void setExecuteType(String executeType) {
         this.executeType = executeType;
+    }
+
+    public Long getGroupId() {
+        return groupId;
+    }
+
+    public void setGroupId(Long groupId) {
+        this.groupId = groupId;
     }
 
     public Long getTableId() {

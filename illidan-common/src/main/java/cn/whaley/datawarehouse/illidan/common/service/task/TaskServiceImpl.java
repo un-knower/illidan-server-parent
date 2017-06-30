@@ -202,7 +202,15 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public List<Task> findTaskByGroupId(Long groupId) {
-        return null;
+        List<Task> taskList = null;
+        try {
+            TaskQuery task = new TaskQuery();
+            task.setGroupId(groupId);
+            taskList = findByTask(task);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return taskList;
     }
 
 }
