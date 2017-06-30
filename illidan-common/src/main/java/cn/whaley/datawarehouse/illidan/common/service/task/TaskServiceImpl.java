@@ -126,7 +126,6 @@ public class TaskServiceImpl implements TaskService {
 
     public TaskFull getFullTaskBy(String taskCode, Long id){
         TaskFull taskFull = null;
-        TableWithField tableWithField = new TableWithField();
         TaskQuery taskQuery = new TaskQuery();
 
         try {
@@ -139,16 +138,10 @@ public class TaskServiceImpl implements TaskService {
             Task task = findOne(taskQuery);
             if (task != null){
                 List<String> executeTypeList = java.util.Arrays.asList(task.getExecuteType().split(","));
-                //目标表实体
-                TableInfo tableInfo = tableInfoMapper.get(task.getTableId());
-                //目标数据库实体
-                DbInfo dbInfo = dbInfoMapper.get(tableInfo.getDbId());
-                //列名实体
-                List<FieldInfo> fieldInfoList = fieldInfoMapper.getByTableId(tableInfo.getId());
-                tableWithField.setDbInfo(dbInfo);
-                tableWithField.setFieldList(fieldInfoList);
+                TableWithField tableWithField = tableInfoService.getTableWithField(task.getTableId());
 
                 taskFull = new TaskFull();
+                BeanUtils.copyProperties(task, taskFull);
                 taskFull.setTable(tableWithField);
                 taskFull.setExecuteTypeList(executeTypeList);
             }
