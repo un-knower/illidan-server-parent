@@ -44,14 +44,18 @@ public class AzkabanUtil {
         return result;
     }
 
+    /**
+     * 删除project
+     * @param sessionId
+     * @param projectName
+     */
     public void deleteProject(String sessionId,String projectName){
         String url = ConfigurationManager.getProperty("managerUrl");
         Map<String, String> params = new HashMap<String,String>();
         params.put("delete","true");
         params.put("session.id",sessionId);
         params.put("project",projectName);
-        getGetResponse(url,params,"UTF-8");
-        JSONObject result = new JSONObject();
+        getGetResponse(url, params, "UTF-8");
     }
 
     /**
@@ -129,7 +133,7 @@ public class AzkabanUtil {
      * @param password
      * @return
      */
-    private JSONObject getSeesionId(String username,String password){
+    public JSONObject getSeesionId(String username,String password){
         JSONObject result = new JSONObject();
         String url = ConfigurationManager.getProperty("domainUrl");
         Map<String, String> params = new HashMap<String,String>();
@@ -144,7 +148,7 @@ public class AzkabanUtil {
             log.info("seesionId is : "+result);
         }else{
             result.put("status","error");
-            result.put("message","get sessionId error message is : "+response);
+            result.put("message",response);
             log.error("get seesionId error message is : "+response);
         }
         return result;
@@ -159,6 +163,7 @@ public class AzkabanUtil {
     private  String getGetResponse(String url , Map<String, String> params, String enc){
         return HttpClientUtil.URLGet(url,params,enc);
     }
+
 
     public static void main(String[] args) {
         AzkabanUtil controller = new AzkabanUtil();
@@ -177,7 +182,6 @@ public class AzkabanUtil {
 //            JSONObject unscheduleInfo = controller.deleteSchedule(seesionId,"139");
 //            System.out.println(unscheduleInfo);
             controller.deleteProject(seesionId,"bbaaa");
-
         }
 
 

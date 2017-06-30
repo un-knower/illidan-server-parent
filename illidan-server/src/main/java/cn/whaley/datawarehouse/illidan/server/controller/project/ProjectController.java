@@ -1,12 +1,17 @@
 package cn.whaley.datawarehouse.illidan.server.controller.project;
 
+import cn.whaley.datawarehouse.illidan.common.domain.group.TaskGroup;
 import cn.whaley.datawarehouse.illidan.common.domain.owner.Owner;
 import cn.whaley.datawarehouse.illidan.common.domain.owner.OwnerQuery;
 import cn.whaley.datawarehouse.illidan.common.domain.project.Project;
 import cn.whaley.datawarehouse.illidan.common.domain.project.ProjectQuery;
+import cn.whaley.datawarehouse.illidan.common.domain.task.Task;
+import cn.whaley.datawarehouse.illidan.common.service.group.TaskGroupService;
 import cn.whaley.datawarehouse.illidan.common.service.owner.OwnerService;
 import cn.whaley.datawarehouse.illidan.common.service.project.ProjectService;
-import cn.whaley.datawarehouse.illidan.server.util.Common;
+import cn.whaley.datawarehouse.illidan.common.service.task.TaskService;
+import cn.whaley.datawarehouse.illidan.server.util.*;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,11 +24,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
+import java.io.File;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -38,6 +41,11 @@ public class ProjectController extends Common {
     private ProjectService projectService;
     @Autowired
     private OwnerService ownerService;
+    @Autowired
+    private TaskGroupService taskGroupService;
+    @Autowired
+    private TaskService taskService;
+
 
     @RequestMapping("list")
     public String list(){
@@ -147,6 +155,11 @@ public class ProjectController extends Common {
                 returnResult(false, "工程code不能为空!!!");
             } else {
                 projectService.insert(project);
+                //azkaban创建project
+                JSONObject reseult = createProject(project);
+                if("error".equals(reseult.getString("status"))){
+                    returnResult(false, reseult.getString("message").replaceAll("'","\\\\'"));
+                }
                 returnResult(true, "新增项目成功!!!");
             }
         } catch (Exception e) {
@@ -184,6 +197,76 @@ public class ProjectController extends Common {
 
     public List<Owner> getOwner(){
         return ownerService.findByOwner(new OwnerQuery());
+    }
+
+    /**
+     * 创建azkaban project
+     * @param project
+     * @return
+     */
+    private JSONObject createProject(Project project){
+        AzkabanUtil azkabanUtil = new AzkabanUtil();
+        //获取sessionId
+        JSONObject sessionIdResult = azkabanUtil.getSeesionId("azkaban", "azkaban@whaley");
+        if("error".equals(sessionIdResult.getString("status"))){
+            projectService.deleteById(project.getId());
+            return sessionIdResult;
+        }
+        String sessionId = sessionIdResult.getString("status");
+        //azkaban创建project
+        JSONObject projectResult = azkabanUtil.createProject(sessionId, project.getProjectCode(), project.getProjectDes());
+
+        if("error".equals(projectResult.getString("status"))){
+            projectService.deleteById(project.getId());
+            return projectResult;
+        }
+        return projectResult;
+    }
+    public void publishProject(){
+        Long projectId = 0L;
+        Project project = projectService.get(projectId);
+        String projectCode = project.getProjectCode();
+
+        //删除原来project的文件
+        String path = ConfigurationManager.getProperty("zipdir");
+        String projectPath = path+File.separator+projectCode;
+        File file = new File(projectPath);
+        FileUtil.deleteDFile(file);
+
+        List<TaskGroup> taskGroupList = taskGroupService.findTaskGroupByProjectId(projectId);
+        for(TaskGroup taskGroup: taskGroupList){
+            Long groupId = taskGroup.getId();
+            String email = taskGroup.getEmail();
+            String groupCode = taskGroup.getGroupCode();
+            String schedule = taskGroup.getSchedule();
+            //创建结束 end.job
+            FileUtil.createFile(projectCode,groupCode,groupCode);
+
+            List<Task> taskList = taskService.findTaskByGroupId(groupId);
+            List<String> taskNames = new ArrayList<>();
+            for(Task task:taskList){
+                String taskCode = task.getTaskCode();
+                //创建 执行任务.job
+                FileUtil.createFile(projectCode,groupCode,taskCode);
+                //写入 执行任务.job
+                FileUtil.writeJob(projectCode,groupCode,taskCode,email);
+                taskNames.add(taskCode);
+            }
+            //写入 结束 end.job
+            FileUtil.writeEndJob(projectCode,groupCode,taskNames);
+
+            //copy properties
+            FileUtil.copyFile(projectCode,"pro.properties");
+            FileUtil.copyFile(projectCode,"submit.sh");
+            //压缩zip包
+            ZipUtils.doCompress(projectPath,projectPath);
+        }
+    }
+
+    @RequestMapping("toPublishProject")
+    @ResponseBody
+    public void toPublishProject(Long id) {
+        System.out.println(id);
     }
 
 }

@@ -3,6 +3,7 @@ package cn.whaley.datawarehouse.illidan.common.service.project;
 import cn.whaley.datawarehouse.illidan.common.domain.project.Project;
 import cn.whaley.datawarehouse.illidan.common.domain.project.ProjectQuery;
 import cn.whaley.datawarehouse.illidan.common.mapper.project.ProjectMapper;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -24,7 +25,8 @@ public class ProjectServiceImpl implements ProjectService {
         if(count > 0){
             throw new Exception("项目已经存在不能重复新增");
         }
-        return projectMapper.insert(project);
+        projectMapper.insert(project) ;
+        return project.getId();
     }
 
     public Long insertBatch(final List<Project> list) {
@@ -85,5 +87,10 @@ public class ProjectServiceImpl implements ProjectService {
     @Override
     public List<Project> getByCodeLike(String projectCode) {
         return projectMapper.getByCodeLike(projectCode);
+    }
+
+    @Override
+    public void deleteById(Long id) {
+        projectMapper.deleteById(id);
     }
 }

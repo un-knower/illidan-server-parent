@@ -17,16 +17,16 @@
     <div class="page-header objhid">
         <div class="form-inline ">
             <%--<div class="form-group">--%>
-                <%--<input type="email" class="form-control" id="id" name="id" query="query" placeholder="项目ID">--%>
+                <%--<input class="form-control" id="id" name="id" query="query" placeholder="项目ID">--%>
             <%--</div>--%>
             <div class="form-group">
-                <input type="email" class="form-control" id="projectCode" name="projectCode" query="query" placeholder="项目code">
+                <input class="form-control" id="projectCode" name="projectCode" query="query" placeholder="项目code">
             </div>
             <div class="form-group">
-                <input type="email" class="form-control" id="projectDes" name="projectDes" query="query" placeholder="项目描述">
+                <input class="form-control" id="projectDes" name="projectDes" query="query" placeholder="项目描述">
             </div>
             <%--<div class="form-group">--%>
-                <%--<input type="email" class="form-control" id="ownerId" name="ownerId" query="query" placeholder="所有者ID">--%>
+                <%--<input class="form-control" id="ownerId" name="ownerId" query="query" placeholder="所有者ID">--%>
             <%--</div>--%>
 
             <div class="text-center search-btns">
@@ -38,7 +38,7 @@
     </div>
     <button type="button" class="btn btn-success" onclick="add()">新增</button>
     <button type="button" class="btn btn-danger" onclick="remove();">删除</button>
-    <button type="button" class="btn btn-primary" onclick="publish();">发布</button>
+    <%--<button type="button" class="btn btn-primary" onclick="publish();">发布</button>--%>
     <table id="dynamic-table" name="dynamic-table" class="table table-striped table-hover table-bordered">
         <thead>
         <tr>
@@ -112,7 +112,7 @@
                     },
                     {
                         data: function (row) {
-                            return "<a href='javascript:void(0);' onclick='edit(" + row.id + ");'>编辑</a>";
+                            return "<a href='javascript:void(0);' onclick='edit(" + row.id + ");'>编辑</a> <a href='javascript:void(0);' onclick='publish(" + row.id + ");'>发布</a>";
                         }
                     },
                     {data: "projectCode"},
@@ -147,6 +147,16 @@
                         }
                     }
 
+                ],
+                "aoColumnDefs": [
+                    {
+                        "render": function(data, type, row, meta) {
+//                            return '<a href="javascript:void(0);" onclick="goToGroup(' + row.id + ');">' + row.projectCode + '</a>';
+                            return '<a href="/group/list?projectId=' + row.id + '">' + row.projectCode + '</a>';
+                        },
+                        //指定是第三列
+                        "targets": 2
+                    }
                 ],
                 "serverSide": true,
                 "aLengthMenu": [10, 25, 50, 100],
@@ -235,6 +245,29 @@
     function project_detail(id){
         modalWindow("/project/detail?id=" + id, "项目详情", 450, 700);
     }
+    
+    function publish(id) {
+        modalConfirm("提示", "你确定要发布吗?", function () {
+            publishProject(id)
+        }, cancle);
+    }
+
+    function publishProject(id) {
+        $.ajax({
+            type: 'POST',
+            url: '/project/toPublishProject',
+            data: "id=" + id,
+            dataType: 'json',
+            async: false,
+            success: function (data) {
+                if (data.result == true) {
+                    modalAlert("提示", data.msg, searchList, "ok");
+                } else {
+                    modalAlert("提示", data.msg, searchList, "error");
+                }
+            }
+        });
+    }
 
     function remove() {
         var rows = myTable.rows('.selected').data();
@@ -282,9 +315,6 @@
         });
     }
 
-    function exportExcel_f() {
-        $.download('/project/projectExportDate.xls',getParam(),'post' );
-    }
 </script>
 </body>
 </html>

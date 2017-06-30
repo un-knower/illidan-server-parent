@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -18,6 +19,10 @@ public class FileUtil {
     private static Logger log = LoggerFactory.getLogger(FileUtil.class);
     private static String path = ConfigurationManager.getProperty("zipdir");
 
+    public static void copyFile(String projectCode,String fileName){
+        String newPath = path+File.separator+projectCode;
+        copyFile(path,newPath,fileName);
+    }
     /**
      * 文件复制
      * @param oldPath
@@ -78,7 +83,7 @@ public class FileUtil {
         }
     }
     /**
-     * 创建job文件并写入内容
+     * 创建job文件
      * @param projectName
      * @param groupName
      * @param taskName
@@ -101,10 +106,9 @@ public class FileUtil {
 
     /**
      * job文件中写入内容
-     * @param filepath
      * @param taskName
      */
-    public static void writeJob(String filepath,String taskName,String emails){
+    public static void writeJob(String projecName,String groupName,String taskName,String emails){
         FileOutputStream fos  = null;
         PrintWriter pw = null;
         try {
@@ -114,7 +118,7 @@ public class FileUtil {
             buffer.append("failure.emails="+emails);
             buffer.append(System.getProperty("line.separator"));
             buffer.append("command=sh submit.sh --task " +taskName +" --startDate ${startDate} --endDate ${endDate}");
-            filepath=filepath+File.separator+taskName+".job";
+            String filepath=path+File.separator+projecName+File.separator+groupName+File.separator+taskName+".job";
             File file = new File(filepath);//文件路径(包括文件名称)
             fos = new FileOutputStream(file);
             pw = new PrintWriter(fos);
@@ -124,10 +128,10 @@ public class FileUtil {
             log.error("writeFile is err : "+e.getMessage());
         }
     }
-    public static void writeEndJob(String filepath,String groupName,List<String> taskNames){
+    public static void writeEndJob(String projecName,String groupName,List<String> taskNames){
         FileOutputStream fos  = null;
         PrintWriter pw = null;
-        filepath=filepath+File.separator+groupName+".job";
+        String filepath=path+File.separator+projecName+File.separator+groupName+File.separator+groupName+"_end.job";
         try {
             StringBuffer buffer = new StringBuffer();
             buffer.append("type=command");
@@ -154,12 +158,12 @@ public class FileUtil {
 //        FileUtil.deleteDFile(file);
 //        FileUtil.copyFile("G:\\zip","G:\\zip\\project","pro.properties");
 
- /*         List<String> list = new ArrayList<>();
+/*       List<String> list = new ArrayList<>();
         list.add("a");
         list.add("b");
         list.add("c");
-        FileUtil.writeEndJob("G:\\zip\\project\\flow","end",list);*/
-        FileUtil.writeJob("G:\\zip\\project\\flow","a","guo.hao@whaley.cn,xiaoming@whaley.cn");
+        FileUtil.writeEndJob("project","flow",list);*/
+        FileUtil.writeJob("project","flow","task","guo.hao@whaley.cn,xiaoming@whaley.cn");
     }
 
 }

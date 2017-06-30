@@ -128,11 +128,7 @@
         </foreach>
     </insert>
 
-    <insert id="insert" parameterType="Project">
-        <selectKey resultType="long" keyProperty="id" order="AFTER">
-            SELECT
-            LAST_INSERT_ID()
-        </selectKey>
+    <insert id="insert" parameterType="Project" useGeneratedKeys="true" keyProperty="project.id">
         insert into project
         (
         <trim prefix="" prefixOverrides=",">
@@ -208,6 +204,10 @@
         <foreach item="item" collection="ids" open="(" separator="," close=")" >
             #{item}
         </foreach>
+    </delete>
+
+    <delete id="deleteById">
+        delete from project where id = #{id}
     </delete>
 
     <select id="getByCodeLike"  resultMap="returnProject">
