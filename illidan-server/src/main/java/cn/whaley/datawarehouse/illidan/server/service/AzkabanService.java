@@ -17,9 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by hc on 2017/6/30.
@@ -92,19 +90,23 @@ public class AzkabanService {
             project.setPublishTime(new Date());
             projectService.updateById(project);
             //设置调度
+            project.getOwnerId();
             for(TaskGroup taskGroup: taskGroupList){
                 String cronExpression = taskGroup.getSchedule();
                 String groupCode = taskGroup.getGroupCode();
                 if(!"0".equals(cronExpression)){
-                    JSONObject scheduleResult = azkabanUtil.setSchedule(sessionId, projectCode, groupCode+"_end", cronExpression);
-                    System.out.println("sesss ... "+scheduleResult);
+                    JSONObject scheduleResult = setSchedule(projectId, taskGroup, cronExpression);
+                    if("error".equals(scheduleResult.getString("status"))){
+                        return scheduleResult;
+                    }
+                    /*JSONObject scheduleResult = azkabanUtil.setSchedule(sessionId, projectCode, groupCode+"_end", cronExpression);
                     if("error".equals(scheduleResult.getString("status"))){
                         return scheduleResult;
                     }
                     //设置scheduleId,更新状态
                     int scheduleId = scheduleResult.getInt("scheduleId");
                     taskGroup.setScheduleId(scheduleId+"");
-                    taskGroupService.updateById(taskGroup);
+                    taskGroupService.updateById(taskGroup);*/
                 }
             }
             result.put("status","success");
@@ -115,4 +117,92 @@ public class AzkabanService {
         }
         return result ;
     }
+
+    /**
+     * 创建azkaban project
+     * @param project
+     * @return
+     */
+    public JSONObject createProject(Project project){
+        AzkabanUtil azkabanUtil = new AzkabanUtil();
+        //获取sessionId
+        JSONObject sessionIdResult = azkabanUtil.getSeesionId("azkaban", "azkaban@whaley");
+        if("error".equals(sessionIdResult.getString("status"))){
+            projectService.deleteById(project.getId());
+            return sessionIdResult;
+        }
+        String sessionId = sessionIdResult.getString("status");
+        //azkaban创建project
+        JSONObject projectResult = azkabanUtil.createProject(sessionId, project.getProjectCode(), project.getProjectDes());
+
+        if("error".equals(projectResult.getString("status"))){
+            projectService.deleteById(project.getId());
+            return projectResult;
+        }
+        return projectResult;
+    }
+
+    /**
+     * 取消调度并且删除taskGroup中的scheduleId
+     * @param scheduleId
+     * @return
+     */
+    public JSONObject deleteSchedule(Long projectId,TaskGroup taskGroup,String scheduleId){
+        Project project = projectService.get(projectId);
+        Owner owner = ownerService.get(project.getOwnerId());
+        AzkabanUtil azkabanUtil = new AzkabanUtil();
+        //获取sessionId
+        JSONObject sessionIdResult = azkabanUtil.getSeesionId(owner.getOwnerName(), owner.getOwnerPassword());
+        if("error".equals(sessionIdResult.getString("status"))){
+            return sessionIdResult;
+        }
+        String sessionId = sessionIdResult.getString("status");
+        JSONObject deleteScheduleResult = azkabanUtil.deleteSchedule(sessionId, scheduleId);
+        if("error".equals(deleteScheduleResult.getString("status"))){
+            return deleteScheduleResult;
+        }
+        //删除taskGroup中的scheduleId
+
+        TaskGroup newTaskGroup = new TaskGroup();
+        newTaskGroup.setId(taskGroup.getId());
+        newTaskGroup.setScheduleId("0");
+        taskGroupService.updateById(newTaskGroup);
+
+        return deleteScheduleResult;
+    }
+
+    /**
+     * 设置调度并且，更改scheduleId到taskGroup中
+     * @param projectId
+     * @param taskGroup
+     * @param cronExpression
+     * @return
+     */
+    public JSONObject setSchedule(Long projectId,TaskGroup taskGroup,String cronExpression){
+        Project project = projectService.get(projectId);
+        Owner owner = ownerService.get(project.getOwnerId());
+        String projectCode = project.getProjectCode();
+        AzkabanUtil azkabanUtil = new AzkabanUtil();
+        //获取sessionId
+        JSONObject sessionIdResult = azkabanUtil.getSeesionId(owner.getOwnerName(), owner.getOwnerPassword());
+        if("error".equals(sessionIdResult.getString("status"))){
+            return sessionIdResult;
+        }
+        String sessionId = sessionIdResult.getString("status");
+        String groupCode = taskGroup.getGroupCode();
+        JSONObject scheduleResult = azkabanUtil.setSchedule(sessionId, projectCode, groupCode+"_end", cronExpression);
+        if("error".equals(scheduleResult.getString("status"))){
+            return scheduleResult;
+        }
+        //设置scheduleId,更新taskGroup中设置scheduleId状态
+        int scheduleId = scheduleResult.getInt("scheduleId");
+
+        TaskGroup newTaskGroup = new TaskGroup();
+        newTaskGroup.setScheduleId(scheduleId+"");
+        newTaskGroup.setId(taskGroup.getId());
+        taskGroupService.updateById(newTaskGroup);
+
+        return  scheduleResult;
+    }
+
 }

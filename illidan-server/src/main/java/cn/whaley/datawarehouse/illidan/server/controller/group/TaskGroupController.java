@@ -2,11 +2,15 @@ package cn.whaley.datawarehouse.illidan.server.controller.group;
 
 import cn.whaley.datawarehouse.illidan.common.domain.group.TaskGroup;
 import cn.whaley.datawarehouse.illidan.common.domain.group.TaskGroupQuery;
+import cn.whaley.datawarehouse.illidan.common.domain.owner.Owner;
 import cn.whaley.datawarehouse.illidan.common.domain.project.Project;
 import cn.whaley.datawarehouse.illidan.common.domain.project.ProjectQuery;
 import cn.whaley.datawarehouse.illidan.common.service.group.TaskGroupService;
+import cn.whaley.datawarehouse.illidan.common.service.owner.OwnerService;
 import cn.whaley.datawarehouse.illidan.common.service.project.ProjectService;
+import cn.whaley.datawarehouse.illidan.server.service.AzkabanService;
 import cn.whaley.datawarehouse.illidan.server.util.Common;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,7 +42,10 @@ public class TaskGroupController extends Common {
     private TaskGroupService taskGroupService;
     @Autowired
     private ProjectService projectService;
-
+    @Autowired
+    private OwnerService ownerService;
+    @Autowired
+    private AzkabanService azkabanService;
     @RequestMapping("list")
     public ModelAndView list(Long projectId, ModelAndView mav){
         if (projectId != null){
@@ -139,9 +146,46 @@ public class TaskGroupController extends Common {
             if(StringUtils.isEmpty(taskGroup)){
                 returnResult(false, "修改任务组失败!!!");
             } else {
+                //为了操作azkaban数据异常回退
+                TaskGroup oldtaskGroup = taskGroupService.get(taskGroup.getId());
+                String cronExpression = taskGroup.getSchedule();
+                Project project = projectService.get(oldtaskGroup.getProjectId());
+                String isPublish = project.getIsPublish();
+                //修改数据库
                 taskGroup.setUpdateTime(new Date());
                 taskGroupService.updateById(taskGroup);
-                returnResult(true, "修改任务组成功!!!");
+
+                if(!"1".equals(isPublish)){
+                    //project为未发布，只需改数据库即可
+                    returnResult(true, "修改任务组成功!!!");
+                }else{
+                    if(cronExpression.equals(oldtaskGroup.getSchedule())){
+                        //cronExpression未修改，只需改数据库即可
+                        returnResult(true, "修改任务组成功!!!");
+                    }else{
+                        //cronExpression修改，只需改数据库即可
+                        String scheduleId = oldtaskGroup.getScheduleId();
+                        JSONObject result = null;
+                        //cronExpression修改
+                        if("0".equals(cronExpression)){
+                            //取消调度
+                            result = azkabanService.deleteSchedule(project.getId(), oldtaskGroup, scheduleId);
+                        }else{
+                            //修改调度
+                            result = azkabanService.setSchedule(project.getId(),oldtaskGroup,cronExpression);
+                        }
+                        if("success".equals(result.getString("status"))){
+                            returnResult(true, "修改任务组成功!!!" );
+                        }else{
+                            //回退更新数据
+                            taskGroupService.updateById(oldtaskGroup);
+                            returnResult(true, "修改任务组成功!!!");
+                            returnResult(false, result.getString("message").replaceAll("'","\\\\'") );
+                        }
+                    }
+
+                }
+
             }
         } catch (Exception e) {
             e.printStackTrace();
