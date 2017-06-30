@@ -263,7 +263,10 @@ public class ProjectController extends Common {
         }
     }
 
-
-
+    @RequestMapping("toPublishProject")
+    @ResponseBody
+    public void toPublishProject(Long id) {
+        System.out.println(id);
+    }
 
 }

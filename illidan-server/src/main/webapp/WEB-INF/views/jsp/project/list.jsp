@@ -38,7 +38,7 @@
     </div>
     <button type="button" class="btn btn-success" onclick="add()">新增</button>
     <button type="button" class="btn btn-danger" onclick="remove();">删除</button>
-    <button type="button" class="btn btn-primary" onclick="publish();">发布</button>
+    <%--<button type="button" class="btn btn-primary" onclick="publish();">发布</button>--%>
     <table id="dynamic-table" name="dynamic-table" class="table table-striped table-hover table-bordered">
         <thead>
         <tr>
@@ -112,7 +112,7 @@
                     },
                     {
                         data: function (row) {
-                            return "<a href='javascript:void(0);' onclick='edit(" + row.id + ");'>编辑</a>";
+                            return "<a href='javascript:void(0);' onclick='edit(" + row.id + ");'>编辑</a> <a href='javascript:void(0);' onclick='publish(" + row.id + ");'>发布</a>";
                         }
                     },
                     {data: "projectCode"},
@@ -246,9 +246,28 @@
         modalWindow("/project/detail?id=" + id, "项目详情", 450, 700);
     }
     
-//    function goToGroup(id) {
-//        window.location.href = "/group/list?projectId=" + id;
-//    }
+    function publish(id) {
+        modalConfirm("提示", "你确定要发布吗?", function () {
+            publishProject(id)
+        }, cancle);
+    }
+
+    function publishProject(id) {
+        $.ajax({
+            type: 'POST',
+            url: '/project/toPublishProject',
+            data: "id=" + id,
+            dataType: 'json',
+            async: false,
+            success: function (data) {
+                if (data.result == true) {
+                    modalAlert("提示", data.msg, searchList, "ok");
+                } else {
+                    modalAlert("提示", data.msg, searchList, "error");
+                }
+            }
+        });
+    }
 
     function remove() {
         var rows = myTable.rows('.selected').data();
