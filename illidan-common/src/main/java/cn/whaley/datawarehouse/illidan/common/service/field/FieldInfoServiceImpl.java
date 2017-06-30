@@ -5,6 +5,7 @@ import cn.whaley.datawarehouse.illidan.common.mapper.field.FieldInfoMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -21,7 +22,11 @@ public class FieldInfoServiceImpl implements FieldInfoService {
     }
 
     public List<FieldInfo> getByTableId(final Long tableId) {
-        return fieldInfoMapper.getByTableId(tableId);
+        List<FieldInfo> fieldInfos = fieldInfoMapper.getByTableId(tableId);
+        if(fieldInfos == null) {
+            return new ArrayList<FieldInfo>();
+        }
+        return fieldInfos;
     }
 
     @Override
@@ -33,4 +38,16 @@ public class FieldInfoServiceImpl implements FieldInfoService {
     public void removeByTableId(Long tableId) {
         fieldInfoMapper.removeByTableId(tableId);
     }
+
+    public List<String> findPartitionFields(final Long tableId){
+        List<FieldInfo> fieldInfos = getByTableId(tableId);
+        List<String> partitionFields = new ArrayList<String>();
+        for(FieldInfo fieldInfo : fieldInfos) {
+            if("1".equals(fieldInfo.getIsPartitionCol())) {
+                partitionFields.add(fieldInfo.getColName());
+            }
+        }
+        return partitionFields;
+    }
+
 }

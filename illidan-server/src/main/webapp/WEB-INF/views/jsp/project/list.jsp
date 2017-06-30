@@ -16,18 +16,18 @@
 
     <div class="page-header objhid">
         <div class="form-inline ">
+            <%--<div class="form-group">--%>
+                <%--<input class="form-control" id="id" name="id" query="query" placeholder="项目ID">--%>
+            <%--</div>--%>
             <div class="form-group">
-                <input type="email" class="form-control" id="id" name="id" query="query" placeholder="项目ID">
+                <input class="form-control" id="projectCode" name="projectCode" query="query" placeholder="项目code">
             </div>
             <div class="form-group">
-                <input type="email" class="form-control" id="projectCode" name="projectCode" query="query" placeholder="项目code">
+                <input class="form-control" id="projectDes" name="projectDes" query="query" placeholder="项目描述">
             </div>
-            <div class="form-group">
-                <input type="email" class="form-control" id="projectDes" name="projectDes" query="query" placeholder="项目描述">
-            </div>
-            <div class="form-group">
-                <input type="email" class="form-control" id="ownerId" name="ownerId" query="query" placeholder="所有者ID">
-            </div>
+            <%--<div class="form-group">--%>
+                <%--<input class="form-control" id="ownerId" name="ownerId" query="query" placeholder="所有者ID">--%>
+            <%--</div>--%>
 
             <div class="text-center search-btns">
                 <button class="btn btn-info" onclick="searchList();">查询</button>
@@ -53,6 +53,7 @@
             <th >发布状态</th>
             <th >创建时间</th>
             <th >更新时间</th>
+            <th >发布时间</th>
 
         </tr>
         </thead>
@@ -135,8 +136,27 @@
                                 return "";
                             }
                         }
+                    },
+                    {
+                        data: function (data) {
+                            if (data.publishTime != null) {
+                                return formatDate(data.publishTime);
+                            } else {
+                                return "";
+                            }
+                        }
                     }
 
+                ],
+                "aoColumnDefs": [
+                    {
+                        "render": function(data, type, row, meta) {
+//                            return '<a href="javascript:void(0);" onclick="goToGroup(' + row.id + ');">' + row.projectCode + '</a>';
+                            return '<a href="/group/list?projectId=' + row.id + '">' + row.projectCode + '</a>';
+                        },
+                        //指定是第三列
+                        "targets": 2
+                    }
                 ],
                 "serverSide": true,
                 "aLengthMenu": [10, 25, 50, 100],
@@ -225,6 +245,10 @@
     function project_detail(id){
         modalWindow("/project/detail?id=" + id, "项目详情", 450, 700);
     }
+    
+//    function goToGroup(id) {
+//        window.location.href = "/group/list?projectId=" + id;
+//    }
 
     function remove() {
         var rows = myTable.rows('.selected').data();
@@ -272,9 +296,6 @@
         });
     }
 
-    function exportExcel_f() {
-        $.download('/project/projectExportDate.xls',getParam(),'post' );
-    }
 </script>
 </body>
 </html>
