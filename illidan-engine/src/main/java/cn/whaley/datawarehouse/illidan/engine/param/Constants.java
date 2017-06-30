@@ -7,6 +7,6 @@ public class Constants {
 
     public static final String FORMAT_SPLITTER = "#";
     public static final String PARAM_REGEX = "\\$\\{\\w+#?\\w*\\}";
-    public static final String INVALID_PARAM_REGEX = "\\$\\{.*}";
+    public static final String ALL_PARAM_REGEX = "\\$\\{.*}";
 
 }

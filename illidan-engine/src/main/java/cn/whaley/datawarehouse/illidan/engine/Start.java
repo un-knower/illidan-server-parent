@@ -13,7 +13,7 @@ public class Start {
     public static void main(String[] args) {
 
         if(args.length % 2 != 0) {
-            throw new RuntimeException("参数数量错误");
+            throw new RuntimeException("参数数量错误, 是" + args.length);
         }
 
         GenericXmlApplicationContext context = new GenericXmlApplicationContext();

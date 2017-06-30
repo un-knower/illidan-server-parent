@@ -1,12 +1,15 @@
 package cn.whaley.datawarehouse.illidan.engine.service;
 
 import cn.whaley.datawarehouse.illidan.common.domain.task.TaskFull;
+import cn.whaley.datawarehouse.illidan.common.service.field.FieldInfoService;
 import cn.whaley.datawarehouse.illidan.common.service.task.TaskService;
 import cn.whaley.datawarehouse.illidan.engine.param.DateFormat;
 import cn.whaley.datawarehouse.illidan.engine.param.DateParam;
 import cn.whaley.datawarehouse.illidan.engine.param.DateParamMethod;
 import cn.whaley.datawarehouse.illidan.engine.param.ExecuteIntervalType;
 import cn.whaley.datawarehouse.illidan.engine.util.DateUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,6 +18,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static cn.whaley.datawarehouse.illidan.engine.param.Constants.*;
+import static cn.whaley.datawarehouse.illidan.engine.param.DateParam.findByParamName;
 
 /**
  * Created by lituo on 2017/6/28.
@@ -22,11 +26,16 @@ import static cn.whaley.datawarehouse.illidan.engine.param.Constants.*;
 @Service
 public class SubmitService {
 
+    Logger logger = LoggerFactory.getLogger(SubmitService.class);
+
     @Autowired
     private HiveService hiveService;
 
     @Autowired
     private TaskService taskService;
+
+    @Autowired
+    private FieldInfoService fieldInfoService;
 
     /**
      * 任务执行
@@ -39,7 +48,7 @@ public class SubmitService {
 
         Date dataDueTime = parseDataDueTime(dataDueTimeStr);
         if (dataDueTime == null) {
-            return false;
+            throw new RuntimeException("参与分析的数据截止时间参数不合法：" + dataDueTimeStr);
         }
 
         //读取任务信息
@@ -47,24 +56,20 @@ public class SubmitService {
 
         //替换执行sql中的参数
         if (task == null) {
-            return false;
+            throw new RuntimeException("任务名称参数不合法：" + taskCode);
         }
 
         String content = task.getContent();
 
-        //替换自定义参数值，参数优先级高于数据库配置
-        if (paramMap != null && paramMap.size() > 0) {
-            for (String param : paramMap.keySet()) {
-                content = content.replace("${" + param + "}", paramMap.get(param));
-            }
+        //TODO 数据库参数添加到paramMap，优先级低于原paramMap中的参数
+        if (paramMap == null) {
+            paramMap = new HashMap<>();
         }
 
-        //TODO 数据库参数
-
-
+        //根据配置的执行周期，生成多条执行sql
         Map<String, String> selectSqlMap = parseTimeInterval(content, task.getExecuteTypeList(), dataDueTime);
         if (selectSqlMap == null || selectSqlMap.size() == 0) {
-            return false;
+            throw new RuntimeException("请检查执行周期配置：" + taskCode);
         }
 
         for (String executeType : selectSqlMap.keySet()) {
@@ -74,7 +79,9 @@ public class SubmitService {
             //拼装insert overwrite语句
             String executeSql = getExecuteSql(selectSql, task, executeType);
 
-            String completeSql = parseSqlParams(executeSql, dataDueTime);
+            logger.info("完整执行sql：\n" + executeSql);
+
+            String completeSql = parseSqlParams(executeSql, dataDueTime, paramMap);
 
             //执行sql
             int result = hiveService.queryForCount(completeSql);
@@ -83,7 +90,7 @@ public class SubmitService {
         return true;
     }
 
-    private String parseSqlParams(String selectSql, Date dataDueTime) {
+    private String parseSqlParams(String selectSql, Date dataDueTime, Map<String, String> paramMap) {
 
         Pattern pattern = Pattern.compile(PARAM_REGEX);
         Matcher matcher = pattern.matcher(selectSql);
@@ -101,9 +108,13 @@ public class SubmitService {
             result = result.replace(key, map.get(key));
         }
 
-        Pattern invalidPattern = Pattern.compile(INVALID_PARAM_REGEX);
+        //自定义参数
+        result = parseCustomParams(result, paramMap);
+
+        //验证已经替换所有参数
+        Pattern invalidPattern = Pattern.compile(ALL_PARAM_REGEX);
         if (invalidPattern.matcher(result).find()) {
-            return null;
+            throw new RuntimeException("发现不能识别的参数：" + matcher.group());
         }
 
         return result;
@@ -140,7 +151,7 @@ public class SubmitService {
             paramName = param;
             dateFormat = DateParam.getDateFormatByParamName(paramName);
         }
-        DateParam dateParam = DateParam.findByParamName(paramName);
+        DateParam dateParam = findByParamName(paramName);
         if (dateParam == null) {
             return null;
         }
@@ -175,10 +186,46 @@ public class SubmitService {
         return result;
     }
 
+    private String parseCustomParams(String sql, Map<String, String> paramMap) {
+        String result = sql;
+        //替换自定义参数值
+        if (paramMap != null && paramMap.size() > 0) {
+            for (String param : paramMap.keySet()) {
+                result = result.replace("${" + param + "}", paramMap.get(param));
+            }
+        }
+        return result;
+    }
+
     private String getExecuteSql(String selectSql, TaskFull task, String executeType) {
         String tableName = task.getTable().getDbInfo().getDbCode() + "." + task.getTable().getTableCode();
 
+        List<String> partitionFields = fieldInfoService.findPartitionFields(task.getTableId());
+        if (partitionFields == null || partitionFields.isEmpty()) {
+            throw new RuntimeException("未获取到分区字段， task=" + task.getTaskCode());
+        }
 
-        return selectSql;
+        String insertStatement = "insert overwrite table " + tableName + " partition(";
+        for (int i = 0; i < partitionFields.size(); i++) {
+            String field = partitionFields.get(i);
+            if (field.equalsIgnoreCase("date_type")) {
+                insertStatement += "date_type=" + executeType;
+            } else if (field.equalsIgnoreCase("product_line")) {
+                insertStatement += "product_line=${product_line}";
+            } else {
+                if (DateParam.findByParamName(field) != null) {
+                    insertStatement += field + "=${" + field+ "}";
+                }else {
+                    throw new RuntimeException("未知的分区字段" + field + "， task=" + task.getTaskCode());
+                }
+            }
+            if (i < partitionFields.size() - 1) {
+                insertStatement += ",";
+            } else {
+                insertStatement += ")";
+            }
+        }
+
+        return insertStatement +  " " + selectSql;
     }
 }
