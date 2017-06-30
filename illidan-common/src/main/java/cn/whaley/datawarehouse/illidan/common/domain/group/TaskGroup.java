@@ -48,6 +48,10 @@ public class TaskGroup implements Serializable {
      * 调度的id号，设置调度成功后，生成
      */
     private String scheduleId;
+    /**
+     * 工程code
+     */
+    private String projectCode;
 
     public Long getId() {
         return id;
@@ -127,6 +131,14 @@ public class TaskGroup implements Serializable {
 
     public void setScheduleId(String scheduleId) {
         this.scheduleId = scheduleId;
+    }
+
+    public String getProjectCode() {
+        return projectCode;
+    }
+
+    public void setProjectCode(String projectCode) {
+        this.projectCode = projectCode;
     }
 
     @Override
