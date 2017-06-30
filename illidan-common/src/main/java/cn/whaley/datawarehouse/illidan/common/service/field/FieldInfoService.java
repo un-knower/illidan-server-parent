@@ -10,8 +10,14 @@ import java.util.List;
  * Created by wujiulin on 2017/6/28.
  */
 public interface FieldInfoService {
+
     FieldInfo get(final Long id);
+
     List<FieldInfo> getByTableId(final Long tableId);
+
     void insertBatch(final List<FieldInfo> list);
+
     void removeByTableId(final Long tableId);
+
+    List<String> findPartitionFields(final Long tableId);
 }

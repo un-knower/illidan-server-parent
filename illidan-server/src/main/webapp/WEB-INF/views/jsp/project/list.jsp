@@ -148,6 +148,16 @@
                     }
 
                 ],
+                "aoColumnDefs": [
+                    {
+                        "render": function(data, type, row, meta) {
+//                            return '<a href="javascript:void(0);" onclick="goToGroup(' + row.id + ');">' + row.projectCode + '</a>';
+                            return '<a href="/group/list?projectId=' + row.id + '">' + row.projectCode + '</a>';
+                        },
+                        //指定是第三列
+                        "targets": 2
+                    }
+                ],
                 "serverSide": true,
                 "aLengthMenu": [10, 25, 50, 100],
                 'bSort': false,
@@ -235,6 +245,10 @@
     function project_detail(id){
         modalWindow("/project/detail?id=" + id, "项目详情", 450, 700);
     }
+    
+//    function goToGroup(id) {
+//        window.location.href = "/group/list?projectId=" + id;
+//    }
 
     function remove() {
         var rows = myTable.rows('.selected').data();
@@ -282,9 +296,6 @@
         });
     }
 
-    function exportExcel_f() {
-        $.download('/project/projectExportDate.xls',getParam(),'post' );
-    }
 </script>
 </body>
 </html>
