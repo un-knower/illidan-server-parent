@@ -222,51 +222,58 @@ public class ProjectController extends Common {
         }
         return projectResult;
     }
-    public void publishProject(){
-        Long projectId = 0L;
-        Project project = projectService.get(projectId);
-        String projectCode = project.getProjectCode();
 
+    @RequestMapping("toPublishProject")
+    @ResponseBody
+    public void toPublishProject(Long id) {
+        publishProject(id);
+    }
+
+    public void publishProject(Long projectId){
+        Project project = projectService.get(projectId);
+//        project.get
+//        ownerService
+        String projectCode = project.getProjectCode();
         //删除原来project的文件
         String path = ConfigurationManager.getProperty("zipdir");
         String projectPath = path+File.separator+projectCode;
         File file = new File(projectPath);
+        System.out.println("projectPath ... "+projectPath);
         FileUtil.deleteDFile(file);
 
         List<TaskGroup> taskGroupList = taskGroupService.findTaskGroupByProjectId(projectId);
+        System.out.println("taskGroupList ... "+taskGroupList.toString());
         for(TaskGroup taskGroup: taskGroupList){
             Long groupId = taskGroup.getId();
             String email = taskGroup.getEmail();
             String groupCode = taskGroup.getGroupCode();
             String schedule = taskGroup.getSchedule();
+            System.out.println("projectCode ... "+projectCode);
+            System.out.println("groupCode ... "+groupCode);
+            //创建工作目录
+            FileUtil.createDir(projectPath+File.separator+groupCode);
             //创建结束 end.job
-            FileUtil.createFile(projectCode,groupCode,groupCode);
-
+//            FileUtil.createFile(path,projectCode,groupCode,groupCode);
             List<Task> taskList = taskService.findTaskByGroupId(groupId);
             List<String> taskNames = new ArrayList<>();
+
             for(Task task:taskList){
                 String taskCode = task.getTaskCode();
-                //创建 执行任务.job
-                FileUtil.createFile(projectCode,groupCode,taskCode);
                 //写入 执行任务.job
-                FileUtil.writeJob(projectCode,groupCode,taskCode,email);
+                FileUtil.writeJob(path,projectCode,groupCode,taskCode,email);
                 taskNames.add(taskCode);
             }
             //写入 结束 end.job
-            FileUtil.writeEndJob(projectCode,groupCode,taskNames);
-
-            //copy properties
-            FileUtil.copyFile(projectCode,"pro.properties");
-            FileUtil.copyFile(projectCode,"submit.sh");
-            //压缩zip包
-            ZipUtils.doCompress(projectPath,projectPath);
+            FileUtil.writeEndJob(path,projectCode,groupCode,taskNames);
         }
-    }
+        //copy properties,submit.sh
+        FileUtil.copyFile(path,projectPath,"pro.properties");
+        FileUtil.copyFile(path,projectPath,"submit.sh");
+        //压缩zip包
+        ZipUtils zipUtils = new ZipUtils(projectPath + ".zip");
+        zipUtils.compress(projectPath);
+        //上传zip
 
-    @RequestMapping("toPublishProject")
-    @ResponseBody
-    public void toPublishProject(Long id) {
-        System.out.println(id);
     }
 
 }

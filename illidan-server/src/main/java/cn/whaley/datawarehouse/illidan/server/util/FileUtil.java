@@ -17,33 +17,29 @@ import java.util.List;
 
 public class FileUtil {
     private static Logger log = LoggerFactory.getLogger(FileUtil.class);
-    private static String path = ConfigurationManager.getProperty("zipdir");
-
-    public static void copyFile(String projectCode,String fileName){
-        String newPath = path+File.separator+projectCode;
-        copyFile(path,newPath,fileName);
-    }
     /**
      * 文件复制
-     * @param oldPath
      * @param newPath
      */
-    public static void copyFile(String oldPath,String newPath,String fileName){
+    public static void copyFile(String oldPath ,String newPath,String fileName){
+        oldPath= oldPath+File.separator+fileName;
+        newPath= newPath+File.separator+fileName;
         try {
             int bytesum = 0;
             int byteread = 0;
-            oldPath= oldPath+File.separator+fileName;
-            newPath= newPath+File.separator+fileName;
-            File oldfile = new File(oldPath);
+            InputStream inStream = null;
+            FileOutputStream fs = null;
+                    File oldfile = new File(oldPath);
             if (oldfile.exists()){ //文件存在时
-                InputStream inStream = new FileInputStream(oldPath); //读入原文件
-                FileOutputStream fs = new FileOutputStream(newPath);
+                inStream = new FileInputStream(oldPath); //读入原文件
+                fs = new FileOutputStream(newPath);
                 byte[] buffer = new byte[1024];
                 while ( (byteread = inStream.read(buffer)) != -1) {
                     bytesum += byteread; //字节数 文件大小
                     fs.write(buffer, 0, byteread);
                 }
                 inStream.close();
+                fs.close();
             }
         }catch (Exception e){
             log.error("copyFile is err : "+e.getMessage());
@@ -88,11 +84,11 @@ public class FileUtil {
      * @param groupName
      * @param taskName
      */
-    public static void createFile(String projectName,String groupName,String taskName){
-        path = path + File.separator +projectName + File.separator+groupName;
+    public static void createFile(String dirPath,String projectName,String groupName,String taskName){
+        dirPath = dirPath + File.separator +projectName + File.separator+groupName;
         //创建目录,project+group
-        createDir(path);
-        String filePath = path +File.separator+taskName+".job";
+        createDir(dirPath);
+        String filePath = dirPath +File.separator+taskName+".job";
         File file = new File(filePath);
         try {
             if(!file.exists()){
@@ -108,9 +104,10 @@ public class FileUtil {
      * job文件中写入内容
      * @param taskName
      */
-    public static void writeJob(String projecName,String groupName,String taskName,String emails){
+    public static void writeJob(String dirPath ,String projecName,String groupName,String taskName,String emails){
         FileOutputStream fos  = null;
         PrintWriter pw = null;
+        String filepath=dirPath+File.separator+projecName+File.separator+groupName+File.separator+taskName+".job";
         try {
             StringBuffer buffer = new StringBuffer();
             buffer.append("type=command");
@@ -118,7 +115,6 @@ public class FileUtil {
             buffer.append("failure.emails="+emails);
             buffer.append(System.getProperty("line.separator"));
             buffer.append("command=sh submit.sh --task " +taskName +" --startDate ${startDate} --endDate ${endDate}");
-            String filepath=path+File.separator+projecName+File.separator+groupName+File.separator+taskName+".job";
             File file = new File(filepath);//文件路径(包括文件名称)
             fos = new FileOutputStream(file);
             pw = new PrintWriter(fos);
@@ -126,12 +122,19 @@ public class FileUtil {
             pw.flush();
         }catch (Exception e){
             log.error("writeFile is err : "+e.getMessage());
+        }finally {
+            try {
+                fos.close();
+                pw.close();
+            }catch (Exception e){
+                log.error("writeFile is err : "+e.getMessage());
+            }
         }
     }
-    public static void writeEndJob(String projecName,String groupName,List<String> taskNames){
+    public static void writeEndJob(String dirPath,String projecName,String groupName,List<String> taskNames){
         FileOutputStream fos  = null;
         PrintWriter pw = null;
-        String filepath=path+File.separator+projecName+File.separator+groupName+File.separator+groupName+"_end.job";
+        String filepath=dirPath+File.separator+projecName+File.separator+groupName+File.separator+groupName+"_end.job";
         try {
             StringBuffer buffer = new StringBuffer();
             buffer.append("type=command");
@@ -150,12 +153,19 @@ public class FileUtil {
             pw.flush();
         }catch (Exception e){
             log.error("writeFile is err : "+e.getMessage());
+        }finally {
+            try {
+                fos.close();
+                pw.close();
+            }catch (Exception e){
+                log.error("writeFile is err : "+e.getMessage());
+            }
         }
     }
     public static void main(String[] args) {
 //        FileUtil.createFile("project","flow","task");
-//        File file = new File("G:\\zip\\project");
-//        FileUtil.deleteDFile(file);
+        File file = new File("G:\\zip\\project");
+        FileUtil.deleteDFile(file);
 //        FileUtil.copyFile("G:\\zip","G:\\zip\\project","pro.properties");
 
 /*       List<String> list = new ArrayList<>();
@@ -163,7 +173,7 @@ public class FileUtil {
         list.add("b");
         list.add("c");
         FileUtil.writeEndJob("project","flow",list);*/
-        FileUtil.writeJob("project","flow","task","guo.hao@whaley.cn,xiaoming@whaley.cn");
+//        FileUtil.writeJob("project","flow","task","guo.hao@whaley.cn,xiaoming@whaley.cn");
     }
 
 }
