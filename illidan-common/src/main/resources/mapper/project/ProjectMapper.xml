@@ -97,7 +97,7 @@
         <result column="createTime" javaType="Date" jdbcType="TIMESTAMP" property="createTime"/>
         <result column="updateTime" javaType="Date" jdbcType="TIMESTAMP" property="updateTime"/>
         <result column="publishTime" javaType="Date" jdbcType="TIMESTAMP" property="publishTime"/>
-        <result column="ownerId" javaType="String" jdbcType="VARCHAR" property="ownerId"/>
+        <result column="ownerId" javaType="Long" jdbcType="BIGINT" property="ownerId"/>
         <result column="status" javaType="String" jdbcType="VARCHAR" property="status"/>
         <result column="isPublish" javaType="String" jdbcType="VARCHAR" property="isPublish"/>
 

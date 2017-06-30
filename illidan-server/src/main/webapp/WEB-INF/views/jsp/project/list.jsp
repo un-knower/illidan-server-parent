@@ -117,7 +117,7 @@
                     },
                     {data: "projectCode"},
                     {data: "projectDes"},
-                    {data: "ownerId"},
+                    {data: "ownerName"},
                     {data: "isPublish"},
                     {
                         data: function (data) {
