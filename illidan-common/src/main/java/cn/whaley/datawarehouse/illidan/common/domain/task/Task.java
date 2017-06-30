@@ -36,6 +36,10 @@ public class Task implements Serializable {
      */
     private Long groupId;
     /**
+     * 任务所属group的code
+     */
+    private String groupCode;
+    /**
      * 目标表主键
      */
     private Long tableId;
@@ -138,6 +142,14 @@ public class Task implements Serializable {
 
     public void setGroupId(Long groupId) {
         this.groupId = groupId;
+    }
+
+    public String getGroupCode() {
+        return groupCode;
+    }
+
+    public void setGroupCode(String groupCode) {
+        this.groupCode = groupCode;
     }
 
     @Override

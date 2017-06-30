@@ -73,7 +73,7 @@ public class ProjectController extends Common {
             List<Project> projects = projectService.findByProject(project);
             for (int i=0;i<=projects.size()-1;++i){
                 projects.get(i).setIsPublish(map.get(projects.get(i).getIsPublish()));
-                projects.get(i).setOwnerId(ownerService.get(Long.parseLong(projects.get(i).getOwnerId())).getOwnerName());
+                projects.get(i).setOwnerName(ownerService.get(projects.get(i).getOwnerId()).getOwnerName());
             }
             outputTemplateJson(projects, count);
         } catch (Exception e) {

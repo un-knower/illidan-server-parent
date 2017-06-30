@@ -36,6 +36,10 @@ public class TaskQuery extends BaseQueryEntity {
      */
     private Long groupId;
     /**
+     * 任务所属group的code
+     */
+    private String groupCode;
+    /**
      * 目标表主键
      */
     private Long tableId;
@@ -156,6 +160,14 @@ public class TaskQuery extends BaseQueryEntity {
 
     public void setCreateTimeEnd(String createTimeEnd) {
         this.createTimeEnd = createTimeEnd;
+    }
+
+    public String getGroupCode() {
+        return groupCode;
+    }
+
+    public void setGroupCode(String groupCode) {
+        this.groupCode = groupCode;
     }
 
     @Override
