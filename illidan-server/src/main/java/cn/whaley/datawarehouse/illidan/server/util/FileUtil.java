@@ -43,6 +43,7 @@ public class FileUtil {
             }
         }catch (Exception e){
             log.error("copyFile is err : "+e.getMessage());
+            throw new RuntimeException("copyFile is error ...");
         }
     }
 
@@ -97,6 +98,7 @@ public class FileUtil {
             }
         }catch (Exception e){
             log.error("create file error : "+e.getMessage());
+            throw new RuntimeException("create file error ...");
         }
     }
 
@@ -122,12 +124,14 @@ public class FileUtil {
             pw.flush();
         }catch (Exception e){
             log.error("writeFile is err : "+e.getMessage());
+            throw new RuntimeException("writeFile is err ...");
         }finally {
             try {
                 fos.close();
                 pw.close();
             }catch (Exception e){
                 log.error("writeFile is err : "+e.getMessage());
+                throw new RuntimeException("writeFile is err ...");
             }
         }
     }
@@ -153,12 +157,14 @@ public class FileUtil {
             pw.flush();
         }catch (Exception e){
             log.error("writeFile is err : "+e.getMessage());
+            throw new RuntimeException("writeFile is err ...");
         }finally {
             try {
                 fos.close();
                 pw.close();
             }catch (Exception e){
                 log.error("writeFile is err : "+e.getMessage());
+                throw new RuntimeException("writeFile is err ...");
             }
         }
     }

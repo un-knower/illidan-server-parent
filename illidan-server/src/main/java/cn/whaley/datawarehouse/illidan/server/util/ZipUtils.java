@@ -1,5 +1,8 @@
 package cn.whaley.datawarehouse.illidan.server.util;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -12,6 +15,7 @@ import java.util.zip.ZipOutputStream;
  * Created by hc on 2017/6/30.
  */
 public class ZipUtils {
+    private static Logger log = LoggerFactory.getLogger(ZipUtils.class);
     static final int BUFFER = 8192;
 
     private File zipFile;
@@ -32,13 +36,14 @@ public class ZipUtils {
             }
             out.close();
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            log.error("compress is error ..."+e.getMessage());
+            throw new RuntimeException("compress is error ...");
         }
     }
     public void compress(String srcPathName) {
         File file = new File(srcPathName);
         if (!file.exists())
-            throw new RuntimeException(srcPathName + "不存在！");
+            throw new RuntimeException("compress is error ..." +srcPathName + "不存在！");
         try {
             FileOutputStream fileOutputStream = new FileOutputStream(zipFile);
             CheckedOutputStream cos = new CheckedOutputStream(fileOutputStream,
@@ -48,17 +53,18 @@ public class ZipUtils {
             compress(file, out, basedir);
             out.close();
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            log.error("compress is error ..."+e.getMessage());
+            throw new RuntimeException("compress is error ...");
         }
     }
 
     private void compress(File file, ZipOutputStream out, String basedir) {
         /* 判断是目录还是文件 */
         if (file.isDirectory()) {
-            System.out.println("压缩：" + basedir + file.getName());
+            log.info("压缩：" + basedir + file.getName());
             this.compressDirectory(file, out, basedir);
         } else {
-            System.out.println("压缩：" + basedir + file.getName());
+            log.info("压缩：" + basedir + file.getName());
             this.compressFile(file, out, basedir);
         }
     }
@@ -67,7 +73,6 @@ public class ZipUtils {
     private void compressDirectory(File dir, ZipOutputStream out, String basedir) {
         if (!dir.exists())
             return;
-
         File[] files = dir.listFiles();
         for (int i = 0; i < files.length; i++) {
             /* 递归 */
@@ -92,7 +97,8 @@ public class ZipUtils {
             }
             bis.close();
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            log.error("compressFile is error ..."+e.getMessage());
+            throw new RuntimeException("compressFile is error ...");
         }
     }
     public static void main(String[] args) {

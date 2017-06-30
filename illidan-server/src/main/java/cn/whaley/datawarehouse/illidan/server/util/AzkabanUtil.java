@@ -29,18 +29,26 @@ public class AzkabanUtil {
      * @return
      */
     public JSONObject uploadProject(String sessionId,String projectName,String loadFile){
-        JSONObject result = new JSONObject();
         String url = ConfigurationManager.getProperty("managerUrl");
-        String filePath = ConfigurationManager.getProperty("zipdir")+ File.separator+loadFile.trim();
         ArrayList<FormFieldKeyValuePair> ffkvp = new ArrayList<FormFieldKeyValuePair>();
         ffkvp.add(new FormFieldKeyValuePair("session.id", sessionId));//其他参数
         ffkvp.add(new FormFieldKeyValuePair("ajax", "upload"));
         ffkvp.add(new FormFieldKeyValuePair("project", projectName));
         // 设定要上传的文件
         ArrayList<UploadFileItem> ufi = new ArrayList<UploadFileItem>();
-        ufi.add(new UploadFileItem("file", filePath));
+        ufi.add(new UploadFileItem("file", loadFile));
         String response = HttpClientUtil.postForm(url,ffkvp,ufi);
-        result = new JSONObject(response);
+        System.out.println("response : "+response);
+        JSONObject  result = new JSONObject(response);
+        if(result.getString("status").equals("success")){
+            result.put("status","success");
+            result.put("message","sucess");
+            log.info(" upload  "+projectName+".zip  is success ... ");
+        }else{
+            result.put("status","error");
+            result.put("message",result.getString("message"));
+            log.error(" upload "+projectName+".zip  error message is : "+result.getString("message"));
+        }
         return result;
     }
 
@@ -114,16 +122,11 @@ public class AzkabanUtil {
         String url = ConfigurationManager.getProperty("scheduleUrl");
         String response = getPostResponse(url,params,"UTF-8");
         JSONObject result = new JSONObject(response);
-        //调度设置成功后，需要向task_group中添加sh
-        /*if(resultJson.getString("status").equals("success")){
-            result=resultJson;
-            log.info(" create project message is : "+resultJson.getString("message"));
-            //同时需要向taskgroup中添加
-        }else{
+        if(!result.has("status")){
             result.put("status","error");
-            result.put("message",resultJson.getString("message"));
-            log.error(" create project error message is : "+resultJson.getString("message"));
-        }*/
+            result.put("message",result.getString("error"));
+            log.error("set schedule error message is : "+result.getString("error"));
+        }
         return result;
     }
 
@@ -167,7 +170,7 @@ public class AzkabanUtil {
 
     public static void main(String[] args) {
         AzkabanUtil controller = new AzkabanUtil();
-        JSONObject sessionResult = controller.getSeesionId("azkaban", "azkaban@whaley");
+        JSONObject sessionResult = controller.getSeesionId("dw", "dw@whaley");
         if(sessionResult.getString("status").equals("success")){
             String seesionId = sessionResult.getString("message");
 //            System.out.println("session id is : "+ sessionResult.getString("message"));
@@ -175,13 +178,14 @@ public class AzkabanUtil {
 //            JSONObject createinfo = controller.createProject(seesionId,"bb","bbbbbb");
 //            System.out.println(createinfo);
 
-//            JSONObject uploadInfo = controller.uploadProject(seesionId,"bb","DataWarehouseEtlSpark-1.0.0-dimension.zip1");
+//            JSONObject uploadInfo = controller.uploadProject("4ee6ceac-f997-48cd-b7f3-f11afd3a00d1","hhhh","G:\\zip\\hhhh.zip");
 //            System.out.println(uploadInfo);
-//            JSONObject scheduleInfo = controller.setSchedule(seesionId,"bb","dimension_whaley","0 0 2 ? * *");
-//            System.out.println(scheduleInfo);
+
+            JSONObject scheduleInfo = controller.setSchedule(seesionId,"hhhh","testGroup1_end","0 0 2 ? * *");
+            System.out.println("scheduleInfo .... "+scheduleInfo);
 //            JSONObject unscheduleInfo = controller.deleteSchedule(seesionId,"139");
 //            System.out.println(unscheduleInfo);
-            controller.deleteProject(seesionId,"bbaaa");
+//            controller.deleteProject(seesionId,"bbaaa");
         }
 
 
