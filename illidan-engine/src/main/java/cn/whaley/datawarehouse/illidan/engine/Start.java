@@ -1,5 +1,7 @@
 package cn.whaley.datawarehouse.illidan.engine;
 
+import cn.whaley.datawarehouse.illidan.common.domain.task.TaskFull;
+import cn.whaley.datawarehouse.illidan.common.service.task.TaskService;
 import cn.whaley.datawarehouse.illidan.engine.service.SubmitService;
 import org.springframework.context.support.GenericXmlApplicationContext;
 
@@ -43,7 +45,7 @@ public class Start {
 //        TaskService taskService = context.getBean(TaskService.class);
 //        System.out.println("task count: " + taskService.findByTask(task).size());
 
-        String taskCode = "testTask1";
+//        String taskCode = "testTask1";
         Long taskId = 1L;
         TaskService taskService = context.getBean(TaskService.class);
 //        TaskFull taskFull = taskService.getFullTaskByCode(taskCode);
