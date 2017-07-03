@@ -211,7 +211,7 @@ public class ProjectController extends Common {
         if("success".equals(result.getString("status"))){
             returnResult(true, "发布项目成功");
         }else{
-            returnResult(false,result.getString("message") );
+            returnResult(false,result.getString("message").replaceAll("'","\\\\'"));
         }
     }
 

@@ -118,7 +118,7 @@ public class FileUtil {
             buffer.append(System.getProperty("line.separator"));
             buffer.append("failure.emails="+emails);
             buffer.append(System.getProperty("line.separator"));
-            buffer.append("command=sh submit.sh --taskCode " +taskName +" --startDate ${startDate} --endDate ${endDate}");
+            buffer.append("command=sh  ../submit.sh --taskCode " +taskName +" --startDate ${startDate} --endDate ${endDate}");
             File file = new File(filepath);//文件路径(包括文件名称)
             fos = new FileOutputStream(file);
             pw = new PrintWriter(fos);
