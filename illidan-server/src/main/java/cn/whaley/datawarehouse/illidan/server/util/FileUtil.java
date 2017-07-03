@@ -23,13 +23,15 @@ public class FileUtil {
      */
     public static void copyFile(String oldPath ,String newPath,String fileName){
         oldPath= oldPath+File.separator+fileName;
+        log.info("copy file oldFilePath is : "+oldPath);
         newPath= newPath+File.separator+fileName;
+        log.info("copy file newFilePath is : "+newPath);
         try {
             int bytesum = 0;
             int byteread = 0;
             InputStream inStream = null;
             FileOutputStream fs = null;
-                    File oldfile = new File(oldPath);
+            File oldfile = new File(oldPath);
             if (oldfile.exists()){ //文件存在时
                 inStream = new FileInputStream(oldPath); //读入原文件
                 fs = new FileOutputStream(newPath);
