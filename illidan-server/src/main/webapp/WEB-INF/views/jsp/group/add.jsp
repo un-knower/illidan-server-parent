@@ -14,6 +14,7 @@
 <div class="container theme-showcase form-horizontal" role="main">
     <div class="panel panel-default">
         <div class="panel-body">
+            <input class="form-control" type="hidden" id="projectId" name="projectId" value="${projectId}"/>
             <div class="col-sm-6">
                 <div class="form-group">
                     <label for="groupCode" class="col-md-2 control-label">任务组code</label>
@@ -23,18 +24,18 @@
                 </div>
             </div>
 
-            <div class="col-sm-6">
-                <div class="form-group">
-                    <label for="projectId" class="col-md-2 control-label">所属项目</label>
-                    <div class="col-md-6">
-                        <select class="form-control" id="projectId" name="projectId" data-placeholder="">
-                            <c:forEach begin="0" end="${project.size()-1}"  var="index">
-                                <option value ="${project.get(index).id}" >${project.get(index).projectCode}</option>
-                            </c:forEach>
-                        </select>
-                    </div>
-                </div>
-            </div>
+            <%--<div class="col-sm-6">--%>
+                <%--<div class="form-group">--%>
+                    <%--<label for="projectId" class="col-md-2 control-label">所属项目</label>--%>
+                    <%--<div class="col-md-6">--%>
+                        <%--<select class="form-control" id="projectId" name="projectId" data-placeholder="">--%>
+                            <%--<c:forEach begin="0" end="${project.size()-1}"  var="index">--%>
+                                <%--<option value ="${project.get(index).id}" >${project.get(index).projectCode}</option>--%>
+                            <%--</c:forEach>--%>
+                        <%--</select>--%>
+                    <%--</div>--%>
+                <%--</div>--%>
+            <%--</div>--%>
 
             <div class="col-sm-6">
                 <div class="form-group">

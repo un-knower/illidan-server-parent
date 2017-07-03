@@ -3,6 +3,7 @@ package cn.whaley.datawarehouse.illidan.common.service.table;
 import cn.whaley.datawarehouse.illidan.common.domain.db.DbInfo;
 import cn.whaley.datawarehouse.illidan.common.domain.field.FieldInfo;
 import cn.whaley.datawarehouse.illidan.common.domain.table.TableInfo;
+import cn.whaley.datawarehouse.illidan.common.domain.table.TableInfoQuery;
 import cn.whaley.datawarehouse.illidan.common.domain.table.TableWithField;
 import cn.whaley.datawarehouse.illidan.common.mapper.table.TableInfoMapper;
 import cn.whaley.datawarehouse.illidan.common.service.db.DbInfoService;
@@ -59,5 +60,19 @@ public class TableInfoServiceImpl implements TableInfoService {
         tableWithField.setFieldList(fieldInfoList);
 
         return tableWithField;
+    }
+
+    public List<TableInfo> findByTableInfo(final TableInfoQuery tableInfo){
+        return tableInfoMapper.findByTableInfo(tableInfo);
+    }
+
+    public TableInfo findOne(final TableInfoQuery tableInfo) {
+        tableInfo.setLimitStart(0);
+        tableInfo.setLimitEnd(1);
+        List<TableInfo> datas = tableInfoMapper.findByTableInfo(tableInfo);
+        if (datas != null && datas.size() > 0) {
+            return datas.get(0);
+        }
+        return null;
     }
 }
