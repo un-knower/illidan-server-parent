@@ -251,7 +251,7 @@ public class HttpClientUtil {
 						.append("Content-Disposition:form-data; name=\"")
 						.append(ufi.getFormFieldName() + "\"; ") // form中field的名称
 						.append("filename=\"")
-						.append(ufi.getFileName() + "\"") // 上传文件的文件名，包括目录
+						.append(ufi.getFileNameWithoutPath() + "\"") // 上传文件的文件名，包括目录
 						.append("\r\n")
 						.append("Content-Type:application/octet-stream")
 						.append("\r\n\r\n");
@@ -277,14 +277,28 @@ public class HttpClientUtil {
 			// 4. 从服务器获得回答的内容
 			String strLine = "";
 			String strResponse = "";
-			InputStream in = connection.getInputStream();
+			InputStream in;
+			if(connection.getResponseCode() == 200) {
+				in = connection.getInputStream();
+			}
+			else {
+				in = connection.getErrorStream();
+			}
 			BufferedReader reader = new BufferedReader(new InputStreamReader(in));
 			while ((strLine = reader.readLine()) != null){
 				strResponse += strLine + "\n";
 			}
-			resultJson.put("status","success");
-			resultJson.put("message",strResponse);
-			log.info("upload project zip success ...");
+			if(connection.getResponseCode() == 200) {
+				resultJson.put("status","success");
+				resultJson.put("message",strResponse);
+				log.info("upload project zip success ...");
+			}
+			else {
+				resultJson.put("status","error");
+				resultJson.put("message",strResponse);
+				log.info("upload project zip error : " + strResponse);
+			}
+
 		}catch (Exception e){
 			resultJson.put("status","error");
 			resultJson.put("message",e.getMessage());

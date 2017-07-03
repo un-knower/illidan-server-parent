@@ -12,6 +12,7 @@ import cn.whaley.datawarehouse.illidan.server.util.AzkabanUtil;
 import cn.whaley.datawarehouse.illidan.server.util.ConfigurationManager;
 import cn.whaley.datawarehouse.illidan.server.util.FileUtil;
 import cn.whaley.datawarehouse.illidan.server.util.ZipUtils;
+import org.apache.commons.io.FileUtils;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -44,19 +45,29 @@ public class AzkabanService {
             String path = ConfigurationManager.getProperty("zipdir");
             String projectPath = path+ File.separator+projectCode;
             File file = new File(projectPath);
-            System.out.println("projectPath ... "+projectPath);
             FileUtil.deleteDFile(file);
+
             List<TaskGroup> taskGroupList = taskGroupService.findTaskGroupByProjectId(projectId);
+            //没有group直接返回
+            if(taskGroupList.size() == 0){
+                result.put("status","error");
+                result.put("message","project '"+projectCode+"' has no groups , please add  ...");
+                return result;
+            }
             for(TaskGroup taskGroup: taskGroupList){
                 Long groupId = taskGroup.getId();
                 String email = taskGroup.getEmail();
                 String groupCode = taskGroup.getGroupCode();
-                String schedule = taskGroup.getSchedule();
+                List<Task> taskList = taskService.findTaskByGroupId(groupId);
+                //group下至少有一个task
+                if(taskList.size() == 0){
+                    result.put("status","error");
+                    result.put("message","group '"+groupCode + "' has no task , please add  or delete...");
+                    return result;
+                }
                 //创建工作目录
                 FileUtil.createDir(projectPath+File.separator+groupCode);
-                //创建结束 end.job
-//            FileUtil.createFile(path,projectCode,groupCode,groupCode);
-                List<Task> taskList = taskService.findTaskByGroupId(groupId);
+                //写文件
                 List<String> taskNames = new ArrayList<>();
                 for(Task task:taskList){
                     String taskCode = task.getTaskCode();
@@ -68,8 +79,13 @@ public class AzkabanService {
                 FileUtil.writeEndJob(path,projectCode,groupCode,taskNames);
             }
             //copy properties,submit.sh
-            FileUtil.copyFile(path,projectPath,"pro.properties");
-            FileUtil.copyFile(path,projectPath,"submit.sh");
+            String[] zipExtensions = {"jar", "sh","properties"};
+            Collection<File> files = FileUtils.listFiles(FileUtils.getFile(path), zipExtensions, false);
+            File destination = FileUtils.getFile(projectPath);
+            for (File eachFile: files) {
+                FileUtils.copyFileToDirectory(eachFile, destination);
+            }
+
             //压缩zip包
             ZipUtils zipUtils = new ZipUtils(projectPath + ".zip");
             zipUtils.compress(projectPath);
@@ -93,7 +109,7 @@ public class AzkabanService {
             project.getOwnerId();
             for(TaskGroup taskGroup: taskGroupList){
                 String cronExpression = taskGroup.getSchedule();
-                String groupCode = taskGroup.getGroupCode();
+                //过滤需要调度的group
                 if(!"0".equals(cronExpression)){
                     JSONObject scheduleResult = setSchedule(projectId, taskGroup, cronExpression);
                     if("error".equals(scheduleResult.getString("status"))){
@@ -161,11 +177,11 @@ public class AzkabanService {
         if("error".equals(deleteScheduleResult.getString("status"))){
             return deleteScheduleResult;
         }
-        //删除taskGroup中的scheduleId
+        //删除taskGroup中的scheduleId,ScheduleId为-1
 
         TaskGroup newTaskGroup = new TaskGroup();
         newTaskGroup.setId(taskGroup.getId());
-        newTaskGroup.setScheduleId("0");
+        newTaskGroup.setScheduleId("-1");
         taskGroupService.updateById(newTaskGroup);
 
         return deleteScheduleResult;

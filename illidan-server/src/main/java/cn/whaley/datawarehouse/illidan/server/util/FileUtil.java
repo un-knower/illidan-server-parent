@@ -23,13 +23,15 @@ public class FileUtil {
      */
     public static void copyFile(String oldPath ,String newPath,String fileName){
         oldPath= oldPath+File.separator+fileName;
+        log.info("copy file oldFilePath is : "+oldPath);
         newPath= newPath+File.separator+fileName;
+        log.info("copy file newFilePath is : "+newPath);
         try {
             int bytesum = 0;
             int byteread = 0;
             InputStream inStream = null;
             FileOutputStream fs = null;
-                    File oldfile = new File(oldPath);
+            File oldfile = new File(oldPath);
             if (oldfile.exists()){ //文件存在时
                 inStream = new FileInputStream(oldPath); //读入原文件
                 fs = new FileOutputStream(newPath);
@@ -116,7 +118,7 @@ public class FileUtil {
             buffer.append(System.getProperty("line.separator"));
             buffer.append("failure.emails="+emails);
             buffer.append(System.getProperty("line.separator"));
-            buffer.append("command=sh submit.sh --task " +taskName +" --startDate ${startDate} --endDate ${endDate}");
+            buffer.append("command=sh  ../submit.sh --taskCode " +taskName +" --startDate ${startDate} --endDate ${endDate}");
             File file = new File(filepath);//文件路径(包括文件名称)
             fos = new FileOutputStream(file);
             pw = new PrintWriter(fos);

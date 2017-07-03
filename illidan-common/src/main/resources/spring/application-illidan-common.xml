@@ -11,11 +11,9 @@
     <bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource" destroy-method="close">
         <property name="driverClass" value="com.mysql.jdbc.Driver"/>
         <!--<property name="jdbcUrl" value="jdbc:mysql://bigdata-appsvr-130-1:3306/test?characterEncoding=utf-8"/>-->
-        <property name="jdbcUrl" value="jdbc:mysql://115.231.96.85:3306/test?characterEncoding=utf-8"/>
-        <!--<property name="user" value="bi"/>-->
-        <property name="user" value="bislave"/>
-        <!--<property name="password" value="mlw321@moretv"/>-->
-        <property name="password" value="slave4bi@whaley"/>
+        <property name="jdbcUrl" value="jdbc:mysql://10.255.130.1:3306/illidan_new?characterEncoding=utf-8"/>
+        <property name="user" value="bigdata"/>
+        <property name="password" value="bigdata@whaley666"/>
         <!--连接池中保留的最小连接数。-->
         <property name="minPoolSize" value="10" />
         <!--连接池中保留的最大连接数。Default: 15 -->

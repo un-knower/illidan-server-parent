@@ -38,4 +38,13 @@ public class UploadFileItem implements Serializable {
     public void setFileName(String fileName) {
         this.fileName = fileName;
     }
+
+    public String getFileNameWithoutPath() {
+        int index = fileName.lastIndexOf("/");
+        if (index < 0) {
+            return fileName;
+        } else {
+            return fileName.substring(index);
+        }
+    }
 }
