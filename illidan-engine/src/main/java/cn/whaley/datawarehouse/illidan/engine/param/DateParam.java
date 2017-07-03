@@ -10,7 +10,7 @@ public enum DateParam {
     TODAY("today", "today", "yyyy-MM-dd"),
     DAY("day", "today", "yyyy-MM-dd"),
     DAY_P("day_p", "today", "yyyyMMdd"),
-    MONTH_P("month_p", "today", "MM"),
+    MONTH_P("month_p", "today", "yyyyMM"),
     FIRST_SECOND_TODAY("first_second_today", "today", "yyyy-MM-dd HH:mm:ss"),
     LAST_SECOND_TODAY("last_second_today", "lastSecondToday", "yyyy-MM-dd HH:mm:ss"),
     FIRST_SECOND_THIS_WEEK("first_second_this_week", "firstSecondThisWeek", "yyyy-MM-dd HH:mm:ss"),
