@@ -79,9 +79,9 @@ public class SubmitService {
             //拼装insert overwrite语句
             String executeSql = getExecuteSql(selectSql, task, executeType);
 
-            logger.info("完整执行sql：\n" + executeSql);
-
             String completeSql = parseSqlParams(executeSql, dataDueTime, paramMap);
+
+            logger.info("完整执行sql：\n" + completeSql);
 
             //执行sql
             hiveService.update(completeSql);
