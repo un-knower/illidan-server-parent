@@ -10,6 +10,7 @@
 <link rel="stylesheet" href="<%=path%>/static/css/font-awesome.css"/>
 <link rel="stylesheet" href="<%=path%>/static/css/theme.css"/>
 <link rel="stylesheet" href="<%=path%>/static/css/chosen.css"/>
+<link rel="stylesheet" href="<%=path%>/static/css/bootstrap-select.min.css">
 
 <%--<link rel="icon" href="//r.360img.cn/images/H5/common/favicon.ico" >--%>
 
@@ -51,6 +52,7 @@
 <script src="<%=path%>/static/js/jquery-ui.min.js"></script>
 <script src="<%=path%>/static/js/jquery.iframe-transport.js"></script>
 <script src="<%=path%>/static/js/jquery.fileupload.js"></script>
+<script src="<%=path%>/static/js/bootstrap-select.min.js"></script>
 
 <script type="text/javascript">
     jQuery(function($) {

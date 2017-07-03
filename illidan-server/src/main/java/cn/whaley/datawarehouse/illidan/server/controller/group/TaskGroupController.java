@@ -78,9 +78,10 @@ public class TaskGroupController extends Common {
     }
 
     @RequestMapping("toAdd")
-    public ModelAndView toAdd(ModelAndView mav) {
+    public ModelAndView toAdd(ModelAndView mav,Long projectId) {
         List<Project> projectList = getProject();
         mav.addObject("project",projectList);
+        mav.addObject("projectId",projectId);
         mav.setViewName("group/add");
         return mav;
     }

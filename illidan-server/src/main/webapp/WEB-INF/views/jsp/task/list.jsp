@@ -5,7 +5,7 @@
 <head>
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
     <meta charset="utf-8"/>
-    <title>任务组列表</title>
+    <title>任务列表</title>
     <meta name="description" content="overview &amp; stats"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
     <jsp:include page="../frame.jsp"/>
@@ -17,16 +17,16 @@
     <div class="page-header objhid">
         <div class="form-inline ">
             <div class="form-group">
-                <input class="form-control" type="hidden" id="projectId" name="projectId" query="query" value="${projectId}"/>
+                <input class="form-control" type="hidden" id="groupId" name="groupId" query="query" value="${groupId}"/>
             </div>
             <%--<div class="form-group">--%>
-            <%--<input class="form-control" id="id" name="id" query="query" placeholder="任务组ID">--%>
+            <%--<input class="form-control" id="id" name="id" query="query" placeholder="任务ID">--%>
             <%--</div>--%>
             <div class="form-group">
-                <input class="form-control" id="groupCode" name="groupCode" query="query" placeholder="任务组code">
+                <input class="form-control" id="groupCode" name="groupCode" query="query" placeholder="任务code">
             </div>
             <div class="form-group">
-                <input class="form-control" id="groupDes" name="groupDes" query="query" placeholder="任务组描述">
+                <input class="form-control" id="groupDes" name="groupDes" query="query" placeholder="任务描述">
             </div>
             <%--<div class="form-group">--%>
             <%--<input class="form-control" id="ownerId" name="ownerId" query="query" placeholder="所有者ID">--%>
@@ -49,12 +49,11 @@
                 <span class="lbl"></span> </label>
             </th>
             <th >操作</th>
-            <th >任务组code</th>
-            <th >所属项目</th>
-            <th >任务组描述</th>
-            <th >调度策略</th>
-            <th >任务失败邮件发送人</th>
-            <th >调度ID</th>
+            <th >任务code</th>
+            <th >所属任务组</th>
+            <th >任务描述</th>
+            <th >任务添加用户</th>
+            <th >执行方式</th>
             <th >创建时间</th>
             <th >更新时间</th>
 
@@ -78,8 +77,7 @@
             close: 'fa fa-times'
         },
         format: 'YYYY-MM-DD HH:mm:ss',
-        extraFormats: ['YYYY-MM-DD HH:mm:ss', 'YYYY-MM-DD HH:mm:ss'],
-
+        extraFormats: ['YYYY-MM-DD HH:mm:ss', 'YYYY-MM-DD HH:mm:ss']
     }).next().on(ace.click_event, function () {
         $(this).prev().focus();
     });
@@ -102,7 +100,7 @@
                 bFilter: false,
                 bInfo: false,
                 ajax: {
-                    url: '/group/groupList',
+                    url: '/task/taskList',
                     type: 'POST',
                     dataType: 'json',
                     data: getParam()
@@ -115,15 +113,14 @@
                     },
                     {
                         data: function (row) {
-                            return "<a href='javascript:void(0);' onclick='edit(" + row.id + ");'>编辑</a> <a href='javascript:void(0);' onclick='publish(" + row.projectId + ");'>发布</a>";
+                            return "<a href='javascript:void(0);' onclick='edit(" + row.id + ");'>编辑</a>";
                         }
                     },
+                    {data: "taskCode"},
                     {data: "groupCode"},
-                    {data: "projectCode"},
-                    {data: "groupDes"},
-                    {data: "schedule"},
-                    {data: "email"},
-                    {data: "scheduleId"},
+                    {data: "taskDes"},
+                    {data: "addUser"},
+                    {data: "executeType"},
                     {
                         data: function (data) {
                             if (data.createTime != null) {
@@ -143,15 +140,6 @@
                         }
                     }
 
-                ],
-                "aoColumnDefs": [
-                    {
-                        "render": function(data, type, row, meta) {
-                            return '<a href="/task/list?groupId=' + row.id + '">' + row.groupCode + '</a>';
-                        },
-                        //指定是第三列
-                        "targets": 2
-                    }
                 ],
                 "serverSide": true,
                 "aLengthMenu": [10, 25, 50, 100],
@@ -230,11 +218,11 @@
     }
 
     function add() {
-        modalWindow("/group/toAdd?projectId=" + ${projectId}, "新增任务组", 410, 350);
+        modalWindow("/task/toAdd?groupId=" + ${groupId}, "新增任务", 550, 800);
     }
 
     function edit(id) {
-        modalWindow("/group/toEdit?id=" + id, "编辑任务组", 410, 350);
+        modalWindow("/task/toEdit?id=" + id, "编辑任务", 410, 350);
     }
 
     function publish(projectId) {
@@ -261,7 +249,7 @@
     }
 
     function project_detail(id){
-        modalWindow("/group/detail?id=" + id, "任务组详情", 450, 700);
+        modalWindow("/group/detail?id=" + id, "任务详情", 450, 700);
     }
 
     function remove() {
