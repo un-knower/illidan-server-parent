@@ -40,5 +40,10 @@ while [[ $startDate -le $endDate ]]
 do
 echo $startDate
 java -cp ./*:/data/apps/azkaban/illidan/lib/* cn.whaley.datawarehouse.illidan.engine.Start --task $taskCode --time $startDate
+
+if [ $? -ne 0 ];then
+   echo "  java -cp {$startDate} is fail ..."
+   exit 1
+fi
 startDate=`date -d "1 days "$startDate +%Y%m%d`
 done
