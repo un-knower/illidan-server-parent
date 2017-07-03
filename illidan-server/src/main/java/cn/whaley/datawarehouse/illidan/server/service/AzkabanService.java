@@ -12,6 +12,7 @@ import cn.whaley.datawarehouse.illidan.server.util.AzkabanUtil;
 import cn.whaley.datawarehouse.illidan.server.util.ConfigurationManager;
 import cn.whaley.datawarehouse.illidan.server.util.FileUtil;
 import cn.whaley.datawarehouse.illidan.server.util.ZipUtils;
+import org.apache.commons.io.FileUtils;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -68,8 +69,13 @@ public class AzkabanService {
                 FileUtil.writeEndJob(path,projectCode,groupCode,taskNames);
             }
             //copy properties,submit.sh
-            FileUtil.copyFile(path,projectPath,"pro.properties");
-            FileUtil.copyFile(path,projectPath,"submit.sh");
+            String[] zipExtensions = {"jar", "sh"};
+            Collection<File> files = FileUtils.listFiles(FileUtils.getFile(path), zipExtensions, false);
+            File destination = FileUtils.getFile(projectPath);
+            for (File eachFile: files) {
+                FileUtils.copyFileToDirectory(eachFile, destination);
+            }
+
             //压缩zip包
             ZipUtils zipUtils = new ZipUtils(projectPath + ".zip");
             zipUtils.compress(projectPath);
