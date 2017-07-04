@@ -270,6 +270,11 @@ public class Common {
         }
     }
 
+    public static boolean codeReg(String str) {
+        String regex = "^[a-z0-9A-Z_\\-]+$";
+        return str.matches(regex);
+    }
+
 
 //    public String validate(Object object){
 //        try{

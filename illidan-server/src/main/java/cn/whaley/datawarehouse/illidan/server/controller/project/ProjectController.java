@@ -28,6 +28,7 @@ import org.springframework.web.servlet.ModelAndView;
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
@@ -156,6 +157,8 @@ public class ProjectController extends Common {
                 returnResult(false, "新增项目失败!!!");
             } else if(project.getProjectCode() == null || project.getProjectCode().equals("")){
                 returnResult(false, "工程code不能为空!!!");
+            } else if(!codeReg(project.getProjectCode())){
+                returnResult(false, "工程code只能由英文字母,数字,-,_组成!!!");
             } else {
                 projectService.insert(project);
                 //azkaban创建project

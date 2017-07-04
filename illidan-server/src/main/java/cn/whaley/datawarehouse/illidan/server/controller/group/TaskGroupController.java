@@ -98,7 +98,9 @@ public class TaskGroupController extends Common {
                 returnResult(false, "新增任务组失败!!!");
             } else if(taskGroup.getGroupCode() == null || taskGroup.getGroupCode().equals("")){
                 returnResult(false, "任务组code不能为空!!!");
-            } else {
+            } else if (!codeReg(taskGroup.getGroupCode())){
+                returnResult(false, "任务组code只能由英文字母,数字,-,_组成!!!");
+            }else {
                 taskGroupService.insert(taskGroup);
                 returnResult(true, "新增任务组成功!!!");
             }

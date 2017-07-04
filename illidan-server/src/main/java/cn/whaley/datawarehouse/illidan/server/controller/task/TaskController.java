@@ -104,6 +104,8 @@ public class TaskController extends Common {
                 returnResult(false, "新增任务失败!!!");
             } else if(taskFull.getTaskCode() == null || taskFull.getTaskCode().equals("")){
                 returnResult(false, "任务code不能为空!!!");
+            } else if (!codeReg(taskFull.getTaskCode())){
+                returnResult(false, "任务code只能由英文字母,数字,-,_组成!!!");
             } else {
                 //执行方式(List)
                 String[] executeTypeArray = taskFull.getExecuteType().split(",");
