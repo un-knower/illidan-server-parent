@@ -76,7 +76,7 @@
             </div>
             <div class="col-sm-6">
                 <div class="form-group">
-                    <label class="col-md-2 control-label">数据类型</label>
+                    <label class="col-md-2 control-label">存储格式</label>
                     <div class="col-md-6">
                         <select id="dataType" name="dataType" class="selectpicker show-tick form-control">
                             <option value="parquet" selected>parquet</option>
