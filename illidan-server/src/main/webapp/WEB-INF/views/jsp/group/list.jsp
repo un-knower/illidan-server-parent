@@ -39,7 +39,7 @@
 
         </div>
     </div>
-    <button type="button" class="btn btn-success" onclick="add()">新增</button>
+    <button type="button" class="btn btn-success" onclick="add('${projectId}')">新增</button>
     <button type="button" class="btn btn-danger" onclick="remove();">删除</button>
     <table id="dynamic-table" name="dynamic-table" class="table table-striped table-hover table-bordered">
         <thead>
@@ -229,8 +229,8 @@
 
     }
 
-    function add() {
-        modalWindow("/group/toAdd?projectId=" + ${projectId}, "新增任务组", 410, 350);
+    function add(projectId) {
+        modalWindow("/group/toAdd?projectId=" + projectId, "新增任务组", 410, 350);
     }
 
     function edit(id) {
