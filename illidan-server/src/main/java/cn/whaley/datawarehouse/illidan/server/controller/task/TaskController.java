@@ -66,7 +66,7 @@ public class TaskController extends Common {
     }
 
     @RequestMapping("taskList")
-    public void groupList(Integer start, Integer length, @ModelAttribute("task") TaskQuery task) {
+    public void taskList(Integer start, Integer length, @ModelAttribute("task") TaskQuery task) {
         try {
             if (task == null) {
                 task = new TaskQuery();

@@ -23,10 +23,10 @@
             <%--<input class="form-control" id="id" name="id" query="query" placeholder="任务ID">--%>
             <%--</div>--%>
             <div class="form-group">
-                <input class="form-control" id="groupCode" name="groupCode" query="query" placeholder="任务code">
+                <input class="form-control" id="taskCode" name="taskCode" query="query" placeholder="任务code">
             </div>
             <div class="form-group">
-                <input class="form-control" id="groupDes" name="groupDes" query="query" placeholder="任务描述">
+                <input class="form-control" id="taskDes" name="taskDes" query="query" placeholder="任务描述">
             </div>
             <%--<div class="form-group">--%>
             <%--<input class="form-control" id="ownerId" name="ownerId" query="query" placeholder="所有者ID">--%>
