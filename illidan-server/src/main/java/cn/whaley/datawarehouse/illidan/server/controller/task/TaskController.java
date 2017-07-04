@@ -59,7 +59,9 @@ public class TaskController extends Common {
         if (groupId != null){
             TaskGroup taskGroup = taskGroupService.get(groupId);
             if(taskGroup == null) {
-                returnResult(false, "groupId参数不合法");
+                mav.addObject("msg","groupId参数不合法");
+                mav.setViewName("error");
+                return mav;
             }
             mav.addObject("groupId",groupId);
             mav.addObject("projectId",taskGroup.getProjectId());
@@ -87,6 +89,8 @@ public class TaskController extends Common {
             outputTemplateJson(tasks, count);
         } catch (Exception e) {
             e.printStackTrace();
+            logger.error(e.getMessage());
+            returnResult(false, "获取任务列表失败" + e.getMessage());
         }
     }
 
