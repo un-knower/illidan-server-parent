@@ -12,6 +12,7 @@ import cn.whaley.datawarehouse.illidan.common.domain.task.Task;
 import cn.whaley.datawarehouse.illidan.common.domain.task.TaskFull;
 import cn.whaley.datawarehouse.illidan.common.domain.task.TaskQuery;
 import cn.whaley.datawarehouse.illidan.common.service.db.DbInfoService;
+import cn.whaley.datawarehouse.illidan.common.service.field.FieldInfoService;
 import cn.whaley.datawarehouse.illidan.common.service.group.TaskGroupService;
 import cn.whaley.datawarehouse.illidan.common.service.table.TableInfoService;
 import cn.whaley.datawarehouse.illidan.common.service.task.TaskService;
@@ -50,6 +51,8 @@ public class TaskController extends Common {
     private DbInfoService dbInfoService;
     @Autowired
     private TableInfoService tableInfoService;
+    @Autowired
+    private FieldInfoService fieldInfoService;
 
     @RequestMapping("list")
     public ModelAndView list(Long groupId, ModelAndView mav){
@@ -97,7 +100,6 @@ public class TaskController extends Common {
     @ResponseBody
     public void add(@RequestBody TaskFull taskFull) {
         try {
-
             if(StringUtils.isEmpty(taskFull)){
                 returnResult(false, "新增任务失败!!!");
             } else if(taskFull.getTaskCode() == null || taskFull.getTaskCode().equals("")){
@@ -116,26 +118,7 @@ public class TaskController extends Common {
                 taskFull.getTable().setUpdateTime(new Date());
                 //field_info的相关字段
                 List<FieldInfo> fieldInfos = taskFull.getTable().getFieldList();
-                for (int i=0;i<=fieldInfos.size()-1;++i){
-                    fieldInfos.get(i).setColType("string");
-                    fieldInfos.get(i).setIsPartitionCol("1");
-                    fieldInfos.get(i).setCreateTime(new Date());
-                    fieldInfos.get(i).setUpdateTime(new Date());
-                    if (fieldInfos.get(i).getColName().equals("date_type")){
-                        fieldInfos.get(i).setColDes("日期类型");
-                        fieldInfos.get(i).setColIndex(1);
-                    }else if (fieldInfos.get(i).getColName().equals("product_line")){
-                        fieldInfos.get(i).setColDes("产品线");
-                        fieldInfos.get(i).setColIndex(2);
-                    }else if (fieldInfos.get(i).getColName().equals("month_p")){
-                        fieldInfos.get(i).setColDes("月分区");
-                        fieldInfos.get(i).setColIndex(3);
-                    }else if (fieldInfos.get(i).getColName().equals("day_p")){
-                        fieldInfos.get(i).setColDes("天分区");
-                        fieldInfos.get(i).setColIndex(4);
-                    }
-                }
-
+                fieldInfoService.setFiledValue(fieldInfos);
                 taskService.insertFullTask(taskFull);
                 returnResult(true, "新增任务成功!!!");
             }
@@ -143,6 +126,47 @@ public class TaskController extends Common {
             e.printStackTrace();
             logger.error(e.getMessage());
             returnResult(false, "新增任务失败: " + e.getMessage());
+        }
+    }
+
+    @RequestMapping("toEdit")
+    public ModelAndView toEdit(Long id, ModelAndView mav, Long groupId) {
+        mav.setViewName("/task/edit");
+        TaskFull task = taskService.getFullTask(id);
+        List<FieldInfo> fieldInfoList = task.getTable().getFieldList();
+        String fieldList = "";
+        for (int i=0;i<=fieldInfoList.size()-1;++i){
+            String field = fieldInfoList.get(i).getColName();
+            fieldList = fieldList + "," + field;
+        }
+        fieldList = fieldList.substring(1,fieldList.length());
+        List<TaskGroup> groupList = getTaskGroup();
+        List<DbInfo> dbInfoList = getDbInfo();
+        mav.addObject("dbInfo",dbInfoList);
+        mav.addObject("task",task);
+        mav.addObject("group",groupList);
+        mav.addObject("groupId",groupId);
+        mav.addObject("fieldList",fieldList);
+        mav.addObject("tableId",task.getTable().getId());
+        return mav;
+    }
+
+    @RequestMapping("edit")
+    @ResponseBody
+    public void edit(@RequestBody TaskFull taskFull) {
+        try {
+            if(StringUtils.isEmpty(taskFull)){
+                returnResult(false, "修改任务失败!!!");
+            } else {
+                taskFull.setUpdateTime(new Date());
+                taskFull.getTable().setUpdateTime(new Date());
+                taskService.updateFullTask(taskFull);
+                returnResult(true, "修改任务成功!!!");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.error(e.getMessage());
+            returnResult(false, "修改任务失败" + e.getMessage());
         }
     }
 

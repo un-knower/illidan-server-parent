@@ -75,4 +75,8 @@ public class TableInfoServiceImpl implements TableInfoService {
         }
         return null;
     }
+
+    public Long updateById(final TableInfo tableInfo){
+        return tableInfoMapper.updateById(tableInfo);
+    }
 }

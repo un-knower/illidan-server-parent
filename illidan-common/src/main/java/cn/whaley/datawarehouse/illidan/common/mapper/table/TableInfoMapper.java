@@ -16,7 +16,12 @@ import java.util.List;
 @Component
 public interface TableInfoMapper {
     TableInfo get(@Param("id") final Long id);
+
     Long insert(@Param("tableInfo") final TableInfo tableInfo);
+
     Long isExistTableInfo(@Param("tableCode") String tableCode);
+
     List<TableInfo> findByTableInfo(@Param("tableInfo") final TableInfoQuery tableInfo);
+
+    Long updateById(@Param("tableInfo") final TableInfo tableInfo);
 }

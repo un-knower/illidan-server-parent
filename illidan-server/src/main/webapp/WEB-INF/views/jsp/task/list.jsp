@@ -222,7 +222,7 @@
     }
 
     function edit(id) {
-        modalWindow("/task/toEdit?id=" + id, "编辑任务", 410, 350);
+        modalWindow("/task/toEdit?id=" + id + "&groupId=" + ${groupId}, "编辑任务", 550, 800);
     }
 
     function publish(projectId) {

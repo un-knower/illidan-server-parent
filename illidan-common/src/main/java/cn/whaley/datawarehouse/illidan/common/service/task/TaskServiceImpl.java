@@ -21,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -190,7 +191,31 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public Long updateFullTask(TaskFull taskFull) {
-        return null;
+        //task
+        Task task = new Task();
+        BeanUtils.copyProperties(taskFull,task);
+        taskMapper.updateById(task);
+        //table_info
+        TableWithField tableWithField = taskFull.getTable();
+        TableInfo tableInfo = new TableInfo();
+        BeanUtils.copyProperties(tableWithField,tableInfo);
+        Long tableId = tableInfo.getId();
+        tableInfoMapper.updateById(tableInfo);
+        //field_info,先删除再添加
+        List<FieldInfo> fieldList = tableWithField.getFieldList();
+        List<FieldInfo> fieldInfoList1 = new ArrayList<FieldInfo>();
+        for(int i=0;i<=fieldList.size()-1;++i ){
+            FieldInfo field = new FieldInfo();
+            BeanUtils.copyProperties(fieldList.get(i),field);
+            field.setTableId(tableId);
+            fieldInfoList1.add(field);
+        }
+        fieldInfoService.setFiledValue(fieldInfoList1);
+        //1.删除历史记录
+        fieldInfoService.removeByTableId(tableId);
+        //2.批量插入
+        fieldInfoService.insertBatch(fieldInfoList1);
+        return task.getId();
     }
 
     @Override

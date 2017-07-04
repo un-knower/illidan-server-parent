@@ -23,20 +23,6 @@
                     </div>
                 </div>
             </div>
-
-            <%--<div class="col-sm-6">--%>
-                <%--<div class="form-group">--%>
-                    <%--<label for="projectId" class="col-md-2 control-label">所属项目</label>--%>
-                    <%--<div class="col-md-6">--%>
-                        <%--<select class="form-control" id="projectId" name="projectId" data-placeholder="">--%>
-                            <%--<c:forEach begin="0" end="${project.size()-1}"  var="index">--%>
-                                <%--<option value ="${project.get(index).id}" >${project.get(index).projectCode}</option>--%>
-                            <%--</c:forEach>--%>
-                        <%--</select>--%>
-                    <%--</div>--%>
-                <%--</div>--%>
-            <%--</div>--%>
-
             <div class="col-sm-6">
                 <div class="form-group">
                     <label for="email" class="col-md-2 control-label">任务失败邮件发送人</label>
@@ -72,8 +58,7 @@
         <button type="submit" class="btn btn-default" onclick="closeParentWindow();">返回</button>
     </div>
 </div>
-<%--<script src="http://s.360img.cn/wgroup/js/common/jquery-ui.min.js"></script>--%>
-<%--<script src="http://s.360img.cn/wgroup/js/common/jquery.fileupload.js"></script>--%>
+
 <script>
 
     $('#workTime').datetimepicker({
@@ -94,10 +79,6 @@
     }).next().on(ace.click_event, function () {
         $(this).prev().focus();
     });
-
-    //    jQuery(function($) {
-    //        autocomplete("supplier", "/supplier/getSupplierList", 'organizationName', "id", "organizationName", 1);
-    //    });
 
     function add() {
         var group = {};

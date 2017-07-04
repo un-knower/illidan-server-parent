@@ -20,4 +20,8 @@ public interface FieldInfoService {
     void removeByTableId(final Long tableId);
 
     List<String> findPartitionFields(final Long tableId);
+
+    Long updateById(final FieldInfo fieldInfo);
+
+    void setFiledValue(List<FieldInfo> fieldInfos);
 }

@@ -20,4 +20,6 @@ public interface TableInfoService {
     List<TableInfo> findByTableInfo(final TableInfoQuery tableInfo);
 
     TableInfo findOne(final TableInfoQuery tableInfo);
+
+    Long updateById(final TableInfo tableInfo);
 }
