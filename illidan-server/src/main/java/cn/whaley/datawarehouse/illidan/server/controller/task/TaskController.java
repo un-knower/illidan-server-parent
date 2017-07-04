@@ -59,7 +59,9 @@ public class TaskController extends Common {
         if (groupId != null){
             TaskGroup taskGroup = taskGroupService.get(groupId);
             if(taskGroup == null) {
-                returnResult(false, "groupId参数不合法");
+                mav.addObject("msg","groupId参数不合法");
+                mav.setViewName("error");
+                return mav;
             }
             mav.addObject("groupId",groupId);
             mav.addObject("projectId",taskGroup.getProjectId());
