@@ -230,7 +230,7 @@
     }
 
     function add(projectId) {
-        modalWindow("/group/toAdd?projectId=" + projectId, "新增任务组", 410, 350);
+        modalWindow("/group/toAdd?projectId=" + projectId, "新增任务组", 450, 350);
     }
 
     function edit(id) {

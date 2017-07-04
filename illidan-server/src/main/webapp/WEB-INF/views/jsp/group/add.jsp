@@ -32,11 +32,30 @@
                 </div>
             </div>
 
+            <%--<div class="col-sm-6">--%>
+                <%--<div class="form-group">--%>
+                    <%--<label for="schedule" class="col-md-2 control-label">调度策略</label>--%>
+                    <%--<div class="col-md-6">--%>
+                        <%--<input class="form-control" id="schedule" placeholder="调度策略">--%>
+                    <%--</div>--%>
+                <%--</div>--%>
+            <%--</div>--%>
+
             <div class="col-sm-6">
                 <div class="form-group">
-                    <label for="schedule" class="col-md-2 control-label">调度策略</label>
+                    <label class="col-md-2 control-label">调度策略</label>
+                    <label>
+                        <input type="radio" name="schedule" checked value="no" onclick="isSchedule(this)"> 无
+                    </label>
+                    <label>
+                        <input type="radio" name="schedule" value="yes" onclick="isSchedule(this)"> 有
+                    </label>
+                </div>
+            </div>
+            <div class="col-sm-6" id="scheduleDiv" style="display: none">
+                <div class="form-group">
                     <div class="col-md-6">
-                        <input class="form-control" id="schedule" placeholder="调度策略">
+                        <input class="form-control" id="schedule" placeholder="调度策略" value="0">
                     </div>
                 </div>
             </div>
@@ -118,6 +137,16 @@
 
     function closeParentWindow(){
         window.parent.closeWindow();
+    }
+
+    function isSchedule(obj) {
+        var oDiv = document.getElementById("scheduleDiv");
+        if(obj.value=="yes"){
+            oDiv.style.display = "block";
+        }else{
+            oDiv.style.display = "none";
+            $("#schedule").val("0");
+        }
     }
 
 </script>
