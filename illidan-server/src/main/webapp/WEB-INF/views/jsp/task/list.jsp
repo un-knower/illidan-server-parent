@@ -15,6 +15,9 @@
     <%--<jsp:include page="/index" />--%>
 
     <div class="page-header objhid">
+        <div>
+            <a href="/group/list?projectId=${projectId}">返回组列表</a>
+        </div>
         <div class="form-inline ">
             <%--<div class="form-group">--%>
                 <%--<input class="form-control" type="hidden" id="groupId" name="groupId" query="query" value="${groupId}"/>--%>

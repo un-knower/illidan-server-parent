@@ -15,6 +15,9 @@
     <%--<jsp:include page="/index" />--%>
 
     <div class="page-header objhid">
+        <div>
+            <a href="/project/list ">返回工程列表</a>
+        </div>
         <div class="form-inline ">
             <div class="form-group">
                 <input class="form-control" type="hidden" id="projectId" name="projectId" query="query" value="${projectId}"/>
