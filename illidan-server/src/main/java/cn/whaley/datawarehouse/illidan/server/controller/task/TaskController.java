@@ -57,7 +57,12 @@ public class TaskController extends Common {
     @RequestMapping("list")
     public ModelAndView list(Long groupId, ModelAndView mav){
         if (groupId != null){
+            TaskGroup taskGroup = taskGroupService.get(groupId);
+            if(taskGroup == null) {
+                returnResult(false, "groupId参数不合法");
+            }
             mav.addObject("groupId",groupId);
+            mav.addObject("projectId",taskGroup.getProjectId());
             mav.setViewName("task/list");
         }else {
             mav.setViewName("group/list");

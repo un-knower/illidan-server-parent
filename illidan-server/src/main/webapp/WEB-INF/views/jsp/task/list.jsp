@@ -16,9 +16,9 @@
 
     <div class="page-header objhid">
         <div class="form-inline ">
-            <div class="form-group">
-                <input class="form-control" type="hidden" id="groupId" name="groupId" query="query" value="${groupId}"/>
-            </div>
+            <%--<div class="form-group">--%>
+                <%--<input class="form-control" type="hidden" id="groupId" name="groupId" query="query" value="${groupId}"/>--%>
+            <%--</div>--%>
             <%--<div class="form-group">--%>
             <%--<input class="form-control" id="id" name="id" query="query" placeholder="任务ID">--%>
             <%--</div>--%>
@@ -33,7 +33,8 @@
             <%--</div>--%>
 
             <div class="text-center search-btns">
-                <button class="btn btn-info" onclick="searchList();">查询</button>
+                <button class="btn btn-info" onclick="searchList();">组内查询</button>
+                <button class="btn btn-info" onclick="searchListInProject();">项目内查询</button>
                 <button class="btn btn-default" onclick="clearCondition();">重置</button>
             </div>
 
@@ -103,7 +104,7 @@
                     url: '/task/taskList',
                     type: 'POST',
                     dataType: 'json',
-                    data: getParam()
+                    data: getParamWithGroupId()
                 },
                 aoColumns: [
                     {
@@ -206,15 +207,34 @@
 
     });
 
+    function getParamWithGroupId() {
+        paramWithGroupId = getParam();
+        paramWithGroupId["groupId"] = '${groupId}'
+        return paramWithGroupId
+    }
+
+    function getParamWithProjectId() {
+        paramWithProjectId = getParam();
+        paramWithProjectId["projectId"] = '${projectId}'
+        return paramWithProjectId
+    }
 
     function searchList() {
         if (myTable) {
-            searchObj = getParam();
+            searchObj = getParamWithGroupId();
             myTable.page("first");
             myTable.ajax.params(searchObj);
             myTable.ajax.reload(null, false);
         }
+    }
 
+    function searchListInProject() {
+        if (myTable) {
+            searchObj = getParamWithProjectId();
+            myTable.page("first");
+            myTable.ajax.params(searchObj);
+            myTable.ajax.reload(null, false);
+        }
     }
 
     function add() {
