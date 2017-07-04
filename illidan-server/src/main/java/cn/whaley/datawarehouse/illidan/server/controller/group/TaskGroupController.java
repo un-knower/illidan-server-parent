@@ -52,7 +52,8 @@ public class TaskGroupController extends Common {
             mav.addObject("projectId",projectId);
             mav.setViewName("group/list");
         }else {
-            mav.setViewName("project/list");
+            mav.addObject("msg","projectId参数不合法");
+            mav.setViewName("error");
         }
         return mav;
     }

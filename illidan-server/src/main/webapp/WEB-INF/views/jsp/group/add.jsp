@@ -17,7 +17,7 @@
             <input class="form-control" type="hidden" id="projectId" name="projectId" value="${projectId}"/>
             <div class="col-sm-6">
                 <div class="form-group">
-                    <label for="groupCode" class="col-md-2 control-label">任务组code</label>
+                    <label for="groupCode" class="col-md-2 control-label"><b class="text-danger">*</b>任务组code</label>
                     <div class="col-md-6">
                         <input class="form-control" id="groupCode" placeholder="请输入任务组code">
                     </div>
@@ -31,16 +31,6 @@
                     </div>
                 </div>
             </div>
-
-            <%--<div class="col-sm-6">--%>
-                <%--<div class="form-group">--%>
-                    <%--<label for="schedule" class="col-md-2 control-label">调度策略</label>--%>
-                    <%--<div class="col-md-6">--%>
-                        <%--<input class="form-control" id="schedule" placeholder="调度策略">--%>
-                    <%--</div>--%>
-                <%--</div>--%>
-            <%--</div>--%>
-
             <div class="col-sm-6">
                 <div class="form-group">
                     <label class="col-md-2 control-label">调度策略</label>

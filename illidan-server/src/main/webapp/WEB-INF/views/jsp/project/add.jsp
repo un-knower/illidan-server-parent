@@ -16,7 +16,7 @@
         <div class="panel-body">
             <div class="col-sm-6">
                 <div class="form-group">
-                    <label for="projectCode" class="col-md-2 control-label">项目code</label>
+                    <label for="projectCode" class="col-md-2 control-label"><b class="text-danger">*</b>项目code</label>
                     <div class="col-md-6">
                         <input class="form-control" id="projectCode" placeholder="请输入项目code">
                     </div>

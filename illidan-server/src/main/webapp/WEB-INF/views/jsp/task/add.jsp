@@ -18,7 +18,7 @@
             <input class="form-control" type="hidden" id="groupId" name="groupId" value="${groupId}"/>
             <div class="col-sm-6">
                 <div class="form-group">
-                    <label for="taskCode" class="col-md-2 control-label">任务code</label>
+                    <label for="taskCode" class="col-md-2 control-label"><b class="text-danger">*</b>任务code</label>
                     <div class="col-md-6">
                         <input class="form-control" id="taskCode" placeholder="请输入任务code">
                     </div>
@@ -26,7 +26,7 @@
             </div>
             <div class="col-sm-6">
                 <div class="form-group">
-                    <label for="addUser" class="col-md-2 control-label">任务添加用户</label>
+                    <label for="addUser" class="col-md-2 control-label"><b class="text-danger">*</b>任务添加用户</label>
                     <div class="col-md-6">
                         <input class="form-control" id="addUser" placeholder="请输入任务添加用户">
                     </div>
@@ -34,10 +34,10 @@
             </div>
             <div class="col-sm-6">
                 <div class="form-group">
-                    <label class="col-md-2 control-label">执行方式</label>
+                    <label class="col-md-2 control-label"><b class="text-danger">*</b>执行方式</label>
                     <div class="col-md-6">
-                        <select id="executeType" name="executeType" class="selectpicker show-tick form-control" multiple data-live-search="true">
-                            <option value="day" selected>day</option>
+                        <select id="executeType" name="executeType" title="请选择执行方式" class="selectpicker show-tick form-control" multiple data-live-search="true">
+                            <option value="day">day</option>
                             <option value="week">week</option>
                             <option value="month">month</option>
                             <option value="quarter">quarter</option>
@@ -48,9 +48,9 @@
             </div>
             <div class="col-sm-6">
                 <div class="form-group">
-                    <label class="col-md-2 control-label">目标数据库</label>
+                    <label class="col-md-2 control-label"><b class="text-danger">*</b>目标数据库</label>
                     <div class="col-md-6">
-                        <select id="dbId" name="dbId" class="selectpicker show-tick form-control" data-live-search="true">
+                        <select id="dbId" name="dbId" class="selectpicker show-tick form-control" title="请选择目标数据库" data-live-search="true">
                             <c:forEach begin="0" end="${dbInfo.size()-1}"  var="index">
                                 <option value ="${dbInfo.get(index).id}" >${dbInfo.get(index).dbCode}</option>
                             </c:forEach>
@@ -60,7 +60,7 @@
             </div>
             <div class="col-sm-6">
                 <div class="form-group">
-                    <label for="tableCode" class="col-md-2 control-label">目标表</label>
+                    <label for="tableCode" class="col-md-2 control-label"><b class="text-danger">*</b>目标表</label>
                     <div class="col-md-6">
                         <input class="form-control" id="tableCode" placeholder="请输入目标表">
                     </div>
@@ -76,10 +76,10 @@
             </div>
             <div class="col-sm-6">
                 <div class="form-group">
-                    <label class="col-md-2 control-label">存储格式</label>
+                    <label class="col-md-2 control-label"><b class="text-danger">*</b>存储格式</label>
                     <div class="col-md-6">
-                        <select id="dataType" name="dataType" class="selectpicker show-tick form-control">
-                            <option value="parquet" selected>parquet</option>
+                        <select id="dataType" name="dataType" class="selectpicker show-tick form-control" title="请选择存储格式" data-live-search="true">
+                            <option value="parquet">parquet</option>
                             <option value="textfile">textfile</option>
                         </select>
                     </div>
@@ -87,20 +87,20 @@
             </div>
             <div class="col-sm-6">
                 <div class="form-group">
-                    <label class="col-md-2 control-label">分区字段</label>
+                    <label class="col-md-2 control-label"><b class="text-danger">*</b>分区字段</label>
                     <div class="col-md-6">
                         <select id="partitionCol" name="partitionCol" class="selectpicker show-tick form-control" multiple data-live-search="true">
                             <option value="date_type" selected>date_type</option>
                             <option value="product_line">product_line</option>
-                            <option value="month_p">month_p</option>
-                            <option value="day_p">day_p</option>
+                            <option value="month_p" selected>month_p</option>
+                            <option value="day_p" selected>day_p</option>
                         </select>
                     </div>
                 </div>
             </div>
             <div class="col-sm-6">
                 <div class="form-group">
-                    <label class="col-md-2 control-label">业务分析语句</label>
+                    <label class="col-md-2 control-label"><b class="text-danger">*</b>业务分析语句</label>
                     <div class="col-md-6">
                         <textarea id="content" name="content" cols="20" rows="4"
                                   class="form-control"></textarea>
@@ -155,16 +155,21 @@
         var table = {};
         var fieldList = [];
 
-        var fieldArray = $("#partitionCol").val().toString().split(",");
-        for (var i=0;i<=fieldArray.length-1;++i){
-            var fieldInfo = {};
-            fieldInfo.colName = fieldArray[i];
-            fieldList.push(fieldInfo);
+        if ($("#partitionCol").val()!=null && $("#partitionCol").val()!=""){
+            var fieldArray = $("#partitionCol").val().toString().split(",");
+            for (var i=0;i<=fieldArray.length-1;++i){
+                var fieldInfo = {};
+                fieldInfo.colName = fieldArray[i];
+                fieldList.push(fieldInfo);
+            }
         }
+
         taskFull.taskCode = $("#taskCode").val();
         taskFull.groupId = $("#groupId").val();
         taskFull.addUser = $("#addUser").val();
-        taskFull.executeType = $("#executeType").val().toString();
+        if ($("#executeType").val()!=null && $("#executeType").val()!=""){
+            taskFull.executeType = $("#executeType").val().toString();
+        }
         taskFull.content = $("#content").val();
         taskFull.taskDes = $("#taskDes").val();
 

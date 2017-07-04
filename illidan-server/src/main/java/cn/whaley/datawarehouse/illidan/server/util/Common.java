@@ -270,9 +270,17 @@ public class Common {
         }
     }
 
-    public static boolean codeReg(String str) {
+    public boolean codeReg(String str) {
         String regex = "^[a-z0-9A-Z_\\-]+$";
         return str.matches(regex);
+    }
+
+    public Boolean validateColumnNull(Object columnName){
+        return !(columnName == null || columnName.equals(""));
+    }
+
+    public void validateMessage(String columnName){
+        returnResult(false, columnName+"不能为空!!!");
     }
 
 

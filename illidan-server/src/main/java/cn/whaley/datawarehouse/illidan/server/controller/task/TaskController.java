@@ -56,19 +56,15 @@ public class TaskController extends Common {
 
     @RequestMapping("list")
     public ModelAndView list(Long groupId, ModelAndView mav){
-        if (groupId != null){
-            TaskGroup taskGroup = taskGroupService.get(groupId);
-            if(taskGroup == null) {
-                mav.addObject("msg","groupId参数不合法");
-                mav.setViewName("error");
-                return mav;
-            }
-            mav.addObject("groupId",groupId);
-            mav.addObject("projectId",taskGroup.getProjectId());
-            mav.setViewName("task/list");
-        }else {
-            mav.setViewName("group/list");
+        TaskGroup taskGroup = taskGroupService.get(groupId);
+        if(taskGroup == null) {
+            mav.addObject("msg","groupId参数不合法");
+            mav.setViewName("error");
+            return mav;
         }
+        mav.addObject("groupId",groupId);
+        mav.addObject("projectId",taskGroup.getProjectId());
+        mav.setViewName("task/list");
         return mav;
     }
 
@@ -111,10 +107,24 @@ public class TaskController extends Common {
         try {
             if(StringUtils.isEmpty(taskFull)){
                 returnResult(false, "新增任务失败!!!");
-            } else if(taskFull.getTaskCode() == null || taskFull.getTaskCode().equals("")){
-                returnResult(false, "任务code不能为空!!!");
+            } else if(!validateColumnNull(taskFull.getTaskCode())){
+                validateMessage("任务code");
             } else if (!codeReg(taskFull.getTaskCode())){
                 returnResult(false, "任务code只能由英文字母,数字,-,_组成!!!");
+            } else if (!validateColumnNull(taskFull.getAddUser())){
+                validateMessage("任务添加用户");
+            } else if (!validateColumnNull(taskFull.getExecuteType())){
+                validateMessage("执行方式");
+            } else if (!validateColumnNull(taskFull.getTable().getDbId())){
+                validateMessage("目标数据库");
+            } else if (!validateColumnNull(taskFull.getTable().getTableCode())){
+                validateMessage("目标表");
+            } else if (!validateColumnNull(taskFull.getTable().getDataType())){
+                validateMessage("存储格式");
+            } else if (!validateColumnNull(taskFull.getTable().getFieldList())){
+                validateMessage("分区字段");
+            } else if (!validateColumnNull(taskFull.getContent())){
+                validateMessage("业务分析语句");
             } else {
                 //执行方式(List)
                 String[] executeTypeArray = taskFull.getExecuteType().split(",");
