@@ -89,6 +89,8 @@ public class TaskController extends Common {
             outputTemplateJson(tasks, count);
         } catch (Exception e) {
             e.printStackTrace();
+            logger.error(e.getMessage());
+            returnResult(false, "获取任务列表失败" + e.getMessage());
         }
     }
 
