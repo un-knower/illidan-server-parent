@@ -12,18 +12,16 @@
 </head>
 <body>
 <div class="container">
-    <%--<jsp:include page="/index" />--%>
-
+    <div style="margin-top: 5px;">
+        <a href="/group/list?projectId=${projectId}">
+            <i class="glyphicon glyphicon-chevron-left" aria-hidden="true"></i> 返回组列表
+        </a>
+    </div>
     <div class="page-header objhid">
-        <div>
-            <a href="/group/list?projectId=${projectId}">返回组列表</a>
-        </div>
+
         <div class="form-inline ">
             <%--<div class="form-group">--%>
                 <%--<input class="form-control" type="hidden" id="groupId" name="groupId" query="query" value="${groupId}"/>--%>
-            <%--</div>--%>
-            <%--<div class="form-group">--%>
-            <%--<input class="form-control" id="id" name="id" query="query" placeholder="任务ID">--%>
             <%--</div>--%>
             <div class="form-group">
                 <input class="form-control" id="taskCode" name="taskCode" query="query" placeholder="任务code">
@@ -31,16 +29,12 @@
             <div class="form-group">
                 <input class="form-control" id="taskDes" name="taskDes" query="query" placeholder="任务描述">
             </div>
-            <%--<div class="form-group">--%>
-            <%--<input class="form-control" id="ownerId" name="ownerId" query="query" placeholder="所有者ID">--%>
-            <%--</div>--%>
-
             <div class="text-center search-btns">
                 <button class="btn btn-info" onclick="searchList();">组内查询</button>
-                <button class="btn btn-info" onclick="searchListInProject();">项目内查询</button>
+                <button class="btn btn-primary" onclick="searchListInProject();">项目内查询</button>
                 <button class="btn btn-default" onclick="clearCondition();">重置</button>
+                <%--<button class="btn btn-warning" onclick="goBack();">返回组列表</button>--%>
             </div>
-
         </div>
     </div>
     <button type="button" class="btn btn-success" onclick="add()">新增</button>
@@ -323,6 +317,10 @@
 
     function exportExcel_f() {
         $.download('/project/projectExportDate.xls',getParam(),'post' );
+    }
+
+    function goBack() {
+        window.location.href = "/group/list?projectId=${projectId}";
     }
 </script>
 </body>

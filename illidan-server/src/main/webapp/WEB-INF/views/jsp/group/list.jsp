@@ -12,34 +12,27 @@
 </head>
 <body>
 <div class="container">
-    <%--<jsp:include page="/index" />--%>
+    <div style="margin-top: 5px;">
+        <a href="/project/list ">
+            <i class="glyphicon glyphicon-chevron-left" aria-hidden="true"></i> 返回项目列表
+        </a>
+    </div>
 
     <div class="page-header objhid">
-        <div>
-            <a href="/project/list ">返回工程列表</a>
-        </div>
         <div class="form-inline ">
             <div class="form-group">
                 <input class="form-control" type="hidden" id="projectId" name="projectId" query="query" value="${projectId}"/>
             </div>
-            <%--<div class="form-group">--%>
-            <%--<input class="form-control" id="id" name="id" query="query" placeholder="任务组ID">--%>
-            <%--</div>--%>
             <div class="form-group">
                 <input class="form-control" id="groupCode" name="groupCode" query="query" placeholder="任务组code">
             </div>
             <div class="form-group">
                 <input class="form-control" id="groupDes" name="groupDes" query="query" placeholder="任务组描述">
             </div>
-            <%--<div class="form-group">--%>
-            <%--<input class="form-control" id="ownerId" name="ownerId" query="query" placeholder="所有者ID">--%>
-            <%--</div>--%>
-
             <div class="text-center search-btns">
                 <button class="btn btn-info" onclick="searchList();">查询</button>
                 <button class="btn btn-default" onclick="clearCondition();">重置</button>
             </div>
-
         </div>
     </div>
     <button type="button" class="btn btn-success" onclick="add('${projectId}')">新增</button>
@@ -221,7 +214,6 @@
 
     });
 
-
     function searchList() {
         if (myTable) {
             searchObj = getParam();
@@ -311,10 +303,6 @@
                 }
             }
         });
-    }
-
-    function exportExcel_f() {
-        $.download('/project/projectExportDate.xls',getParam(),'post' );
     }
 </script>
 </body>

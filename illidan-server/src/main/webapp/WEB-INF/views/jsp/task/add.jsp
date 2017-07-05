@@ -37,7 +37,7 @@
                     <label class="col-md-2 control-label"><b class="text-danger">*</b>执行方式</label>
                     <div class="col-md-6">
                         <select id="executeType" name="executeType" title="请选择执行方式" class="selectpicker show-tick form-control" multiple data-live-search="true">
-                            <option value="day">day</option>
+                            <option value="day" selected>day</option>
                             <option value="week">week</option>
                             <option value="month">month</option>
                             <option value="quarter">quarter</option>
@@ -98,20 +98,20 @@
                     </div>
                 </div>
             </div>
-            <div class="col-sm-6">
+            <div class="col-sm-12">
                 <div class="form-group">
                     <label class="col-md-2 control-label"><b class="text-danger">*</b>业务分析语句</label>
                     <div class="col-md-6">
-                        <textarea id="content" name="content" cols="20" rows="4"
+                        <textarea id="content" name="content" cols="20" rows="6" wrap="off"
                                   class="form-control"></textarea>
                     </div>
                 </div>
             </div>
-            <div class="col-sm-6">
+            <div class="col-sm-12">
                 <div class="form-group">
                     <label class="col-md-2 control-label">任务描述</label>
                     <div class="col-md-6">
-                        <textarea id="taskDes" name="taskDes" cols="20" rows="4"
+                        <textarea id="taskDes" name="taskDes" cols="20" rows="2"
                                   class="form-control"></textarea>
                     </div>
                 </div>

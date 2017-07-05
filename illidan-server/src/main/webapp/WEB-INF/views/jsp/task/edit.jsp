@@ -100,20 +100,20 @@
                     </div>
                 </div>
             </div>
-            <div class="col-sm-6">
+            <div class="col-sm-12">
                 <div class="form-group">
                     <label class="col-md-2 control-label">业务分析语句</label>
                     <div class="col-md-6">
-                        <textarea id="content" name="content" cols="20" rows="4"
+                        <textarea id="content" name="content" cols="20" rows="6"
                                   class="form-control">${task.content}</textarea>
                     </div>
                 </div>
             </div>
-            <div class="col-sm-6">
+            <div class="col-sm-12">
                 <div class="form-group">
                     <label class="col-md-2 control-label">任务描述</label>
                     <div class="col-md-6">
-                        <textarea id="taskDes" name="taskDes" cols="20" rows="4"
+                        <textarea id="taskDes" name="taskDes" cols="20" rows="2"
                                   class="form-control">${task.taskDes}</textarea>
                     </div>
                 </div>
