@@ -17,9 +17,9 @@
     </ul>
     <div class="page-header objhid">
         <div class="form-inline ">
-            <div class="form-group">
-                <input class="form-control" type="hidden" id="projectId" name="projectId" query="query" value="${projectId}"/>
-            </div>
+            <%--<div class="form-group">--%>
+                <%--<input class="form-control" type="hidden" id="projectId" name="projectId" query="query" value="${projectId}"/>--%>
+            <%--</div>--%>
             <div class="form-group">
                 <input class="form-control" id="groupCode" name="groupCode" query="query" placeholder="任务组code">
             </div>
@@ -98,7 +98,7 @@
                     url: '/group/groupList',
                     type: 'POST',
                     dataType: 'json',
-                    data: getParam()
+                    data: getParamWithProjectId()
                 },
                 aoColumns: [
                     {
@@ -213,12 +213,18 @@
 
     function searchList() {
         if (myTable) {
-            searchObj = getParam();
+            searchObj = getParamWithProjectId();
             myTable.page("first");
             myTable.ajax.params(searchObj);
             myTable.ajax.reload(null, false);
         }
 
+    }
+
+    function getParamWithProjectId() {
+        paramWithProjectId = getParam();
+        paramWithProjectId["projectId"] = '${projectId}'
+        return paramWithProjectId
     }
 
     function add(projectId) {

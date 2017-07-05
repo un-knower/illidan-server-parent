@@ -98,6 +98,15 @@
         </where>
     </sql>
 
+    <sql id="likeWhereCase">
+        <where>
+            taskGroup.status = '1'
+            <if test="taskGroup != null and taskGroup.groupCode != null">and taskGroup.groupCode LIKE concat('%',#{taskGroup.groupCode},'%')</if>
+            <if test="taskGroup != null and taskGroup.groupDes != null">and taskGroup.groupDes LIKE concat('%',#{taskGroup.groupDes},'%')</if>
+            <if test="taskGroup != null and taskGroup.projectId != null">and taskGroup.projectId = #{taskGroup.projectId}</if>
+        </where>
+    </sql>
+
     <resultMap id="returnTaskGroup" type="cn.whaley.datawarehouse.illidan.common.domain.group.TaskGroup">
         <id column="id" javaType="Long" jdbcType="BIGINT" property="id"/>
         <result column="groupCode" javaType="String" jdbcType="VARCHAR" property="groupCode"/>
@@ -191,7 +200,7 @@
     <select id="findByTaskGroup" resultMap="returnTaskGroup">
         select <include refid="colList" /> from task_group taskGroup
         <include refid="joinTables"/>
-        <include refid="smallWhereCase"/>
+        <include refid="likeWhereCase"/>
         order by taskGroup.updateTime desc
         <if test="taskGroup != null and taskGroup.limitStart != null and taskGroup.limitEnd != null">limit #{taskGroup.limitStart}, #{taskGroup.limitEnd}</if>
     </select>
@@ -199,7 +208,7 @@
     <select id="countByTaskGroup"  resultType="long">
         select count(1) from task_group taskGroup
         <include refid="joinTables"/>
-        <include refid="smallWhereCase"/>
+        <include refid="likeWhereCase"/>
     </select>
 
     <select id="isExistTaskGroup"  resultType="long">

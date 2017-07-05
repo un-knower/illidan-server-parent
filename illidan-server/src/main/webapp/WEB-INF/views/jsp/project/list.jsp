@@ -12,28 +12,18 @@
 </head>
 <body>
 <div class="container">
-    <%--<jsp:include page="/index" />--%>
-
     <div class="page-header objhid">
         <div class="form-inline ">
-            <%--<div class="form-group">--%>
-                <%--<input class="form-control" id="id" name="id" query="query" placeholder="项目ID">--%>
-            <%--</div>--%>
             <div class="form-group">
                 <input class="form-control" id="projectCode" name="projectCode" query="query" placeholder="项目code">
             </div>
             <div class="form-group">
                 <input class="form-control" id="projectDes" name="projectDes" query="query" placeholder="项目描述">
             </div>
-            <%--<div class="form-group">--%>
-                <%--<input class="form-control" id="ownerId" name="ownerId" query="query" placeholder="所有者ID">--%>
-            <%--</div>--%>
-
             <div class="text-center search-btns">
                 <button class="btn btn-info" onclick="searchList();">查询</button>
                 <button class="btn btn-default" onclick="clearCondition();">重置</button>
             </div>
-
         </div>
     </div>
     <button type="button" class="btn btn-success" onclick="add()">新增</button>
