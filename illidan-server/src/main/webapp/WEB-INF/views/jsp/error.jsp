@@ -9,10 +9,14 @@
     <title>错误页面</title>
     <meta name="description" content="overview &amp; stats"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+    <link rel="stylesheet" href="/static/css/style.css">
 </head>
 <body>
-<div class="container theme-showcase form-horizontal" role="main">
-    ${msg}
+<div class="content">
+    <h2>${msg}</h2>
+    <p class="text">
+        由于您输入的projetId不合法,没有相应的页面
+    </p>
 </div>
 </body>
 </html>
