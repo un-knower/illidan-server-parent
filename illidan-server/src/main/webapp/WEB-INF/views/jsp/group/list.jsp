@@ -12,12 +12,9 @@
 </head>
 <body>
 <div class="container">
-    <div style="margin-top: 5px;">
-        <a href="/project/list ">
-            <i class="glyphicon glyphicon-chevron-left" aria-hidden="true"></i> 返回项目列表
-        </a>
-    </div>
-
+    <ul class="pager" style="margin-top: 10px;margin-bottom: 0px;">
+        <li class="previous"><a href="/project/list"><span aria-hidden="true">&larr;</span> 返回项目列表</a></li>
+    </ul>
     <div class="page-header objhid">
         <div class="form-inline ">
             <div class="form-group">
