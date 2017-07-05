@@ -191,6 +191,27 @@ public class TaskController extends Common {
         }
     }
 
+    @RequestMapping("delete")
+    @ResponseBody
+    public void delete(String ids) {
+        try {
+            if(StringUtils.isEmpty(ids)){
+                returnResult(false, "请选择要删除的记录");
+            }else {
+                String[] idArray = ids.split(",");
+                List<Long> idList = Arrays.asList(idArray).stream().map(x->Long.parseLong(x)).collect(Collectors.toList());
+                taskService.removeByIds(idList);
+                logger.error("删除了任务：" + ids);
+                returnResult(true, "删除任务成功");
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.error(e.getMessage());
+            returnResult(false, "删除任务失败:" + e.getMessage());
+        }
+    }
+
     public List<TaskGroup> getTaskGroup(){
         return taskGroupService.findByTaskGroup(new TaskGroupQuery());
     }

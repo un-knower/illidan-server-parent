@@ -288,7 +288,7 @@
 
     function removeRecord(ids) {
         modalConfirm("提示", "你确定要删除记录吗?", function () {
-            deleteGroup(ids)
+            deleteTask(ids)
         }, cancle);
     }
 
@@ -296,10 +296,10 @@
         return false;
     }
 
-    function deleteGroup(ids) {
+    function deleteTask(ids) {
         $.ajax({
             type: 'POST',
-            url: '/group/delete',
+            url: '/task/delete',
             data: "ids=" + ids,
             dataType: 'json',
             async: false,
