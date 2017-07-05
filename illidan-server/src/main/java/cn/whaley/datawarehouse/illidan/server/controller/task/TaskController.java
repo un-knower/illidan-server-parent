@@ -103,29 +103,9 @@ public class TaskController extends Common {
 
     @RequestMapping("add")
     @ResponseBody
-    public void add(@RequestBody TaskFull taskFull) {
+    public String add(@RequestBody TaskFull taskFull) {
         try {
-            if(StringUtils.isEmpty(taskFull)){
-                returnResult(false, "新增任务失败!!!");
-            } else if(!validateColumnNull(taskFull.getTaskCode())){
-                validateMessage("任务code");
-            } else if (!codeReg(taskFull.getTaskCode())){
-                returnResult(false, "任务code只能由英文字母,数字,-,_组成!!!");
-            } else if (!validateColumnNull(taskFull.getAddUser())){
-                validateMessage("任务添加用户");
-            } else if (!validateColumnNull(taskFull.getExecuteType())){
-                validateMessage("执行方式");
-            } else if (!validateColumnNull(taskFull.getTable().getDbId())){
-                validateMessage("目标数据库");
-            } else if (!validateColumnNull(taskFull.getTable().getTableCode())){
-                validateMessage("目标表");
-            } else if (!validateColumnNull(taskFull.getTable().getDataType())){
-                validateMessage("存储格式");
-            } else if (!validateColumnNull(taskFull.getTable().getFieldList())){
-                validateMessage("分区字段");
-            } else if (!validateColumnNull(taskFull.getContent())){
-                validateMessage("业务分析语句");
-            } else {
+            if(validateTask(taskFull).equals("ok")) {
                 //执行方式(List)
                 String[] executeTypeArray = taskFull.getExecuteType().split(",");
                 List<String> executeTypeList = new ArrayList<>(Arrays.asList(executeTypeArray));
@@ -141,12 +121,12 @@ public class TaskController extends Common {
                 List<FieldInfo> fieldInfos = taskFull.getTable().getFieldList();
                 fieldInfoService.setFiledValue(fieldInfos);
                 taskService.insertFullTask(taskFull);
-                returnResult(true, "新增任务成功!!!");
             }
+            return returnResult(true, "新增任务成功!!!");
         } catch (Exception e) {
             e.printStackTrace();
             logger.error(e.getMessage());
-            returnResult(false, "新增任务失败: " + e.getMessage());
+            return returnResult(false, "新增任务失败: " + e.getMessage());
         }
     }
 
@@ -174,20 +154,18 @@ public class TaskController extends Common {
 
     @RequestMapping("edit")
     @ResponseBody
-    public void edit(@RequestBody TaskFull taskFull) {
+    public String edit(@RequestBody TaskFull taskFull) {
         try {
-            if(StringUtils.isEmpty(taskFull)){
-                returnResult(false, "修改任务失败!!!");
-            } else {
+            if(validateTask(taskFull).equals("ok")) {
                 taskFull.setUpdateTime(new Date());
                 taskFull.getTable().setUpdateTime(new Date());
                 taskService.updateFullTask(taskFull);
-                returnResult(true, "修改任务成功!!!");
             }
+            return returnResult(true, "修改任务成功!!!");
         } catch (Exception e) {
             e.printStackTrace();
             logger.error(e.getMessage());
-            returnResult(false, "修改任务失败" + e.getMessage());
+            return returnResult(false, "修改任务失败" + e.getMessage());
         }
     }
 
@@ -224,5 +202,40 @@ public class TaskController extends Common {
         TableInfoQuery tableInfoQuery = new TableInfoQuery();
         tableInfoQuery.setTableCode(tableCode);
         return tableInfoService.findOne(tableInfoQuery);
+    }
+
+    public String validateTask(TaskFull taskFull){
+        String result = "ok";
+        if(StringUtils.isEmpty(taskFull)){
+            return returnResult(false, "失败!!!");
+        }
+        if(!validateColumnNull(taskFull.getTaskCode())){
+            return validateMessage("任务code");
+        }
+        if (!codeReg(taskFull.getTaskCode())){
+            return returnResult(false, "任务code只能由英文字母,数字,-,_组成!!!");
+        }
+        if (!validateColumnNull(taskFull.getAddUser())){
+            return validateMessage("任务添加用户");
+        }
+        if (!validateColumnNull(taskFull.getExecuteType())){
+            return validateMessage("执行方式");
+        }
+        if (!validateColumnNull(taskFull.getTable().getDbId())){
+            return validateMessage("目标数据库");
+        }
+        if (!validateColumnNull(taskFull.getTable().getTableCode())){
+            return validateMessage("目标表");
+        }
+        if (!validateColumnNull(taskFull.getTable().getDataType())){
+            return validateMessage("存储格式");
+        }
+        if (!validateColumnNull(taskFull.getTable().getFieldList())){
+            return validateMessage("分区字段");
+        }
+        if (!validateColumnNull(taskFull.getContent())){
+            return validateMessage("业务分析语句");
+        }
+        return result;
     }
 }

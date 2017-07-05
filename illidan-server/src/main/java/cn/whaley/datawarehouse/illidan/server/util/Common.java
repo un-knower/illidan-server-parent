@@ -247,18 +247,19 @@ public class Common {
         }
     }
 
-    protected void returnResult(boolean flag, String msg) {
+    protected String returnResult(boolean flag, String msg) {
         PrintWriter out = null;
+        String result;
         try {
             response.setContentType("text/json; charset=utf-8");
             out = response.getWriter();
-            String result = "{\"result\" :" + flag + ", \"msg\" : '" + msg + "'}";
+            result = "{\"result\" :" + flag + ", \"msg\" : '" + msg + "'}";
             out.print(JSONObject.parseObject(result));
 //            out.print(result);
             out.flush();
         } catch (Exception e) {
             e.printStackTrace();
-            String result = "{\"result\" :" + false + ", \"msg\" : '" + e.getMessage() + "'}";
+            result = "{\"result\" :" + false + ", \"msg\" : '" + e.getMessage() + "'}";
             System.out.println("----"+result);
             if (out != null){
                 out.print(JSONObject.parseObject(result));
@@ -268,6 +269,7 @@ public class Common {
                 out.close();
             }
         }
+        return result;
     }
 
     public boolean codeReg(String str) {
@@ -279,8 +281,8 @@ public class Common {
         return !(columnName == null || columnName.equals(""));
     }
 
-    public void validateMessage(String columnName){
-        returnResult(false, columnName+"不能为空!!!");
+    public String validateMessage(String columnName){
+        return returnResult(false, columnName+"不能为空!!!");
     }
 
 
