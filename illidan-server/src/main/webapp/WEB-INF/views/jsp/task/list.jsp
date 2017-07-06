@@ -233,11 +233,11 @@
     }
 
     function add() {
-        modalWindow("/task/toAdd?groupId=" + ${groupId}, "新增任务", 550, 800);
+        modalWindow("/task/toAdd?groupId=" + ${groupId}, "新增任务", 600, 800);
     }
 
     function edit(id) {
-        modalWindow("/task/toEdit?id=" + id + "&groupId=" + ${groupId}, "编辑任务", 550, 800);
+        modalWindow("/task/toEdit?id=" + id + "&groupId=" + ${groupId}, "编辑任务", 600, 800);
     }
 
     function publish(projectId) {
