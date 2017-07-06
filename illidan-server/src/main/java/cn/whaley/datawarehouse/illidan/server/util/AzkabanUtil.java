@@ -156,9 +156,32 @@ public class AzkabanUtil {
         }
         return result;
     }
-    public String createZip(){
+    public JSONObject addPermission(String projectName,String azkabanUser){
+        JSONObject result = new JSONObject();
+        String url = ConfigurationManager.getProperty("managerUrl");
+        Map<String, String> params = new HashMap<String,String>();
+        params.put("project",projectName);
+        params.put("name",azkabanUser);
+        params.put("ajax","addPermission");
+        params.put("permissions%5Badmin%5D","false");
+        params.put("permissions%5Bread%5D","true");
+        params.put("permissions%5Bwrite%5D","true");
+        params.put("permissions%5Bexecute%5D","true");
+        params.put("permissions%5Bschedule%5D","true");
+        params.put("group","false");
+        String response =getGetResponse(url,params,"UTF-8");
 
-        return "";
+       JSONObject resultJson = new JSONObject(response);
+        if(!resultJson.has("error")){
+            result.put("status","success");
+            result.put("message","add Permission success ...");
+            log.info(projectName +" add Permission to user "+azkabanUser+" is success ...");
+        }else{
+            result.put("status","error");
+            result.put("message",resultJson.getString("error"));
+            log.error(projectName +" add Permission to user "+azkabanUser+" is error ...");
+        }
+        return result;
     }
     private  String getPostResponse(String url , Map<String, String> params, String enc){
         return HttpClientUtil.URLPost(url,params,enc);
@@ -170,7 +193,7 @@ public class AzkabanUtil {
 
     public static void main(String[] args) {
         AzkabanUtil controller = new AzkabanUtil();
-        JSONObject sessionResult = controller.getSeesionId("dw", "dw@whaley");
+        JSONObject sessionResult = controller.getSeesionId("azkaban", "azkaban@whaley");
         if(sessionResult.getString("status").equals("success")){
             String seesionId = sessionResult.getString("message");
 //            System.out.println("session id is : "+ sessionResult.getString("message"));
@@ -181,11 +204,13 @@ public class AzkabanUtil {
 //            JSONObject uploadInfo = controller.uploadProject("4ee6ceac-f997-48cd-b7f3-f11afd3a00d1","hhhh","G:\\zip\\hhhh.zip");
 //            System.out.println(uploadInfo);
 
-            JSONObject scheduleInfo = controller.setSchedule(seesionId,"hhhh","testGroup1_end","0 0 2 ? * *");
-            System.out.println("scheduleInfo .... "+scheduleInfo);
+//            JSONObject scheduleInfo = controller.setSchedule(seesionId,"hhhh","testGroup1_end","0 0 2 ? * *");
+//            System.out.println("scheduleInfo .... "+scheduleInfo);
 //            JSONObject unscheduleInfo = controller.deleteSchedule(seesionId,"139");
 //            System.out.println(unscheduleInfo);
 //            controller.deleteProject(seesionId,"bbaaa");
+
+            controller.addPermission("test2","dw");
         }
 
 

@@ -162,8 +162,12 @@ public class ProjectController extends Common {
             } else {
                 projectService.insert(project);
                 //azkaban创建project
+                Owner owner = ownerService.get(project.getOwnerId());
+                project.setOwnerName(owner.getOwnerName());
                 JSONObject reseult = azkabanService.createProject(project);
                 if("error".equals(reseult.getString("status"))){
+                    //创建失败，回滚
+                    projectService.deleteById(project.getId());
                     returnResult(false, reseult.getString("message").replaceAll("'","\\\\'"));
                 }
                 returnResult(true, "新增项目成功!!!");

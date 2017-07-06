@@ -144,7 +144,6 @@ public class AzkabanService {
         //获取sessionId
         JSONObject sessionIdResult = azkabanUtil.getSeesionId("azkaban", "azkaban@whaley");
         if("error".equals(sessionIdResult.getString("status"))){
-            projectService.deleteById(project.getId());
             return sessionIdResult;
         }
         String sessionId = sessionIdResult.getString("status");
@@ -152,10 +151,16 @@ public class AzkabanService {
         JSONObject projectResult = azkabanUtil.createProject(sessionId, project.getProjectCode(), project.getProjectDes());
 
         if("error".equals(projectResult.getString("status"))){
-            projectService.deleteById(project.getId());
             return projectResult;
         }
-        return projectResult;
+        //添加权限
+        JSONObject addPermissionResult = azkabanUtil.addPermission(project.getProjectCode(), project.getOwnerName());
+        if("error".equals(addPermissionResult.getString("status"))){
+            //azkaban上回滚
+            azkabanUtil.deleteProject(sessionId,project.getProjectCode());
+            return addPermissionResult;
+        }
+        return addPermissionResult;
     }
 
     /**
