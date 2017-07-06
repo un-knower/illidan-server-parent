@@ -90,6 +90,14 @@
         </where>
     </sql>
 
+    <sql id="likeWhereCase">
+        <where>
+            project.status = '1'
+            <if test="project != null and project.projectCode != null">and project.projectCode LIKE concat('%',#{project.projectCode},'%')</if>
+            <if test="project != null and project.projectDes != null">and project.projectDes LIKE concat('%',#{project.projectDes},'%')</if>
+        </where>
+    </sql>
+
     <resultMap id="returnProject" type="cn.whaley.datawarehouse.illidan.common.domain.project.Project">
         <id column="id" javaType="Long" jdbcType="BIGINT" property="id"/>
         <result column="projectCode" javaType="String" jdbcType="VARCHAR" property="projectCode"/>
@@ -178,7 +186,7 @@
     <select id="findByProject" resultMap="returnProject">
         select <include refid="colList" /> from project project
         <include refid="joinTables"/>
-        <include refid="smallWhereCase"/>
+        <include refid="likeWhereCase"/>
         order by project.updateTime desc
         <!--<if test="project != null and project.orderBy != null">order by #{project.orderBy}</if>-->
         <if test="project != null and project.limitStart != null and project.limitEnd != null">limit #{project.limitStart}, #{project.limitEnd}</if>
@@ -187,7 +195,7 @@
     <select id="countByProject"  resultType="long">
         select count(1) from project project
         <include refid="joinTables"/>
-        <include refid="smallWhereCase"/>
+        <include refid="likeWhereCase"/>
     </select>
 
     <select id="isExistProject"  resultType="long">

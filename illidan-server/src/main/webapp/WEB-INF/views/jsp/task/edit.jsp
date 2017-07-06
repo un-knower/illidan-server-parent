@@ -20,7 +20,7 @@
             <input type="hidden" id="id" value="${task.id}"/>
             <div class="col-sm-6">
                 <div class="form-group">
-                    <label for="taskCode" class="col-md-2 control-label">任务code</label>
+                    <label for="taskCode" class="col-md-2 control-label"><b class="text-danger">*</b>任务code</label>
                     <div class="col-md-6">
                         <input class="form-control" id="taskCode" placeholder="请输入任务code" value="${task.taskCode}">
                     </div>
@@ -28,7 +28,7 @@
             </div>
             <div class="col-sm-6">
                 <div class="form-group">
-                    <label for="addUser" class="col-md-2 control-label">任务添加用户</label>
+                    <label for="addUser" class="col-md-2 control-label"><b class="text-danger">*</b>任务添加用户</label>
                     <div class="col-md-6">
                         <input class="form-control" id="addUser" placeholder="请输入任务添加用户" value="${task.addUser}">
                     </div>
@@ -36,7 +36,7 @@
             </div>
             <div class="col-sm-6">
                 <div class="form-group">
-                    <label class="col-md-2 control-label">执行方式</label>
+                    <label class="col-md-2 control-label"><b class="text-danger">*</b>执行方式</label>
                     <div class="col-md-6">
                         <select id="executeType" name="executeType" class="selectpicker show-tick form-control" multiple data-live-search="true">
                             <option value="day">day</option>
@@ -50,7 +50,7 @@
             </div>
             <div class="col-sm-6">
                 <div class="form-group">
-                    <label class="col-md-2 control-label">目标数据库</label>
+                    <label class="col-md-2 control-label"><b class="text-danger">*</b>目标数据库</label>
                     <div class="col-md-6">
                         <select id="dbId" name="dbId" class="selectpicker show-tick form-control" data-live-search="true">
                             <c:forEach begin="0" end="${dbInfo.size()-1}"  var="index">
@@ -62,7 +62,7 @@
             </div>
             <div class="col-sm-6">
                 <div class="form-group">
-                    <label for="tableCode" class="col-md-2 control-label">目标表</label>
+                    <label for="tableCode" class="col-md-2 control-label"><b class="text-danger">*</b>目标表</label>
                     <div class="col-md-6">
                         <input class="form-control" id="tableCode" placeholder="请输入目标表" value="${task.table.tableCode}">
                     </div>
@@ -78,7 +78,7 @@
             </div>
             <div class="col-sm-6">
                 <div class="form-group">
-                    <label class="col-md-2 control-label">数据类型</label>
+                    <label class="col-md-2 control-label"><b class="text-danger">*</b>存储格式</label>
                     <div class="col-md-6">
                         <select id="dataType" name="dataType" class="selectpicker show-tick form-control">
                             <option value="parquet">parquet</option>
@@ -89,7 +89,7 @@
             </div>
             <div class="col-sm-6">
                 <div class="form-group">
-                    <label class="col-md-2 control-label">分区字段</label>
+                    <label class="col-md-2 control-label"><b class="text-danger">*</b>分区字段</label>
                     <div class="col-md-6">
                         <select id="partitionCol" name="partitionCol" class="selectpicker show-tick form-control" multiple data-live-search="true">
                             <option value="date_type">date_type</option>
@@ -102,7 +102,7 @@
             </div>
             <div class="col-sm-12">
                 <div class="form-group">
-                    <label class="col-md-2 control-label">业务分析语句</label>
+                    <label class="col-md-2 control-label"><b class="text-danger">*</b>业务分析语句</label>
                     <div class="col-md-6">
                         <textarea id="content" name="content" cols="20" rows="6"
                                   class="form-control">${task.content}</textarea>

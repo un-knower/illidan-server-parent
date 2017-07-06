@@ -106,6 +106,15 @@
         </where>
     </sql>
 
+    <sql id="likeWhereCase">
+        <where>
+            task.status = '1'
+            <if test="task != null and task.taskCode != null">and task.taskCode LIKE concat('%',#{task.taskCode},'%')</if>
+            <if test="task != null and task.taskDes != null">and task.taskDes LIKE concat('%',#{task.taskDes},'%')</if>
+            <if test="task != null and task.groupId != null">and task.groupId = #{task.groupId}</if>
+        </where>
+    </sql>
+
     <resultMap id="returnTask" type="cn.whaley.datawarehouse.illidan.common.domain.task.Task">
         <id column="id" javaType="Long" jdbcType="BIGINT" property="id"/>
         <result column="taskCode" javaType="String" jdbcType="VARCHAR" property="taskCode"/>
@@ -196,7 +205,7 @@
     <select id="findByTask" resultMap="returnTask">
         select <include refid="colList" /> from task task
         <include refid="joinTables"/>
-        <include refid="smallWhereCase"/>
+        <include refid="likeWhereCase"/>
         order by task.updateTime desc
         <if test="task != null and task.limitStart != null and task.limitEnd != null">limit #{task.limitStart}, #{task.limitEnd}</if>
     </select>
@@ -204,7 +213,7 @@
     <select id="countByTask"  resultType="long">
         select count(1) from task task
         <include refid="joinTables"/>
-        <include refid="smallWhereCase"/>
+        <include refid="likeWhereCase"/>
     </select>
 
     <select id="isExistTask"  resultType="long">
