@@ -93,6 +93,7 @@
     <sql id="likeWhereCase">
         <where>
             project.status = '1'
+            <if test="project != null and project.id != null">and project.id = #{project.id}</if>
             <if test="project != null and project.projectCode != null">and project.projectCode LIKE concat('%',#{project.projectCode},'%')</if>
             <if test="project != null and project.projectDes != null">and project.projectDes LIKE concat('%',#{project.projectDes},'%')</if>
         </where>

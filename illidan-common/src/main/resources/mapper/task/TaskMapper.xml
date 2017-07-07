@@ -109,6 +109,7 @@
     <sql id="likeWhereCase">
         <where>
             task.status = '1'
+            <if test="task != null and task.id != null">and task.id = #{task.id}</if>
             <if test="task != null and task.taskCode != null">and task.taskCode LIKE concat('%',#{task.taskCode},'%')</if>
             <if test="task != null and task.taskDes != null">and task.taskDes LIKE concat('%',#{task.taskDes},'%')</if>
             <if test="task != null and task.groupId != null">and task.groupId = #{task.groupId}</if>
