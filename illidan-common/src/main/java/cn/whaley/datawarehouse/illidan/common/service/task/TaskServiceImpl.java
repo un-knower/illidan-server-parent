@@ -68,8 +68,8 @@ public class TaskServiceImpl implements TaskService {
         return taskMapper.remove(params);
     }
 
-    public List<Task> find(final Map<String, String> params) {
-        return taskMapper.find(params);
+    public List<Task> find(final TaskQuery task) {
+        return taskMapper.find(task);
     }
 
     public Long count(final Map<String, String> params) {
@@ -99,7 +99,7 @@ public class TaskServiceImpl implements TaskService {
     public Task findOne(final TaskQuery task) {
         task.setLimitStart(0);
         task.setLimitEnd(1);
-        List<Task> datas = taskMapper.findByTask(task);
+        List<Task> datas = taskMapper.find(task);
         if (datas != null && datas.size() > 0) {
             return datas.get(0);
         }
