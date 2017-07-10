@@ -22,7 +22,7 @@ public interface TaskService {
 
     Long remove(final Map<String, Object> params);
 
-    List<Task> find(final Map<String, String> params);
+    List<Task> find(final TaskQuery task);
 
     Long count(final Map<String, String> params);
 
