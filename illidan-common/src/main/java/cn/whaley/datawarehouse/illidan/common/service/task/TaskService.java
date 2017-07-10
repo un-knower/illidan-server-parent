@@ -22,6 +22,11 @@ public interface TaskService {
 
     Long remove(final Map<String, Object> params);
 
+    /**
+     * 精确查询
+     * @param task
+     * @return
+     */
     List<Task> find(final TaskQuery task);
 
     Long count(final Map<String, String> params);
@@ -34,12 +39,22 @@ public interface TaskService {
 
     Long removeByTask(final TaskQuery task);
 
+    /**
+     * 实现了code和描述的模糊查询
+     * @param task
+     * @return
+     */
     List<Task> findByTask(final TaskQuery task);
 
     Long removeByIds(final List<Long> ids);
 
     List<Task> getByCodeLike(String taskCode);
 
+    /**
+     * 通过taskCode的精确查询
+     * @param taskCode
+     * @return
+     */
     TaskFull getFullTaskByCode(final String taskCode);
 
     TaskFull getFullTask(final Long id);
