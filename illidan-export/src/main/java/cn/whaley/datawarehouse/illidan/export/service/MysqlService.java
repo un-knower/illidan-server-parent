@@ -37,7 +37,7 @@ public class MysqlService {
         String marks = markSb.toString();
         marks = marks.substring(0,marks.length()-1);
         //拼接sql
-        String insertSql = "insert into"+database+"."+tableName+" ("+fields+") values("+marks+")";
+        String insertSql = "insert into "+database+"."+tableName+" ("+fields+") values("+marks+")";
         return insertSql;
     }
 

@@ -26,6 +26,7 @@ public class MysqlExecute extends CommonExecute {
         //根据数据库名查找数据库相关信息
         MysqlDriver mysqlDriver = new MysqlDriver(map);
         mysqlDriver.getJdbcTemplate().update(deleteSql);
+        System.out.println("delete success ...");
         int i = 0;
         Map<String,String> processMap = new HashMap<>();
         processMap.put("sql",insertSql);
@@ -36,7 +37,9 @@ public class MysqlExecute extends CommonExecute {
             String threadName = "thread_"+i;
             processMap.put("threadName",threadName);
             processMap.put("poolParam",String.valueOf(poolParam));
-            new MysqlProcess(processMap,data,mysqlDriver);
+            MysqlProcess mysqlProcess = new MysqlProcess(processMap, data, mysqlDriver);
+            Thread thread = new Thread(mysqlProcess);
+            thread.start();
         }
     }
 
