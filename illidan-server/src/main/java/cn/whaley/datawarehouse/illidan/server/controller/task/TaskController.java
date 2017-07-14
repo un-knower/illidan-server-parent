@@ -5,6 +5,8 @@ import cn.whaley.datawarehouse.illidan.common.domain.db.DbInfoQuery;
 import cn.whaley.datawarehouse.illidan.common.domain.field.FieldInfo;
 import cn.whaley.datawarehouse.illidan.common.domain.group.TaskGroup;
 import cn.whaley.datawarehouse.illidan.common.domain.group.TaskGroupQuery;
+import cn.whaley.datawarehouse.illidan.common.domain.storage.StorageInfo;
+import cn.whaley.datawarehouse.illidan.common.domain.storage.StorageInfoQuery;
 import cn.whaley.datawarehouse.illidan.common.domain.table.TableInfo;
 import cn.whaley.datawarehouse.illidan.common.domain.table.TableInfoQuery;
 import cn.whaley.datawarehouse.illidan.common.domain.table.TableWithField;
@@ -14,6 +16,7 @@ import cn.whaley.datawarehouse.illidan.common.domain.task.TaskQuery;
 import cn.whaley.datawarehouse.illidan.common.service.db.DbInfoService;
 import cn.whaley.datawarehouse.illidan.common.service.field.FieldInfoService;
 import cn.whaley.datawarehouse.illidan.common.service.group.TaskGroupService;
+import cn.whaley.datawarehouse.illidan.common.service.storage.StorageInfoService;
 import cn.whaley.datawarehouse.illidan.common.service.table.TableInfoService;
 import cn.whaley.datawarehouse.illidan.common.service.task.TaskService;
 import cn.whaley.datawarehouse.illidan.server.util.Common;
@@ -53,6 +56,8 @@ public class TaskController extends Common {
     private TableInfoService tableInfoService;
     @Autowired
     private FieldInfoService fieldInfoService;
+    @Autowired
+    private StorageInfoService storageInfoService;
 
     @RequestMapping("list")
     public ModelAndView list(Long groupId, ModelAndView mav){
@@ -94,9 +99,11 @@ public class TaskController extends Common {
     public ModelAndView toAdd(ModelAndView mav, Long groupId) {
         mav.setViewName("task/add");
         List<TaskGroup> groupList = getTaskGroup();
-        List<DbInfo> dbInfoList = getDbInfo();
+        List<DbInfo> hiveDbInfoList = getDbInfo(1L);//hive
+        List<DbInfo> mysqlDbInfoList = getDbInfo(2L);//mysql
         mav.addObject("group",groupList);
-        mav.addObject("dbInfo",dbInfoList);
+        mav.addObject("hiveDbInfoList",hiveDbInfoList);
+        mav.addObject("mysqlDbInfoList",mysqlDbInfoList);
         mav.addObject("groupId",groupId);
         return mav;
     }
@@ -115,10 +122,17 @@ public class TaskController extends Common {
                 taskFull.setCreateTime(new Date());
                 taskFull.setUpdateTime(new Date());
                 //table_info的创建和修改时间
-                taskFull.getTable().setCreateTime(new Date());
-                taskFull.getTable().setUpdateTime(new Date());
+                for(TableWithField t : taskFull.getTableList()){
+                    t.setCreateTime(new Date());
+                    t.setUpdateTime(new Date());
+                }
                 //field_info的相关字段
-                List<FieldInfo> fieldInfos = taskFull.getTable().getFieldList();
+                List<FieldInfo> fieldInfos = new ArrayList<>();
+                for (TableWithField t : taskFull.getTableList()){
+                    if (t.getFieldList()!=null && t.getFieldList().size() >0){
+                        fieldInfos = t.getFieldList();
+                    }
+                }
                 fieldInfoService.setFiledValue(fieldInfos);
                 taskService.insertFullTask(taskFull);
             }
@@ -142,13 +156,29 @@ public class TaskController extends Common {
         }
         fieldList = fieldList.substring(1,fieldList.length());
         List<TaskGroup> groupList = getTaskGroup();
-        List<DbInfo> dbInfoList = getDbInfo();
-        mav.addObject("dbInfo",dbInfoList);
-        mav.addObject("task",task);
-        mav.addObject("group",groupList);
-        mav.addObject("groupId",groupId);
-        mav.addObject("fieldList",fieldList);
-        mav.addObject("tableId",task.getTable().getId());
+        List<DbInfo> dbInfoList = getDbInfo(1L);
+        List<DbInfo> mysqlDbInfoList = getDbInfo(2L);
+        List<TableWithField> tableList = task.getTableList();
+        for (TableWithField t : tableList){
+            if (t.getDbInfo().getStorageType() == 1L){
+                mav.addObject("hiveDbId" , t.getDbId());
+                mav.addObject("hiveTable" , t.getTableCode());
+                mav.addObject("tableId", t.getId());
+            }
+            if (t.getDbInfo().getStorageType() == 2L){
+                mav.addObject("mysqlDbId" , t.getDbId());
+                mav.addObject("mysqlTable" , t.getTableCode());
+            }
+        }
+        Boolean flag = taskService.isExport2Mysql(task.getId());
+        mav.addObject("flag" , flag);
+        mav.addObject("dbInfo", dbInfoList);
+        mav.addObject("mysqlDbInfoList", mysqlDbInfoList);
+        mav.addObject("task", task);
+        mav.addObject("group", groupList);
+        mav.addObject("groupId", groupId);
+        mav.addObject("fieldList", fieldList);
+        mav.addObject("mysqlTableId", task.getMysqlTableId());
         return mav;
     }
 
@@ -158,7 +188,10 @@ public class TaskController extends Common {
         try {
             if(validateTask(taskFull).equals("ok")) {
                 taskFull.setUpdateTime(new Date());
-                taskFull.getTable().setUpdateTime(new Date());
+                for (TableWithField t : taskFull.getTableList()){
+                    t.setUpdateTime(new Date());
+                }
+//                taskFull.getTable().setUpdateTime(new Date());
                 taskService.updateFullTask(taskFull);
             }
             return returnResult(true, "修改任务成功!!!");
@@ -194,8 +227,19 @@ public class TaskController extends Common {
         return taskGroupService.findByTaskGroup(new TaskGroupQuery());
     }
 
-    public List<DbInfo> getDbInfo(){
-        return dbInfoService.findByDbInfo(new DbInfoQuery());
+    public List<DbInfo> getDbInfo(Long storageType){
+        StorageInfoQuery storageInfo = new StorageInfoQuery();
+        storageInfo.setStorageType(storageType);
+        List<StorageInfo> storageInfos = storageInfoService.findByStorageInfo(storageInfo);
+
+        List<DbInfo> dbInfoList = new ArrayList<>();
+        DbInfoQuery dbInfo = new DbInfoQuery();
+        for (StorageInfo s : storageInfos){
+            dbInfo.setStorageId(s.getId());
+            List<DbInfo> dbInfos = dbInfoService.findByDbInfo(dbInfo);
+            dbInfoList.addAll(dbInfos);
+        }
+        return dbInfoList;
     }
 
     public TableInfo getOneTableInfo(String tableCode){
@@ -218,20 +262,27 @@ public class TaskController extends Common {
         if (!validateColumnNull(taskFull.getAddUser())){
             return validateMessage("任务添加用户");
         }
-        if (!validateColumnNull(taskFull.getExecuteType())){
-            return validateMessage("执行方式");
-        }
-        if (!validateColumnNull(taskFull.getTable().getDbId())){
+        List<TableWithField> tableList = taskFull.getTableList();
+        if (!validateColumnNull(tableList.get(0).getDbId())){
             return validateMessage("目标数据库");
         }
-        if (!validateColumnNull(taskFull.getTable().getTableCode())){
+        if (!validateColumnNull(tableList.get(0).getTableCode())){
             return validateMessage("目标表");
         }
-        if (!validateColumnNull(taskFull.getTable().getDataType())){
+        if (tableList.get(0).getFieldList()==null || tableList.get(0).getFieldList().size()==0){
+            return validateMessage("分区字段");
+        }
+        if (!validateColumnNull(tableList.get(0).getDataType())){
             return validateMessage("存储格式");
         }
-        if (!validateColumnNull(taskFull.getTable().getFieldList())){
-            return validateMessage("分区字段");
+        if (!validateColumnNull(tableList.get(0).getDbId())){
+            return validateMessage("mysql目标数据库");
+        }
+        if (!validateColumnNull(tableList.get(0).getTableCode())){
+            return validateMessage("mysql目标表");
+        }
+        if (!validateColumnNull(taskFull.getExecuteType())){
+            return validateMessage("执行方式");
         }
         if (!validateColumnNull(taskFull.getContent())){
             return validateMessage("业务分析语句");
