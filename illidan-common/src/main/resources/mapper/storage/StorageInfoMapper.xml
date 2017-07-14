@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="cn.whaley.datawarehouse.illidan.common.mapper.storage.StorageInfoMapper">
+
+    <!--The user defined SQL!-->
+
+
+    <!--The user defined SQL!-->
+
+    <sql id="updateSql">
+        update storage_info storageInfo
+        <set>
+            <if test="storageInfo.storageType != null">
+                storageType = #{storageInfo.storageType},
+            </if>
+            <if test="storageInfo.address != null">
+                address = #{storageInfo.address},
+            </if>
+            <if test="storageInfo.user != null">
+                user = #{storageInfo.user},
+            </if>
+            <if test="storageInfo.password != null">
+                password = #{storageInfo.password},
+            </if>
+
+        </set>
+    </sql>
+
+    <sql id="joinTables">
+    </sql>
+
+    <sql id="colList">
+        <trim prefix="" prefixOverrides=",">
+            , storageInfo.storageType AS storageType
+            , storageInfo.address AS address
+            , storageInfo.user AS user
+            , storageInfo.password AS password
+            , storageInfo.id AS id
+        </trim>
+    </sql>
+
+    <sql id="whereCase">
+        <where>
+            <if test="storageInfo != null and storageInfo.id != null">and storageInfo.id = #{storageInfo.id}</if>
+            <if test="storageInfo != null and storageInfo.idGT != null">and storageInfo.id > #{storageInfo.idGT}</if><if test="idLT != null">and #{idLT} > storageInfo.id</if>
+            <if test="storageInfo != null and storageInfo.storageType != null">and storageInfo.storageType = #{storageInfo.storageType}</if>
+            <if test="storageInfo != null and storageInfo.storageTypeLK != null">and storageInfo.storageType LIKE #{storageInfo.storageTypeLK}</if>
+            <if test="storageInfo != null and storageInfo.address != null">and storageInfo.address = #{storageInfo.address}</if>
+            <if test="storageInfo != null and storageInfo.addressLK != null">and storageInfo.address LIKE #{storageInfo.addressLK}</if>
+            <if test="storageInfo != null and storageInfo.user != null">and storageInfo.user = #{storageInfo.user}</if>
+            <if test="storageInfo != null and storageInfo.userLK != null">and storageInfo.user LIKE #{storageInfo.userLK}</if>
+            <if test="storageInfo != null and storageInfo.password != null">and storageInfo.password = #{storageInfo.password}</if>
+            <if test="storageInfo != null and storageInfo.passwordLK != null">and storageInfo.password LIKE #{storageInfo.passwordLK}</if>
+        </where>
+    </sql>
+
+    <sql id="smallWhereCase">
+        <where>
+            <if test="storageInfo != null and storageInfo.id != null">and storageInfo.id = #{storageInfo.id}</if>
+            <if test="storageInfo != null and storageInfo.storageType != null">and storageInfo.storageType = #{storageInfo.storageType}</if>
+            <if test="storageInfo != null and storageInfo.address != null">and storageInfo.address = #{storageInfo.address}</if>
+            <if test="storageInfo != null and storageInfo.user != null">and storageInfo.user = #{storageInfo.user}</if>
+            <if test="storageInfo != null and storageInfo.password != null">and storageInfo.password = #{storageInfo.password}</if>
+        </where>
+    </sql>
+
+    <resultMap id="returnStorageInfo" type="cn.whaley.datawarehouse.illidan.common.domain.storage.StorageInfo">
+        <id column="id" javaType="Long" jdbcType="BIGINT" property="id"/>
+        <result column="storageType" javaType="Long" jdbcType="BIGINT" property="storageType"/>
+        <result column="address" javaType="String" jdbcType="VARCHAR" property="address"/>
+        <result column="user" javaType="String" jdbcType="VARCHAR" property="user"/>
+        <result column="password" javaType="String" jdbcType="VARCHAR" property="password"/>
+    </resultMap>
+
+    <select id="get"  resultMap="returnStorageInfo">
+        select * from storage_info storageInfo where storageInfo.id = #{id}
+    </select>
+
+    <update id="update">
+        <include refid="updateSql"/>
+        <include refid="whereCase"/>
+    </update>
+
+    <insert id="insertBatch" >
+        insert into storage_info
+        (
+        <trim prefix="" prefixOverrides=",">
+            ,storageType,address,user,password
+        </trim>
+        ) values
+        <foreach collection="list" item="item" index="index" separator=",">
+            (
+            <trim prefix="" prefixOverrides=",">
+                ,#{storageType} ,#{address} ,#{user} ,#{password}
+            </trim>
+            )
+        </foreach>
+    </insert>
+
+    <insert id="insert" parameterType="storageInfo">
+        <selectKey resultType="long" keyProperty="id" order="AFTER">
+            SELECT
+            LAST_INSERT_ID()
+        </selectKey>
+        insert into storage_info
+        (
+        <trim prefix="" prefixOverrides=",">
+            ,storageType,address,user,password
+        </trim>
+        )values(
+        <trim prefix="" prefixOverrides=",">
+            ,#{storageInfo.storageType},#{storageInfo.address},#{storageInfo.user},#{storageInfo.password}
+        </trim>
+        )
+    </insert>
+
+    <delete id="remove" >
+        delete storageInfo from storage_info storageInfo <include refid="whereCase"/>
+        <!--UPDATE storage_info storageInfo SET storageInfo.status = '0' <include refid="whereCase"/>-->
+    </delete>
+
+    <select id="find"  resultMap="returnStorageInfo">
+        select <include refid="colList" /> from storage_info storageInfo
+        <include refid="joinTables"/>
+        <include refid="smallWhereCase"/>
+        <if test="storageInfo != null and storageInfo.orderBy != null">order by #{storageInfo.orderBy}</if>
+        <if test="storageInfo != null and storageInfo.limitStart != null and storageInfo.limitEnd != null">limit #{storageInfo.limitStart}, #{storageInfo.limitEnd}</if>
+    </select>
+
+    <select id="count"  resultType="long">
+        select count(1) from storage_info storageInfo
+        <include refid="joinTables"/>
+        <include refid="smallWhereCase"/>
+    </select>
+
+    <update id="updateByStorageInfo" >
+        <include refid="updateSql"/>
+        <include refid="smallWhereCase"/>
+    </update>
+
+    <update id="updateById">
+        <include refid="updateSql"/>
+        where id = #{storageInfo.id}
+    </update>
+
+    <delete id="removeByStorageInfo">
+        delete from storage_info storageInfo <include refid="smallWhereCase"/>
+        <!--UPDATE storage_info storageInfo SET storageInfo.status = '0' <include refid="smallWhereCase"/>-->
+    </delete>
+
+    <select id="findByStorageInfo" resultMap="returnStorageInfo">
+        select <include refid="colList" /> from storage_info storageInfo
+        <include refid="joinTables"/>
+        <include refid="smallWhereCase"/>
+        <if test="storageInfo != null and storageInfo.limitStart != null and storageInfo.limitEnd != null">limit #{storageInfo.limitStart}, #{storageInfo.limitEnd}</if>
+    </select>
+
+    <select id="countByStorageInfo"  resultType="long">
+        select count(1) from storage_info storageInfo
+        <include refid="joinTables"/>
+        <include refid="smallWhereCase"/>
+    </select>
+
+    <select id="isExistStorageInfo"  resultType="long">
+        select count(1) from storage_info storageInfo
+        where (dbCode=#{dbCode})
+    </select>
+
+    <delete id="removeByIds">
+        delete from storage_info where id in
+        <foreach item="item" collection="ids" open="(" separator="," close=")" >
+            #{item}
+        </foreach>
+
+        <!--UPDATE storage_info SET status = '0' where status = '1' and id in
+        <foreach item="item" collection="ids" open="(" separator="," close=")" >
+            #{item}
+        </foreach>-->
+
+    </delete>
+
+    <!--<select id="getByCodeLike"  resultMap="returnStorageInfo">
+        select <include refid="colList" /> from storage_info storageInfo where storageInfo.dbCode like concat('%',#{dbCode},'%') limit 10
+    </select>-->
+</mapper>
