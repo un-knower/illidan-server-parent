@@ -32,24 +32,22 @@ public class MysqlDriver{
         this.url =map.get("url");
         this.userName =  map.get("userName");
         this.passWord = map.get("passWord");
-        this.minPoolSize= ConfigurationManager.getInteger("mysql.minPoolSize");
-        this.maxPoolSize= ConfigurationManager.getInteger("mysql.maxPoolSize");
+//        this.minPoolSize= ConfigurationManager.getInteger("mysql.minPoolSize");
+//        this.maxPoolSize= ConfigurationManager.getInteger("mysql.maxPoolSize");
         this.poolSize = ConfigurationManager.getInteger("poolSize");
         for(int i=0;i<poolSize;i++){
             pools.add(i);
         }
         //初始化线程池
         this.dataSource = getDataSource();
+        this.jdbcTemplate = new JdbcTemplate(dataSource);
     }
     /**
      * 获取jdbcTemplate链接
      * @return
      */
-    public synchronized JdbcTemplate getJdbcTemplate(){
-        if(jdbcTemplate==null){
-            jdbcTemplate = new JdbcTemplate(dataSource);
-        }
-        return jdbcTemplate;
+    public JdbcTemplate getJdbcTemplate(){
+        return this.jdbcTemplate;
     }
     /**
      * 创建dataSource
@@ -62,8 +60,8 @@ public class MysqlDriver{
             dataSource.setDriverClass(driver);
             dataSource.setUser(userName);
             dataSource.setPassword(passWord);
-            dataSource.setMinPoolSize(minPoolSize);
-            dataSource.setMaxPoolSize(maxPoolSize);
+//            dataSource.setMinPoolSize(minPoolSize);
+//            dataSource.setMaxPoolSize(maxPoolSize);
         }catch (Exception e){
 
         }

@@ -20,7 +20,9 @@ public class MysqlExecute extends CommonExecute {
     @Override
     public void execute(List<Map<String, Object>> hiveInfo,Map<String,String> map) {
         String insertSql = mysqlService.getInsertSql(hiveInfo,map);
+        System.out.println("insertSql : "+insertSql);
         String deleteSql = mysqlService.getDeleteSql(map);
+        System.out.println("deleteSql : "+deleteSql);
         //根据数据库名查找数据库相关信息
         MysqlDriver mysqlDriver = new MysqlDriver(map);
         mysqlDriver.getJdbcTemplate().update(deleteSql);

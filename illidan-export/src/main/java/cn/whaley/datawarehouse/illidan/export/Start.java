@@ -3,20 +3,14 @@ package cn.whaley.datawarehouse.illidan.export;
 
 import cn.whaley.datawarehouse.illidan.export.driver.MysqlDriver;
 import cn.whaley.datawarehouse.illidan.export.execute.MysqlExecute;
-import cn.whaley.datawarehouse.illidan.export.service.HiveService;
-import cn.whaley.datawarehouse.illidan.export.process.MysqlProcess;
-import cn.whaley.datawarehouse.illidan.export.util.JdbcTemplateUtils;
 import org.springframework.context.support.GenericXmlApplicationContext;
-import org.springframework.jdbc.core.JdbcTemplate;
 
 import java.util.*;
-import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
  * Created by hc on 2017/7/11.
  */
 public class Start {
-    public static Queue<List<Object[]>> dataQueue = new ConcurrentLinkedQueue<List<Object[]>>();
     public static void main(String[] args) {
         if(args.length % 2 != 0) {
             throw new RuntimeException("参数数量错误");
@@ -48,21 +42,16 @@ public class Start {
 
 
         HashMap<String, String> paramMap = new HashMap<>();
-        paramMap.put("tableName","");
-        paramMap.put("hiveDb","");
-        paramMap.put("hiveTable","");
-        paramMap.put("mysqlDb","");
-        paramMap.put("mysqlTable","");
-        paramMap.put("filerCondition","");
+        paramMap.put("hiveDb",hiveDb);
+        paramMap.put("hiveTable",hiveTable);
+        paramMap.put("mysqlDb",mysqlDb);
+        paramMap.put("mysqlTable",mysqlTable);
+        paramMap.put("filerCondition","where day_p ='"+startTime+"' limit 11");
         //获取hive数据
         MysqlExecute mysqlExecute = context.getBean(MysqlExecute.class);
-        Map<String, String> driverInfo = mysqlExecute.getDriverInfo(paramMap);
+        Map<String, String> driverInfo = mysqlExecute.getHiveDriveInfo(paramMap);
         MysqlDriver mysqlDriver = new MysqlDriver(driverInfo);
         List<Map<String, Object>> hiveInfo = mysqlExecute.getHiveInfo(paramMap, mysqlDriver);
-
-
         mysqlExecute.start(hiveInfo,paramMap);
-
-
     }
 }

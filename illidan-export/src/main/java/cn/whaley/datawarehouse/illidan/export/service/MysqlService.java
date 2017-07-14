@@ -17,8 +17,9 @@ public class MysqlService {
      * @return
      */
     public String getInsertSql(List<Map<String, Object>> hiveInfo,Map<String,String> map){
-        String tableName = map.get("tableName");
-        String database = map.get("database");
+
+        String tableName = map.get("mysqlTable");
+        String database = map.get("mysqlDb");
         Set<String> keys = hiveInfo.get(0).keySet();
         //字段拼接
         StringBuffer fieldSb = new StringBuffer();
@@ -39,8 +40,8 @@ public class MysqlService {
     }
 
     public String getDeleteSql(Map<String,String> map){
-        String tableName = map.get("tableName");
-        String database = map.get("database");
+        String tableName = map.get("mysqlTable");
+        String database = map.get("mysqlDb");
         String filerCondition =map.get("filerCondition");
         String deleteSql = "delete from "+database+"."+tableName+" "+filerCondition;
         return deleteSql;

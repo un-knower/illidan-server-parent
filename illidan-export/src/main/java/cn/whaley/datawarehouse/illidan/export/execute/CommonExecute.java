@@ -17,11 +17,13 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  */
 @Service
  public abstract class CommonExecute {
+
     @Autowired
     private HiveService hiveService;
     public static Queue<List<Object[]>> dataQueue = new ConcurrentLinkedQueue<List<Object[]>>();
     public void start(List<Map<String, Object>> hiveInfo,Map<String,String> map){
         addToQueue(hiveInfo);
+        System.out.println("data to queue is success ...");
         execute(hiveInfo,map);
     }
     public abstract void execute(List<Map<String, Object>> hiveInfo,Map<String,String> map);
@@ -30,7 +32,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
      * @param hiveInfo
      */
     public static void addToQueue(List<Map<String, Object>> hiveInfo){
-        int batchNum = ConfigurationManager.getInteger("");
+        int batchNum = ConfigurationManager.getInteger("batchNum");
         int slice = hiveInfo.size()/batchNum;
         System.out.println("slice is "+slice);
         for(int i=1;i<=slice;i++){
