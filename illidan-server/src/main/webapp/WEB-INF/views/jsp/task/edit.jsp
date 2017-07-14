@@ -17,6 +17,7 @@
         <div class="panel-body">
             <input class="form-control" type="hidden" id="groupId" name="groupId" value="${groupId}"/>
             <input class="form-control" type="hidden" id="tableId" name="tableId" value="${tableId}"/>
+            <input class="form-control" type="hidden" id="mysqlTableId" name="mysqlTableId" value="${mysqlTableId}"/>
             <input type="hidden" id="id" value="${task.id}"/>
             <div class="col-sm-6">
                 <div class="form-group">
@@ -31,20 +32,6 @@
                     <label for="addUser" class="col-md-2 control-label"><b class="text-danger">*</b>任务添加用户</label>
                     <div class="col-md-6">
                         <input class="form-control" id="addUser" placeholder="请输入任务添加用户" value="${task.addUser}">
-                    </div>
-                </div>
-            </div>
-            <div class="col-sm-6">
-                <div class="form-group">
-                    <label class="col-md-2 control-label"><b class="text-danger">*</b>执行方式</label>
-                    <div class="col-md-6">
-                        <select id="executeType" name="executeType" class="selectpicker show-tick form-control" multiple data-live-search="true">
-                            <option value="day">day</option>
-                            <option value="week">week</option>
-                            <option value="month">month</option>
-                            <option value="quarter">quarter</option>
-                            <option value="ytd">ytd</option>
-                        </select>
                     </div>
                 </div>
             </div>
@@ -78,6 +65,19 @@
             </div>
             <div class="col-sm-6">
                 <div class="form-group">
+                    <label class="col-md-2 control-label"><b class="text-danger">*</b>分区字段</label>
+                    <div class="col-md-6">
+                        <select id="partitionCol" name="partitionCol" class="selectpicker show-tick form-control" multiple data-live-search="true">
+                            <option value="date_type">date_type</option>
+                            <option value="product_line">product_line</option>
+                            <option value="month_p">month_p</option>
+                            <option value="day_p">day_p</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6">
+                <div class="form-group">
                     <label class="col-md-2 control-label"><b class="text-danger">*</b>存储格式</label>
                     <div class="col-md-6">
                         <select id="dataType" name="dataType" class="selectpicker show-tick form-control">
@@ -89,14 +89,35 @@
             </div>
             <div class="col-sm-6">
                 <div class="form-group">
-                    <label class="col-md-2 control-label"><b class="text-danger">*</b>分区字段</label>
+                    <label class="col-md-2 control-label"><b class="text-danger">*</b>执行方式</label>
                     <div class="col-md-6">
-                        <select id="partitionCol" name="partitionCol" class="selectpicker show-tick form-control" multiple data-live-search="true">
-                            <option value="date_type">date_type</option>
-                            <option value="product_line">product_line</option>
-                            <option value="month_p">month_p</option>
-                            <option value="day_p">day_p</option>
+                        <select id="executeType" name="executeType" class="selectpicker show-tick form-control" multiple data-live-search="true">
+                            <option value="day">day</option>
+                            <option value="week">week</option>
+                            <option value="month">month</option>
+                            <option value="quarter">quarter</option>
+                            <option value="ytd">ytd</option>
                         </select>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6" id="mysqlDataBaseDiv" style="display: none">
+                <div class="form-group">
+                    <label class="col-md-1 control-label">mysql目标数据库</label>
+                    <div class="col-md-6">
+                        <select disabled id="mysqlDataBase" name="mysqlDataBase" class="selectpicker show-tick form-control" title="请选择mysql目标数据库" data-live-search="true">
+                            <c:forEach begin="0" end="${mysqlDbInfoList.size()-1}"  var="index">
+                                <option value ="${mysqlDbInfoList.get(index).id}" >${mysqlDbInfoList.get(index).dbCode}</option>
+                            </c:forEach>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6" id="mysqlTableDiv" style="display: none">
+                <div class="form-group">
+                    <label class="col-md-1 control-label">mysql目标表</label>
+                    <div class="col-md-6">
+                        <input disabled class="form-control" id="mysqlTable" value="${mysqlTable}">
                     </div>
                 </div>
             </div>
@@ -137,35 +158,57 @@
         $('#partitionCol').selectpicker('val', partitionColList);
         $('#dataType').selectpicker('val', dataType);
         $('#dbId').selectpicker('val', dbId);
+        $('#mysqlDataBase').selectpicker('val', ${mysqlDbId});
         $('#executeType').selectpicker('val', executeTypeArray);
+        if ('${flag}' == "true") {
+            var dDiv = document.getElementById("mysqlDataBaseDiv");
+            var tDiv = document.getElementById("mysqlTableDiv");
+            dDiv.style.display = "block";
+            tDiv.style.display = "block";
+        }
     });
 
     function add() {
         var taskFull = {};
-        var table = {};
+        var table1 = {};
+        var table2 = {};
         var fieldList = [];
 
-        var fieldArray = $("#partitionCol").val().toString().split(",");
-        for (var i=0;i<=fieldArray.length-1;++i){
-            var fieldInfo = {};
-            fieldInfo.colName = fieldArray[i];
-            fieldList.push(fieldInfo);
+        if ($("#partitionCol").val()!=null && $("#partitionCol").val()!="") {
+            var fieldArray = $("#partitionCol").val().toString().split(",");
+            for (var i = 0; i <= fieldArray.length - 1; ++i) {
+                var fieldInfo = {};
+                fieldInfo.colName = fieldArray[i];
+                fieldList.push(fieldInfo);
+            }
         }
+        var tableList = [];
+        //hive table
+        table1.id = $("#tableId").val();
+        table1.tableCode = $("#tableCode").val().toString();
+        table1.dbId = $("#dbId").val().toString();
+        table1.dataType = $("#dataType").val().toString();
+        table1.tableDes = $("#tableDes").val().toString();
+        table1.fieldList = fieldList;
+        tableList.push(table1);
+        //mysql table
+        if($("#mysqlTable").val().toString()!=null && $("#mysqlTable").val().toString()!="" && $("#mysqlDataBase").val().toString()!=null && $("#mysqlDataBase").val().toString()!=""){
+            table2.id = $("#mysqlTableId").val();
+            table2.tableCode = $("#mysqlTable").val().toString();
+            table2.dbId = $("#mysqlDataBase").val().toString();
+            tableList.push(table2);
+        }
+
+        taskFull.tableList = tableList;
         taskFull.taskCode = $("#taskCode").val();
         taskFull.groupId = $("#groupId").val();
         taskFull.id = $("#id").val();
         taskFull.addUser = $("#addUser").val();
-        taskFull.executeType = $("#executeType").val().toString();
+        if ($("#executeType").val()!=null && $("#executeType").val()!=""){
+            taskFull.executeType = $("#executeType").val().toString();
+        }
         taskFull.content = $("#content").val();
         taskFull.taskDes = $("#taskDes").val();
-
-        table.tableCode = $("#tableCode").val();
-        table.id = $("#tableId").val();
-        table.dbId = $("#dbId").val().toString();
-        table.dataType = $("#dataType").val().toString();
-        table.tableDes = $("#tableDes").val().toString();
-        table.fieldList = fieldList;
-        taskFull.table = table;
         $.ajax({
             type: 'POST',
             url: '/task/edit',
@@ -185,7 +228,7 @@
 //                alert("status:" + XMLHttpRequest.status);
 //                alert("readyState:" + XMLHttpRequest.readyState);
 //                alert("textStatus:" + textStatus);
-                modalAlert("提示", "修改产品失败,请重新添加", closeWindow, "error");
+                modalAlert("提示", "修改任务失败,请重新修改", closeWindow, "error");
             }
         });
     }

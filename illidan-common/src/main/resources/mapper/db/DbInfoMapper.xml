@@ -26,6 +26,9 @@
             <if test="dbInfo.updateTime != null">
                 updateTime = #{dbInfo.updateTime},
             </if>
+            <if test="dbInfo.storageId != null">
+                storageId = #{dbInfo.storageId},
+            </if>
 
         </set>
     </sql>
@@ -41,6 +44,7 @@
             , dbInfo.createTime AS createTime
             , dbInfo.updateTime AS updateTime
             , dbInfo.id AS id
+            , dbInfo.storageId AS storageId
 
         </trim>
     </sql>
@@ -54,6 +58,8 @@
             <if test="dbInfo != null and dbInfo.dbCodeLK != null">and dbInfo.dbCode LIKE #{dbInfo.dbCodeLK}</if>
             <if test="dbInfo != null and dbInfo.dbDes != null">and dbInfo.dbDes = #{dbInfo.dbDes}</if>
             <if test="dbInfo != null and dbInfo.dbDesLK != null">and dbInfo.dbDes LIKE #{dbInfo.dbDesLK}</if>
+            <if test="dbInfo != null and dbInfo.storageId != null">and dbInfo.storageId = #{dbInfo.storageId}</if>
+            <if test="dbInfo != null and dbInfo.storageIdLK != null">and dbInfo.storageId LIKE #{dbInfo.storageIdLK}</if>
             <if test="dbInfo != null and dbInfo.createTime != null">and dbInfo.createTime = #{dbInfo.createTime}</if>
             <if test="dbInfo != null and dbInfo.updateTime != null">and dbInfo.updateTime = #{dbInfo.updateTime}</if>
 
@@ -64,6 +70,7 @@
         <where>
             dbInfo.status = '1'
             <if test="dbInfo != null and dbInfo.id != null">and dbInfo.id = #{dbInfo.id}</if>
+            <if test="dbInfo != null and dbInfo.storageId != null">and dbInfo.storageId = #{dbInfo.storageId}</if>
             <if test="dbInfo != null and dbInfo.dbCode != null">and dbInfo.dbCode = #{dbInfo.dbCode}</if>
             <if test="dbInfo != null and dbInfo.dbDes != null">and dbInfo.dbDes = #{dbInfo.dbDes}</if>
             <if test="dbInfo != null and dbInfo.createTime != null">and dbInfo.createTime = #{dbInfo.createTime}</if>
@@ -78,6 +85,7 @@
         <result column="createTime" javaType="Date" jdbcType="TIMESTAMP" property="createTime"/>
         <result column="updateTime" javaType="Date" jdbcType="TIMESTAMP" property="updateTime"/>
         <result column="status" javaType="String" jdbcType="VARCHAR" property="status"/>
+        <result column="storageId" javaType="Long" jdbcType="BIGINT" property="storageId"/>
     </resultMap>
 
     <select id="get"  resultMap="returnDbInfo">
@@ -93,13 +101,13 @@
         insert into db_info
         (
         <trim prefix="" prefixOverrides=",">
-            ,dbCode,dbDes,createTime,updateTime,status
+            ,dbCode,dbDes,createTime,updateTime,status,storageId
         </trim>
         ) values
         <foreach collection="list" item="item" index="index" separator=",">
             (
             <trim prefix="" prefixOverrides=",">
-                ,#{dbCode} ,#{dbDes} ,#{createTime} ,#{updateTime} ,#{status}
+                ,#{dbCode} ,#{dbDes} ,#{createTime} ,#{updateTime} ,#{status} ,#{storageId}
             </trim>
             )
         </foreach>
@@ -113,11 +121,11 @@
         insert into db_info
         (
         <trim prefix="" prefixOverrides=",">
-            ,dbCode,dbDes,createTime,updateTime,status
+            ,dbCode,dbDes,createTime,updateTime,status,storageId
         </trim>
         )values(
         <trim prefix="" prefixOverrides=",">
-            ,#{dbInfo.dbCode},#{dbInfo.dbDes},#{dbInfo.createTime},#{dbInfo.updateTime},#{dbInfo.status}
+            ,#{dbInfo.dbCode},#{dbInfo.dbDes},#{dbInfo.createTime},#{dbInfo.updateTime},#{dbInfo.status},#{dbInfo.storageId}
         </trim>
         )
     </insert>

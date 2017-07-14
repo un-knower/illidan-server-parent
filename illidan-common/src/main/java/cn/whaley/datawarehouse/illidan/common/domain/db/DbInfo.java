@@ -1,5 +1,6 @@
 package cn.whaley.datawarehouse.illidan.common.domain.db;
 
+import cn.whaley.datawarehouse.illidan.common.domain.storage.StorageInfo;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import java.io.Serializable;
@@ -31,6 +32,10 @@ public class DbInfo implements Serializable {
      * 修改时间
      **/
     private Date updateTime;
+    /**
+     * 存储信息
+     **/
+    private Long storageId;
 
     public Long getId() {
         return id;
@@ -78,6 +83,14 @@ public class DbInfo implements Serializable {
 
     public void setUpdateTime(Date updateTime) {
         this.updateTime = updateTime;
+    }
+
+    public Long getStorageId() {
+        return storageId;
+    }
+
+    public void setStorageId(Long storageId) {
+        this.storageId = storageId;
     }
 
     @Override

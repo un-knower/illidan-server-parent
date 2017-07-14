@@ -31,6 +31,10 @@ public class DbInfoQuery extends BaseQueryEntity {
      * 修改时间
      **/
     private Date updateTime;
+    /**
+     * 存储信息
+     **/
+    private Long storageId;
     private String createTimeBegin;
     private String createTimeEnd;
 
@@ -96,6 +100,14 @@ public class DbInfoQuery extends BaseQueryEntity {
 
     public void setCreateTimeEnd(String createTimeEnd) {
         this.createTimeEnd = createTimeEnd;
+    }
+
+    public Long getStorageId() {
+        return storageId;
+    }
+
+    public void setStorageId(Long storageId) {
+        this.storageId = storageId;
     }
 
     @Override

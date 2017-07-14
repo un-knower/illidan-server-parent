@@ -1,6 +1,7 @@
 package cn.whaley.datawarehouse.illidan.common.domain.table;
 
 import cn.whaley.datawarehouse.illidan.common.domain.db.DbInfo;
+import cn.whaley.datawarehouse.illidan.common.domain.db.DbInfoWithStorage;
 import cn.whaley.datawarehouse.illidan.common.domain.field.FieldInfo;
 
 import java.util.List;
@@ -18,7 +19,7 @@ public class TableWithField extends TableInfo {
     /**
      * 目标表所属数据库
      */
-    private DbInfo dbInfo;
+    private DbInfoWithStorage dbInfo;
 
     public List<FieldInfo> getFieldList() {
         return fieldList;
@@ -28,11 +29,11 @@ public class TableWithField extends TableInfo {
         this.fieldList = fieldList;
     }
 
-    public DbInfo getDbInfo() {
+    public DbInfoWithStorage getDbInfo() {
         return dbInfo;
     }
 
-    public void setDbInfo(DbInfo dbInfo) {
+    public void setDbInfo(DbInfoWithStorage dbInfo) {
         this.dbInfo = dbInfo;
     }
 }

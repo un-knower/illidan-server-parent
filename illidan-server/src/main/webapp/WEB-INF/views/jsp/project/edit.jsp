@@ -83,7 +83,7 @@
 //                alert("status:" + XMLHttpRequest.status);
 //                alert("readyState:" + XMLHttpRequest.readyState);
 //                alert("textStatus:" + textStatus);
-                modalAlert("提示", "修改产品失败,请重新添加", closeWindow, "error");
+                modalAlert("提示", "修改产品失败,请重新修改", closeWindow, "error");
             }
         });
     }

@@ -41,6 +41,9 @@
             <if test="task.updateTime != null">
                 updateTime = #{task.updateTime},
             </if>
+            <if test="task.mysqlTableId != null">
+                mysqlTableId = #{task.mysqlTableId},
+            </if>
 
         </set>
     </sql>
@@ -61,6 +64,7 @@
             , task.createTime AS createTime
             , task.updateTime AS updateTime
             , task.id AS id
+            , task.mysqlTableId AS mysqlTableId
 
         </trim>
     </sql>
@@ -84,6 +88,8 @@
             <if test="task != null and task.groupIdLK != null">and task.groupId LIKE #{task.groupIdLK}</if>
             <if test="task != null and task.tableId != null">and task.tableId = #{task.tableId}</if>
             <if test="task != null and task.tableIdLK != null">and task.tableId LIKE #{task.tableIdLK}</if>
+            <if test="task != null and task.mysqlTableId != null">and task.mysqlTableId = #{task.mysqlTableId}</if>
+            <if test="task != null and task.mysqlTableIdLK != null">and task.mysqlTableId LIKE #{task.mysqlTableIdLK}</if>
             <if test="task != null and task.executeType != null">and task.executeType = #{task.executeType}</if>
             <if test="task != null and task.executeTypeLK != null">and task.executeType LIKE #{task.executeTypeLK}</if>
 
@@ -103,6 +109,7 @@
             <if test="task != null and task.groupId != null">and task.groupId = #{task.groupId}</if>
             <if test="task != null and task.tableId != null">and task.tableId = #{task.tableId}</if>
             <if test="task != null and task.executeType != null">and task.executeType = #{task.executeType}</if>
+            <if test="task != null and task.mysqlTableId != null">and task.mysqlTableId = #{task.mysqlTableId}</if>
         </where>
     </sql>
 
@@ -128,6 +135,7 @@
         <result column="groupId" javaType="Long" jdbcType="BIGINT" property="groupId"/>
         <result column="tableId" javaType="Long" jdbcType="BIGINT" property="tableId"/>
         <result column="executeType" javaType="String" jdbcType="VARCHAR" property="executeType"/>
+        <result column="mysqlTableId" javaType="Long" jdbcType="BIGINT" property="mysqlTableId"/>
 
     </resultMap>
 
@@ -144,13 +152,13 @@
         insert into task
         (
         <trim prefix="" prefixOverrides=",">
-            ,taskCode,taskDes,createTime,updateTime,content,status,addUser,groupId,tableId,executeType
+            ,taskCode,taskDes,createTime,updateTime,content,status,addUser,groupId,tableId,executeType,mysqlTableId
         </trim>
         ) values
         <foreach collection="list" item="item" index="index" separator=",">
             (
             <trim prefix="" prefixOverrides=",">
-                ,#{taskCode} ,#{taskDes} ,#{createTime} ,#{updateTime} ,#{content} ,#{status} ,#{addUser} ,#{groupId},#{tableId} ,#{executeType}
+                ,#{taskCode} ,#{taskDes} ,#{createTime} ,#{updateTime} ,#{content} ,#{status} ,#{addUser} ,#{groupId},#{tableId} ,#{executeType} ,#{mysqlTableId}
             </trim>
             )
         </foreach>
@@ -160,11 +168,11 @@
         insert into task
         (
         <trim prefix="" prefixOverrides=",">
-            ,taskCode,taskDes,createTime,updateTime,content,status,addUser,groupId,tableId,executeType
+            ,taskCode,taskDes,createTime,updateTime,content,status,addUser,groupId,tableId,executeType,mysqlTableId
         </trim>
         )values(
         <trim prefix="" prefixOverrides=",">
-            ,#{task.taskCode},#{task.taskDes},#{task.createTime},#{task.updateTime},#{task.content},#{task.status},#{task.addUser},#{task.groupId},#{task.tableId},#{task.executeType}
+            ,#{task.taskCode},#{task.taskDes},#{task.createTime},#{task.updateTime},#{task.content},#{task.status},#{task.addUser},#{task.groupId},#{task.tableId},#{task.executeType},#{task.mysqlTableId}
         </trim>
         )
     </insert>

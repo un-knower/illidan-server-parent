@@ -1,6 +1,7 @@
 package cn.whaley.datawarehouse.illidan.common.service.table;
 
 import cn.whaley.datawarehouse.illidan.common.domain.db.DbInfo;
+import cn.whaley.datawarehouse.illidan.common.domain.db.DbInfoWithStorage;
 import cn.whaley.datawarehouse.illidan.common.domain.field.FieldInfo;
 import cn.whaley.datawarehouse.illidan.common.domain.table.TableInfo;
 import cn.whaley.datawarehouse.illidan.common.domain.table.TableInfoQuery;
@@ -51,7 +52,7 @@ public class TableInfoServiceImpl implements TableInfoService {
             return null;
         }
         //目标数据库实体
-        DbInfo dbInfo = dbInfoService.get(tableInfo.getDbId());
+        DbInfoWithStorage dbInfo = dbInfoService.getDbWithStorage(tableInfo.getDbId());
         //列名实体
         List<FieldInfo> fieldInfoList = fieldInfoService.getByTableId(tableInfo.getId());
         TableWithField tableWithField = new TableWithField();
