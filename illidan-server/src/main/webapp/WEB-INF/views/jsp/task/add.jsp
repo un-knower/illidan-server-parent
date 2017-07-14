@@ -187,11 +187,9 @@
         var table1 = {};
         var table2 = {};
         var fieldList = [];
-
-        if (document.getElementById("mysqlDataBaseDiv").style.display == "block" && document.getElementById("mysqlTableDiv").style.display == "block"){
-            taskFull.flag = 1;
-        }
-
+//        if (document.getElementById("mysqlDataBaseDiv").style.display == "block" && document.getElementById("mysqlTableDiv").style.display == "block"){
+//            taskFull.flag = 1;
+//        }
         if ($("#partitionCol").val()!=null && $("#partitionCol").val()!=""){
             var fieldArray = $("#partitionCol").val().toString().split(",");
             for (var i=0;i<=fieldArray.length-1;++i){

@@ -25,12 +25,6 @@ public class TaskFull extends Task{
      */
     private List<String> executeTypeList;
 
-    /**
-     * 0:hive,1:mysql
-     * 默认为0
-     */
-    private int flag = 0;
-
     public TableWithField getTable() {
         List<TableWithField> tableList = getTableList();
         for (int i=0; i<=tableList.size()-1; ++i) {
@@ -62,11 +56,4 @@ public class TaskFull extends Task{
         this.tableList = tableList;
     }
 
-    public int getFlag() {
-        return flag;
-    }
-
-    public void setFlag(int flag) {
-        this.flag = flag;
-    }
 }
