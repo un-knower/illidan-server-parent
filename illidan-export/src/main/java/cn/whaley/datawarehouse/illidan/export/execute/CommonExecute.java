@@ -1,15 +1,14 @@
 package cn.whaley.datawarehouse.illidan.export.execute;
 
+import cn.whaley.datawarehouse.illidan.common.domain.db.DbInfoWithStorage;
+import cn.whaley.datawarehouse.illidan.common.service.db.DbInfoService;
 import cn.whaley.datawarehouse.illidan.export.driver.MysqlDriver;
 import cn.whaley.datawarehouse.illidan.export.service.HiveService;
 import cn.whaley.datawarehouse.illidan.export.util.ConfigurationManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Queue;
+import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
@@ -20,6 +19,8 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
     @Autowired
     private HiveService hiveService;
+    @Autowired
+    private DbInfoService dbInfoService;
     public static Queue<List<Object[]>> dataQueue = new ConcurrentLinkedQueue<List<Object[]>>();
     public void start(List<Map<String, Object>> hiveInfo,Map<String,String> map){
         addToQueue(hiveInfo);
@@ -69,12 +70,28 @@ import java.util.concurrent.ConcurrentLinkedQueue;
         return hiveService.getHiveInfo(map,mysqlDriver);
     }
     /**
-     * 获取驱动的相关信息
+     * 获取驱动的相关信息,同时把已有的数据向下传递
      * @param map
      * @return
      */
     public  Map<String,String> getHiveDriveInfo(Map<String, String> map){
-        String hiveDb = map.get("hiveDb");
-        return hiveService.getHiveDriveInfo(hiveDb);
+        return getDriveInfo("hiveDb",map);
+    }
+
+    public  Map<String,String> getMysqlDriveInfo(Map<String, String> map){
+        return getDriveInfo("mysqlDb",map);
+    }
+
+    public Map<String,String> getDriveInfo(String db,Map<String, String> map){
+        DbInfoWithStorage dbWithStorageByCode = dbInfoService.getDbWithStorageByCode(map.get(db));
+        String url = dbWithStorageByCode.getAddress();
+        String driver = dbWithStorageByCode.getDriver();
+        String userName = dbWithStorageByCode.getUser();
+        String passWord = dbWithStorageByCode.getPassword();
+        map.put("url",url);
+        map.put("driver",driver);
+        map.put("userName",userName);
+        map.put("passWord",passWord);
+        return map;
     }
 }

@@ -84,7 +84,7 @@ public class TaskServiceTest {
         TableWithField tableWithField = new TableWithField();
         BeanUtils.copyProperties(tableInfo,tableWithField);
         tableWithField.setFieldList(fieldInfos);
-        tableWithField.setDbInfo(dbInfo);
+//        tableWithField.setDbInfo(dbInfo);
 
         Task task = new Task();
         task.setAddUser("郭浩");

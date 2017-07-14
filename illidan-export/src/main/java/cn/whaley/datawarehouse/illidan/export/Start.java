@@ -49,9 +49,10 @@ public class Start {
         paramMap.put("filerCondition","where day_p ='"+startTime+"' limit 11");
         //获取hive数据
         MysqlExecute mysqlExecute = context.getBean(MysqlExecute.class);
-        Map<String, String> driverInfo = mysqlExecute.getHiveDriveInfo(paramMap);
-        MysqlDriver mysqlDriver = new MysqlDriver(driverInfo);
-        List<Map<String, Object>> hiveInfo = mysqlExecute.getHiveInfo(paramMap, mysqlDriver);
-        mysqlExecute.start(hiveInfo,paramMap);
+        Map<String, String> map = mysqlExecute.getHiveDriveInfo(paramMap);
+        MysqlDriver mysqlDriver = new MysqlDriver(map);
+        List<Map<String, Object>> hiveInfo = mysqlExecute.getHiveInfo(map, mysqlDriver);
+        Map<String, String> mysqlDriveInfo = mysqlExecute.getMysqlDriveInfo(map);
+        mysqlExecute.start(hiveInfo,mysqlDriveInfo);
     }
 }

@@ -1,5 +1,7 @@
 package cn.whaley.datawarehouse.illidan.export.service;
 
+import cn.whaley.datawarehouse.illidan.common.service.db.DbInfoService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -46,5 +48,4 @@ public class MysqlService {
         String deleteSql = "delete from "+database+"."+tableName+" "+filerCondition;
         return deleteSql;
     }
-
 }
