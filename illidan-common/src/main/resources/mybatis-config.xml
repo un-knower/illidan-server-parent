@@ -34,5 +34,6 @@
         <typeAlias alias="TableInfo" type="cn.whaley.datawarehouse.illidan.common.domain.table.TableInfo"/>
         <typeAlias alias="Owner" type="cn.whaley.datawarehouse.illidan.common.domain.owner.Owner"/>
         <typeAlias alias="FieldInfo" type="cn.whaley.datawarehouse.illidan.common.domain.field.FieldInfo"/>
+        <typeAlias alias="StorageInfo" type="cn.whaley.datawarehouse.illidan.common.domain.storage.StorageInfo"/>
     </typeAliases>
 </configuration>

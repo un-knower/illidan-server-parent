@@ -1,7 +1,9 @@
 package cn.whaley.datawarehouse.illidan.common.service.task;
 
 import cn.whaley.datawarehouse.illidan.common.domain.db.DbInfo;
+import cn.whaley.datawarehouse.illidan.common.domain.db.DbInfoWithStorage;
 import cn.whaley.datawarehouse.illidan.common.domain.field.FieldInfo;
+import cn.whaley.datawarehouse.illidan.common.domain.storage.StorageInfo;
 import cn.whaley.datawarehouse.illidan.common.domain.table.TableInfo;
 import cn.whaley.datawarehouse.illidan.common.domain.table.TableWithField;
 import cn.whaley.datawarehouse.illidan.common.domain.task.Task;
@@ -11,19 +13,18 @@ import cn.whaley.datawarehouse.illidan.common.mapper.db.DbInfoMapper;
 import cn.whaley.datawarehouse.illidan.common.mapper.field.FieldInfoMapper;
 import cn.whaley.datawarehouse.illidan.common.mapper.table.TableInfoMapper;
 import cn.whaley.datawarehouse.illidan.common.mapper.task.TaskMapper;
+import cn.whaley.datawarehouse.illidan.common.service.db.DbInfoService;
 import cn.whaley.datawarehouse.illidan.common.service.db.DbInfoServiceImpl;
 import cn.whaley.datawarehouse.illidan.common.service.field.FieldInfoService;
 import cn.whaley.datawarehouse.illidan.common.service.field.FieldInfoServiceImpl;
+import cn.whaley.datawarehouse.illidan.common.service.storage.StorageInfoService;
 import cn.whaley.datawarehouse.illidan.common.service.table.TableInfoService;
 import cn.whaley.datawarehouse.illidan.common.service.table.TableInfoServiceImpl;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by wujiulin on 2017/6/26.
@@ -43,6 +44,10 @@ public class TaskServiceImpl implements TaskService {
     private TableInfoService tableInfoService;
     @Autowired
     private FieldInfoService fieldInfoService;
+    @Autowired
+    private StorageInfoService storageInfoService;
+    @Autowired
+    private DbInfoService dbInfoService;
 
     public Task get(final Long id) {
         return taskMapper.get(id);
@@ -139,11 +144,16 @@ public class TaskServiceImpl implements TaskService {
             Task task = findOne(taskQuery);
             if (task != null){
                 List<String> executeTypeList = java.util.Arrays.asList(task.getExecuteType().split(","));
-                TableWithField tableWithField = tableInfoService.getTableWithField(task.getTableId());
-
+                List<TableWithField> tableWithFieldList = new ArrayList<TableWithField>();
+                TableWithField hiveTableWithField = tableInfoService.getTableWithField(task.getTableId());
+                tableWithFieldList.add(hiveTableWithField);
+                if (task.getMysqlTableId()!=null){
+                    TableWithField mysqlTableWithField = tableInfoService.getTableWithField(task.getMysqlTableId());
+                    tableWithFieldList.add(mysqlTableWithField);
+                }
                 taskFull = new TaskFull();
                 BeanUtils.copyProperties(task, taskFull);
-                taskFull.setTable(tableWithField);
+                taskFull.setTableList(tableWithFieldList);
                 taskFull.setExecuteTypeList(executeTypeList);
             }
 
@@ -156,37 +166,51 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public Long insertFullTask(TaskFull taskFull) throws Exception {
-        TableWithField tableWithField = taskFull.getTable();
+        HashMap<Long,Long> tableIdMap = new HashMap<Long,Long>();
+        List<TableWithField> tableList = taskFull.getTableList();
         //判断task是否存在
-        Long count = taskMapper.isExistTask(taskFull.getTaskCode(),taskFull.getStatus());
-        if(count >0 ){
+        Long count = taskMapper.isExistTask(taskFull.getTaskCode(), taskFull.getStatus());
+        if (count > 0) {
             throw new Exception("任务已经存在不能重复新增");
         }
-        //插入表信息,并返回其主键id
-        TableInfo tableInfo = new TableInfo();
-        //复制tableWithField信息到tableInfo中
-        BeanUtils.copyProperties(tableWithField,tableInfo);
-        Long tableId = tableInfoService.insert(tableInfo);
-        //插入字段到field_info
-        List<FieldInfo> fieldInfoList = tableWithField.getFieldList();
-        List<FieldInfo> fieldInfos = new ArrayList<FieldInfo>();
-        for(FieldInfo f:fieldInfoList ){
-            FieldInfo fieldInfo = new FieldInfo();
-            BeanUtils.copyProperties(f,fieldInfo);
-            fieldInfo.setTableId(tableId);
-            fieldInfos.add(fieldInfo);
+        for (int i=0; i<=tableList.size()-1; ++i) {
+            DbInfoWithStorage dbInfo = dbInfoService.getDbWithStorage(tableList.get(i).getDbId());
+            //存储类型,1:hive,2:mysql
+            Long storageType = dbInfo.getStorageType();
+            TableWithField tableWithField = tableList.get(i);
+            tableWithField.setDbInfo(dbInfo);
+            TableInfo tableInfo = new TableInfo();
+            //复制tableWithField信息到tableInfo中
+            BeanUtils.copyProperties(tableWithField, tableInfo);
+            //插入表信息,并返回其主键id
+            Long tableId = tableInfoService.insert(tableInfo);
+            tableIdMap.put(storageType,tableId);
+
+            //插入字段到field_info
+            List<FieldInfo> fieldInfoList = tableWithField.getFieldList();
+            List<FieldInfo> fieldInfos = new ArrayList<FieldInfo>();
+            if (fieldInfoList!=null && fieldInfoList.size()>0){
+                for (FieldInfo f : fieldInfoList) {
+                    FieldInfo fieldInfo = new FieldInfo();
+                    BeanUtils.copyProperties(f, fieldInfo);
+                    fieldInfo.setTableId(tableId);
+                    fieldInfos.add(fieldInfo);
+                }
+                //批量插入fieldInfos
+                //1.删除历史记录
+                fieldInfoService.removeByTableId(tableId);
+                //2.批量插入
+                fieldInfoService.insertBatch(fieldInfos);
+            }
         }
-        //批量插入fieldInfos
-        //1.删除历史记录
-        fieldInfoService.removeByTableId(tableId);
-        //2.批量插入
-        fieldInfoService.insertBatch(fieldInfos);
         //插入task信息
         Task task = new Task();
         BeanUtils.copyProperties(taskFull,task);
-        task.setTableId(tableId);
+        task.setTableId(tableIdMap.get(1L));//hive
+        task.setMysqlTableId(tableIdMap.get(2L));//mysql
         taskMapper.insert(task);
         return task.getId();
+
     }
 
     @Override
@@ -196,25 +220,29 @@ public class TaskServiceImpl implements TaskService {
         BeanUtils.copyProperties(taskFull,task);
         taskMapper.updateById(task);
         //table_info
-        TableWithField tableWithField = taskFull.getTable();
-        TableInfo tableInfo = new TableInfo();
-        BeanUtils.copyProperties(tableWithField,tableInfo);
-        Long tableId = tableInfo.getId();
-        tableInfoMapper.updateById(tableInfo);
-        //field_info,先删除再添加
-        List<FieldInfo> fieldList = tableWithField.getFieldList();
-        List<FieldInfo> fieldInfoList1 = new ArrayList<FieldInfo>();
-        for(int i=0;i<=fieldList.size()-1;++i ){
-            FieldInfo field = new FieldInfo();
-            BeanUtils.copyProperties(fieldList.get(i),field);
-            field.setTableId(tableId);
-            fieldInfoList1.add(field);
+        List<TableWithField> tableList = taskFull.getTableList();
+        for (TableWithField t : tableList) {
+            TableInfo tableInfo = new TableInfo();
+            BeanUtils.copyProperties(t,tableInfo);
+            Long tableId = tableInfo.getId();
+            tableInfoMapper.updateById(tableInfo);
+            //field_info,先删除再添加
+            List<FieldInfo> fieldList = t.getFieldList();
+            List<FieldInfo> fieldInfoList1 = new ArrayList<FieldInfo>();
+            if (fieldList!=null && fieldList.size()>0){
+                for(int i=0;i<=fieldList.size()-1;++i ){
+                    FieldInfo field = new FieldInfo();
+                    BeanUtils.copyProperties(fieldList.get(i),field);
+                    field.setTableId(tableId);
+                    fieldInfoList1.add(field);
+                }
+                fieldInfoService.setFiledValue(fieldInfoList1);
+                //1.删除历史记录
+                fieldInfoService.removeByTableId(tableId);
+                //2.批量插入
+                fieldInfoService.insertBatch(fieldInfoList1);
+            }
         }
-        fieldInfoService.setFiledValue(fieldInfoList1);
-        //1.删除历史记录
-        fieldInfoService.removeByTableId(tableId);
-        //2.批量插入
-        fieldInfoService.insertBatch(fieldInfoList1);
         return task.getId();
     }
 
@@ -229,6 +257,14 @@ public class TaskServiceImpl implements TaskService {
             e.printStackTrace();
         }
         return taskList;
+    }
+
+    public Boolean isExport2Mysql(final Long id){
+        Boolean flag = false;
+        if (taskMapper.get(id).getMysqlTableId() != null){
+            flag = true;
+        }
+        return flag;
     }
 
 }

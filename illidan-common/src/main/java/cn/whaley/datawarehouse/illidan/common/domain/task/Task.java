@@ -55,6 +55,10 @@ public class Task implements Serializable {
      * 修改时间
      */
     private Date updateTime;
+    /**
+     * 导入到mysql表
+     */
+    private Long mysqlTableId;
 
     public Long getId() {
         return id;
@@ -150,6 +154,14 @@ public class Task implements Serializable {
 
     public void setGroupCode(String groupCode) {
         this.groupCode = groupCode;
+    }
+
+    public Long getMysqlTableId() {
+        return mysqlTableId;
+    }
+
+    public void setMysqlTableId(Long mysqlTableId) {
+        this.mysqlTableId = mysqlTableId;
     }
 
     @Override

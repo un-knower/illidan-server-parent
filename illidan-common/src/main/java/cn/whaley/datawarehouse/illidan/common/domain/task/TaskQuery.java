@@ -55,6 +55,10 @@ public class TaskQuery extends BaseQueryEntity {
      * 修改时间
      */
     private Date updateTime;
+    /**
+     * 导入到mysql表
+     */
+    private Long mysqlTableId;
     private String createTimeBegin;
     private String createTimeEnd;
 
@@ -168,6 +172,14 @@ public class TaskQuery extends BaseQueryEntity {
 
     public void setGroupCode(String groupCode) {
         this.groupCode = groupCode;
+    }
+
+    public Long getMysqlTableId() {
+        return mysqlTableId;
+    }
+
+    public void setMysqlTableId(Long mysqlTableId) {
+        this.mysqlTableId = mysqlTableId;
     }
 
     @Override

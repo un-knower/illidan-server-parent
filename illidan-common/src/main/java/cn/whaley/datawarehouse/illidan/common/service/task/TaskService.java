@@ -65,6 +65,8 @@ public interface TaskService {
 
     List<Task> findTaskByGroupId(final Long groupId);
 
+    Boolean isExport2Mysql(final Long id);
+
 
 
 
