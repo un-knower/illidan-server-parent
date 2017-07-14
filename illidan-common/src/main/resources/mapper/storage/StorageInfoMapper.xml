@@ -23,6 +23,9 @@
             <if test="storageInfo.password != null">
                 password = #{storageInfo.password},
             </if>
+            <if test="storageInfo.driver != null">
+                driver = #{storageInfo.driver},
+            </if>
 
         </set>
     </sql>
@@ -36,6 +39,7 @@
             , storageInfo.address AS address
             , storageInfo.user AS user
             , storageInfo.password AS password
+            , storageInfo.driver AS driver
             , storageInfo.id AS id
         </trim>
     </sql>
@@ -52,6 +56,8 @@
             <if test="storageInfo != null and storageInfo.userLK != null">and storageInfo.user LIKE #{storageInfo.userLK}</if>
             <if test="storageInfo != null and storageInfo.password != null">and storageInfo.password = #{storageInfo.password}</if>
             <if test="storageInfo != null and storageInfo.passwordLK != null">and storageInfo.password LIKE #{storageInfo.passwordLK}</if>
+            <if test="storageInfo != null and storageInfo.driver != null">and storageInfo.driver = #{storageInfo.driver}</if>
+            <if test="storageInfo != null and storageInfo.driverLK != null">and storageInfo.driver LIKE #{storageInfo.driverLK}</if>
         </where>
     </sql>
 
@@ -62,6 +68,7 @@
             <if test="storageInfo != null and storageInfo.address != null">and storageInfo.address = #{storageInfo.address}</if>
             <if test="storageInfo != null and storageInfo.user != null">and storageInfo.user = #{storageInfo.user}</if>
             <if test="storageInfo != null and storageInfo.password != null">and storageInfo.password = #{storageInfo.password}</if>
+            <if test="storageInfo != null and storageInfo.driver != null">and storageInfo.driver = #{storageInfo.driver}</if>
         </where>
     </sql>
 
@@ -71,6 +78,7 @@
         <result column="address" javaType="String" jdbcType="VARCHAR" property="address"/>
         <result column="user" javaType="String" jdbcType="VARCHAR" property="user"/>
         <result column="password" javaType="String" jdbcType="VARCHAR" property="password"/>
+        <result column="driver" javaType="String" jdbcType="VARCHAR" property="driver"/>
     </resultMap>
 
     <select id="get"  resultMap="returnStorageInfo">
@@ -86,13 +94,13 @@
         insert into storage_info
         (
         <trim prefix="" prefixOverrides=",">
-            ,storageType,address,user,password
+            ,storageType,address,user,password,driver
         </trim>
         ) values
         <foreach collection="list" item="item" index="index" separator=",">
             (
             <trim prefix="" prefixOverrides=",">
-                ,#{storageType} ,#{address} ,#{user} ,#{password}
+                ,#{storageType} ,#{address} ,#{user} ,#{password} ,#{driver}
             </trim>
             )
         </foreach>
@@ -106,11 +114,11 @@
         insert into storage_info
         (
         <trim prefix="" prefixOverrides=",">
-            ,storageType,address,user,password
+            ,storageType,address,user,password,driver
         </trim>
         )values(
         <trim prefix="" prefixOverrides=",">
-            ,#{storageInfo.storageType},#{storageInfo.address},#{storageInfo.user},#{storageInfo.password}
+            ,#{storageInfo.storageType},#{storageInfo.address},#{storageInfo.user},#{storageInfo.password},#{storageInfo.driver}
         </trim>
         )
     </insert>
