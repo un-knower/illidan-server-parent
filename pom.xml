@@ -12,6 +12,7 @@
         <module>illidan-server</module>
         <module>illidan-common</module>
         <module>illidan-engine</module>
+        <module>illidan-export</module>
     </modules>
 
     <properties>
