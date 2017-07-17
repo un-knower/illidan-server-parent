@@ -19,7 +19,7 @@ public interface TableInfoMapper {
 
     Long insert(@Param("tableInfo") final TableInfo tableInfo);
 
-    Long isExistTableInfo(@Param("tableCode") String tableCode);
+    Long isExistTableInfo(@Param("tableCode") String tableCode,@Param("dbId") Long dbId);
 
     List<TableInfo> findByTableInfo(@Param("tableInfo") final TableInfoQuery tableInfo);
 

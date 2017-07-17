@@ -50,6 +50,7 @@
             <th >任务描述</th>
             <th >任务添加用户</th>
             <th >执行方式</th>
+            <th >是否导出到mysql</th>
             <th >创建时间</th>
             <th >更新时间</th>
 
@@ -117,6 +118,15 @@
                     {data: "taskDes"},
                     {data: "addUser"},
                     {data: "executeType"},
+                    {
+                        data: function (data) {
+                            if (data.isExport2Mysql == false) {
+                                return "否";
+                            } else {
+                                return "是";
+                            }
+                        }
+                    },
                     {
                         data: function (data) {
                             if (data.createTime != null) {

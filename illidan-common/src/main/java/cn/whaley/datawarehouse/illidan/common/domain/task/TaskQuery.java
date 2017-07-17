@@ -59,6 +59,7 @@ public class TaskQuery extends BaseQueryEntity {
      * 导入到mysql表
      */
     private Long mysqlTableId;
+    private Boolean isExport2Mysql;
     private String createTimeBegin;
     private String createTimeEnd;
 
@@ -180,6 +181,14 @@ public class TaskQuery extends BaseQueryEntity {
 
     public void setMysqlTableId(Long mysqlTableId) {
         this.mysqlTableId = mysqlTableId;
+    }
+
+    public Boolean getIsExport2Mysql() {
+        return isExport2Mysql;
+    }
+
+    public void setIsExport2Mysql(Boolean isExport2Mysql) {
+        this.isExport2Mysql = isExport2Mysql;
     }
 
     @Override
