@@ -23,7 +23,7 @@ public class Start {
         String hiveTable = null;
         String mysqlDb = null;
         String mysqlTable = null;
-        String filerCondition = null;
+        String filterCondition = null;
         for (int i = 0; i < args.length; i = i + 2) {
             if(args[i].equalsIgnoreCase("--hiveDb")) {
                 hiveDb = args[i + 1];
@@ -33,13 +33,13 @@ public class Start {
                 mysqlDb = args[i + 1];
             } else if(args[i].equalsIgnoreCase("--mysqlTable")) {
                 mysqlTable = args[i + 1];
-            } else if(args[i].equalsIgnoreCase("--filerCondition")) {
-                filerCondition = args[i + 1];
+            } else if(args[i].equalsIgnoreCase("--filterCondition")) {
+                filterCondition = args[i + 1];
             }
 
         }
 
-        if(hiveDb==null || hiveTable==null || filerCondition==null){
+        if(hiveDb==null || hiveTable==null || filterCondition==null){
             logger.error("please input correct parameter ...");
             System.exit(-1);
         }
@@ -54,7 +54,9 @@ public class Start {
         paramMap.put("hiveTable",hiveTable);
         paramMap.put("mysqlDb",mysqlDb);
         paramMap.put("mysqlTable",mysqlTable);
-        paramMap.put("filerCondition",filerCondition);
+        paramMap.put("filterCondition",filterCondition);
+
+        System.out.println("filterCondition is ... "+filterCondition);
       //获取hive数据
         CommonExecute commonExecute = context.getBean(CommonExecute.class);
         Map<String, String> hiveDriveInfo = commonExecute.getHiveDriveInfo(paramMap);

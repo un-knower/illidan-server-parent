@@ -51,7 +51,7 @@ public class MysqlService {
     public String getDeleteSql(Map<String,String> map){
         String tableName = map.get("mysqlTable");
         String database = map.get("mysqlDb");
-        String filerCondition =map.get("filerCondition");
+        String filerCondition =map.get("filterCondition");
         String deleteSql = "delete from "+database+"."+tableName+" "+filerCondition;
         logger.info("insertSql is "+deleteSql);
         return deleteSql;

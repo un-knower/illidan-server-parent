@@ -72,12 +72,11 @@ public class MysqlDriver{
         while(pools.size() == 0){
             try {
                 logger.info("pools size is 0 sleep ... ");
-                Thread.sleep(1000);
+                Thread.sleep(300);
             }catch (Exception e){
                 logger.error("get pools error ... "+e.getMessage());
             }
         }
-        logger.info("get pools success ... ");
         return pools.poll();
     }
 

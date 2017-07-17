@@ -19,7 +19,7 @@ public class HiveService {
     public List<Map<String, Object>> getHiveInfo(Map<String,String> map, MysqlDriver mysqlDriver){
         String hiveDb = map.get("hiveDb");
         String hiveTable = map.get("hiveTable");
-        String filerCondition = map.get("filerCondition");
+        String filerCondition = map.get("filterCondition");
         String sql = "select * from "+hiveDb+"."+hiveTable +" "+filerCondition;
         List<Map<String, Object>> hiveData = mysqlDriver.getJdbcTemplate().queryForList(sql);
         logger.info("hive select total data size is "+hiveData.size());
