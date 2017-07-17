@@ -1,13 +1,12 @@
 package cn.whaley.datawarehouse.illidan.export.execute;
 
-import cn.whaley.datawarehouse.illidan.common.domain.db.DbInfoWithStorage;
-import cn.whaley.datawarehouse.illidan.common.service.db.DbInfoService;
 import cn.whaley.datawarehouse.illidan.export.driver.MysqlDriver;
 import cn.whaley.datawarehouse.illidan.export.service.HiveService;
 import cn.whaley.datawarehouse.illidan.export.util.ConfigurationManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -16,15 +15,12 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  */
 @Service
  public abstract class CommonExecute {
-
+    private static Logger logger = LoggerFactory.getLogger(CommonExecute.class);
     @Autowired
     private HiveService hiveService;
-    @Autowired
-    private DbInfoService dbInfoService;
+
     public static Queue<List<Object[]>> dataQueue = new ConcurrentLinkedQueue<List<Object[]>>();
     public void start(List<Map<String, Object>> hiveInfo,Map<String,String> map){
-        addToQueue(hiveInfo);
-        System.out.println("data to queue is success ...");
         execute(hiveInfo,map);
     }
     public abstract void execute(List<Map<String, Object>> hiveInfo,Map<String,String> map);
@@ -34,8 +30,9 @@ import java.util.concurrent.ConcurrentLinkedQueue;
      */
     public static void addToQueue(List<Map<String, Object>> hiveInfo){
         int batchNum = ConfigurationManager.getInteger("batchNum");
+        logger.info("batch size is "+batchNum);
         int slice = hiveInfo.size()/batchNum;
-        System.out.println("slice is "+slice);
+        logger.info("slice num is "+batchNum);
         for(int i=1;i<=slice;i++){
             List<Object[]> dataList = new ArrayList<Object[]>();
             for(int j=batchNum*(i - 1);j<batchNum*i;j++){
@@ -50,6 +47,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
             dataList.add(data);
         }
         dataQueue.add(dataList);
+        logger.info("add queue is success ...");
     }
 
     /**
@@ -75,23 +73,6 @@ import java.util.concurrent.ConcurrentLinkedQueue;
      * @return
      */
     public  Map<String,String> getHiveDriveInfo(Map<String, String> map){
-        return getDriveInfo("hiveDb",map);
-    }
-
-    public  Map<String,String> getMysqlDriveInfo(Map<String, String> map){
-        return getDriveInfo("mysqlDb",map);
-    }
-
-    public Map<String,String> getDriveInfo(String db,Map<String, String> map){
-        DbInfoWithStorage dbWithStorageByCode = dbInfoService.getDbWithStorageByCode(map.get(db));
-        String url = dbWithStorageByCode.getAddress();
-        String driver = dbWithStorageByCode.getDriver();
-        String userName = dbWithStorageByCode.getUser();
-        String passWord = dbWithStorageByCode.getPassword();
-        map.put("url",url);
-        map.put("driver",driver);
-        map.put("userName",userName);
-        map.put("passWord",passWord);
-        return map;
+        return hiveService.getHiveDriveInfo(map);
     }
 }

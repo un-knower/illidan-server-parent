@@ -3,13 +3,11 @@ package cn.whaley.datawarehouse.illidan.export.process;
 import cn.whaley.datawarehouse.illidan.export.driver.MysqlDriver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.jdbc.core.JdbcTemplate;
-
 import java.util.List;
 import java.util.Map;
 
 /**
- * Created by hc on 2017/7/13.
+ * Created by guohao on 2017/7/13.
  */
 public class MysqlProcess implements Runnable {
     private static Logger logger = LoggerFactory.getLogger(MysqlProcess.class);
@@ -23,7 +21,6 @@ public class MysqlProcess implements Runnable {
         this.sql = map.get("sql");
         this.poolParam =Integer.valueOf(map.get("poolParam"));
         this.data = data;
-
         this.mysqlDriver=mysqlDriver;
     }
     @Override

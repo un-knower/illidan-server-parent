@@ -1,8 +1,11 @@
 package cn.whaley.datawarehouse.illidan.export.execute;
 
+import cn.whaley.datawarehouse.illidan.export.Start;
 import cn.whaley.datawarehouse.illidan.export.driver.MysqlDriver;
 import cn.whaley.datawarehouse.illidan.export.process.MysqlProcess;
 import cn.whaley.datawarehouse.illidan.export.service.MysqlService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,18 +18,18 @@ import java.util.Map;
  */
 @Service
 public class MysqlExecute extends CommonExecute {
+    private static Logger logger = LoggerFactory.getLogger(MysqlExecute.class);
     @Autowired
     private MysqlService mysqlService;
     @Override
     public void execute(List<Map<String, Object>> hiveInfo,Map<String,String> map) {
+        logger.info("mysql export start ...");
         String insertSql = mysqlService.getInsertSql(hiveInfo,map);
-        System.out.println("insertSql : "+insertSql);
         String deleteSql = mysqlService.getDeleteSql(map);
-        System.out.println("deleteSql : "+deleteSql);
         //根据数据库名查找数据库相关信息
         MysqlDriver mysqlDriver = new MysqlDriver(map);
         mysqlDriver.getJdbcTemplate().update(deleteSql);
-        System.out.println("delete success ...");
+        logger.info("delete success ...");
         int i = 0;
         Map<String,String> processMap = new HashMap<>();
         processMap.put("sql",insertSql);
@@ -41,6 +44,9 @@ public class MysqlExecute extends CommonExecute {
             Thread thread = new Thread(mysqlProcess);
             thread.start();
         }
+    }
+    public  Map<String,String> getMysqlDriveInfo(Map<String, String> map){
+        return mysqlService.getMysqlDriveInfo(map);
     }
 
 }

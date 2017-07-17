@@ -5,7 +5,6 @@ import com.mchange.v2.c3p0.ComboPooledDataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.JdbcTemplate;
-
 import java.util.LinkedList;
 import java.util.Map;
 
@@ -35,6 +34,7 @@ public class MysqlDriver{
         this.minPoolSize= ConfigurationManager.getInteger("mysql.minPoolSize");
         this.maxPoolSize= ConfigurationManager.getInteger("mysql.maxPoolSize");
         this.poolSize = ConfigurationManager.getInteger("poolSize");
+        logger.info("pool size is "+poolSize);
         for(int i=0;i<poolSize;i++){
             pools.add(i);
         }
