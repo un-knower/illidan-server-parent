@@ -17,6 +17,7 @@ public class StorageInfoQuery extends BaseQueryEntity {
     private String address;
     private String user;
     private String password;
+    private String driver;
 
     public Long getId() {
         return id;
@@ -56,6 +57,14 @@ public class StorageInfoQuery extends BaseQueryEntity {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public String getDriver() {
+        return driver;
+    }
+
+    public void setDriver(String driver) {
+        this.driver = driver;
     }
 
     @Override
