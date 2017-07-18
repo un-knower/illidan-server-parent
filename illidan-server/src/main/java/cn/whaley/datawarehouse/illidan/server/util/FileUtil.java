@@ -1,11 +1,9 @@
 package cn.whaley.datawarehouse.illidan.server.util;
 
-import com.sun.javafx.collections.MappingChange;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -114,11 +112,8 @@ public class FileUtil {
      */
     public static String createEngineJob(Map<String,String> map){
         String taskName = map.get("taskCode");
-        String emails = map.get("emails");
         StringBuffer buffer = new StringBuffer();
         buffer.append("type=command");
-        buffer.append(System.getProperty("line.separator"));
-        buffer.append("failure.emails="+emails);
         buffer.append(System.getProperty("line.separator"));
         buffer.append("command=sh  ../submit_engine.sh --taskCode " +taskName +" --startDate ${startDate} --endDate ${endDate}");
         return buffer.toString();
@@ -132,7 +127,6 @@ public class FileUtil {
     public static String createExportJob(Map<String,String> map){
         String taskName = map.get("taskCode");
         taskName = taskName.substring(0,taskName.lastIndexOf("_export"));
-        String emails = map.get("emails");
         String hiveDb = map.get("hiveDb");
         String hiveTable = map.get("hiveTable");
         String mysqlDb = map.get("mysqlDb");
@@ -140,22 +134,19 @@ public class FileUtil {
         StringBuffer buffer = new StringBuffer();
         buffer.append("type=command");
         buffer.append(System.getProperty("line.separator"));
-        buffer.append("failure.emails="+emails);
-        buffer.append(System.getProperty("line.separator"));
         buffer.append("dependencies="+taskName);
         buffer.append(System.getProperty("line.separator"));
-        buffer.append("command=sh  ../submit_engine.sh --hiveDb " +hiveDb +" --hiveTable "+hiveTable+" --mysqlDb "+mysqlDb+" --mysqlTable "+mysqlTable+" --platForm 'illidan' --startDate ${startDate} --endDate ${endDate}");
+        buffer.append("command=sh  ../submit_export.sh --hiveDb " +hiveDb +" --hiveTable "+hiveTable+" --mysqlDb "+mysqlDb+" --mysqlTable "+mysqlTable+" --platForm 'illidan' --startDate ${startDate} --endDate ${endDate}");
         return buffer.toString();
     }
 
-
+    /**
+     * 创建错误job文件
+     * @param map
+     * @return
+     */
     public static String createErrorJob(Map<String,String> map){
         String taskName = map.get("taskCode");
-        String emails = map.get("emails");
-        String hiveDb = map.get("hiveDb");
-        String hiveTable = map.get("hiveTable");
-        String mysqlDb = map.get("mysqlDb");
-        String mysqlTable = map.get("mysqlTable");
         StringBuffer buffer = new StringBuffer();
         buffer.append("type=command");
         buffer.append(System.getProperty("line.separator"));
@@ -194,13 +185,7 @@ public class FileUtil {
             log.error("writeFile is err : "+e.getMessage());
             throw new RuntimeException("writeFile is err ...");
         }finally {
-            try {
-                fos.close();
-                pw.close();
-            }catch (Exception e){
-                log.error("writeFile is err : "+e.getMessage());
-                throw new RuntimeException("writeFile is err ...");
-            }
+           close(fos,pw);
         }
     }
 
@@ -208,6 +193,7 @@ public class FileUtil {
      * job文件中写入内容
      * @param taskName
      */
+    @Deprecated
     public static void writeJob(String dirPath ,String projecName,String groupName,String taskName,String emails){
         FileOutputStream fos  = null;
         PrintWriter pw = null;
@@ -228,15 +214,17 @@ public class FileUtil {
             log.error("writeFile is err : "+e.getMessage());
             throw new RuntimeException("writeFile is err ...");
         }finally {
-            try {
-                fos.close();
-                pw.close();
-            }catch (Exception e){
-                log.error("writeFile is err : "+e.getMessage());
-                throw new RuntimeException("writeFile is err ...");
-            }
+            close(fos,pw);
         }
     }
+
+    /**
+     * 写入
+     * @param dirPath
+     * @param projecName
+     * @param groupName
+     * @param taskNames
+     */
     public static void writeEndJob(String dirPath,String projecName,String groupName,List<String> taskNames){
         FileOutputStream fos  = null;
         PrintWriter pw = null;
@@ -258,30 +246,68 @@ public class FileUtil {
             pw.write(buffer.toString().toCharArray());
             pw.flush();
         }catch (Exception e){
+            log.error("writeEndFile is err : "+e.getMessage());
+            throw new RuntimeException("writeEndFile is err ...");
+        }finally {
+            close(fos,pw);
+        }
+    }
+    public static void write2AzkabanProperties(Map<String,String> map){
+        String dirPath = map.get("path");
+        String projecName = map.get("projectCode");
+        String groupName = map.get("groupCode");
+        String emails = map.get("emails");
+        FileOutputStream fos  = null;
+        PrintWriter pw = null;
+        String filepath=dirPath+File.separator+projecName+File.separator+groupName+File.separator+"azkaban.properties";
+        StringBuffer buffer = new StringBuffer();
+        buffer.append("yyyy=${azkaban.flow.start.year}");
+        buffer.append(System.getProperty("line.separator"));
+        buffer.append("MM=${azkaban.flow.start.month}");
+        buffer.append(System.getProperty("line.separator"));
+        buffer.append("dd=${azkaban.flow.start.day}");
+        buffer.append(System.getProperty("line.separator"));
+        buffer.append("hh=${azkaban.flow.start.hour}");
+        buffer.append(System.getProperty("line.separator"));
+        buffer.append("failure.emails="+emails);
+        buffer.append(System.getProperty("line.separator"));
+        buffer.append("hh=${azkaban.flow.start.hour}");
+        buffer.append(System.getProperty("line.separator"));
+        buffer.append("backoff=30000");
+        buffer.append(System.getProperty("line.separator"));
+        buffer.append("retries=1");
+        buffer.append(System.getProperty("line.separator"));
+        buffer.append("startDate=${yyyy}${MM}${dd}");
+        buffer.append(System.getProperty("line.separator"));
+        buffer.append("endDate=${yyyy}${MM}${dd}");
+        buffer.append(System.getProperty("line.separator"));
+        buffer.append("user.to.proxy=spark");
+        buffer.append(System.getProperty("line.separator"));
+        try {
+            File file = new File(filepath);//文件路径(包括文件名称)
+            fos = new FileOutputStream(file);
+            pw = new PrintWriter(fos);
+            pw.write(buffer.toString().toCharArray());
+            pw.flush();
+        }catch (Exception e){
+            log.error("write2Properties is err : "+e.getMessage());
+            throw new RuntimeException("write2Properties is err ...");
+        }finally {
+            close(fos,pw);
+        }
+    }
+
+    public static void close(FileOutputStream fos,PrintWriter pw){
+        try {
+            fos.close();
+            pw.close();
+        }catch (Exception e){
             log.error("writeFile is err : "+e.getMessage());
             throw new RuntimeException("writeFile is err ...");
-        }finally {
-            try {
-                fos.close();
-                pw.close();
-            }catch (Exception e){
-                log.error("writeFile is err : "+e.getMessage());
-                throw new RuntimeException("writeFile is err ...");
-            }
         }
     }
     public static void main(String[] args) {
-//        FileUtil.createFile("project","flow","task");
-        File file = new File("G:\\zip\\project");
-        FileUtil.deleteDFile(file);
-//        FileUtil.copyFile("G:\\zip","G:\\zip\\project","pro.properties");
 
-/*       List<String> list = new ArrayList<>();
-        list.add("a");
-        list.add("b");
-        list.add("c");
-        FileUtil.writeEndJob("project","flow",list);*/
-//        FileUtil.writeJob("project","flow","task","guo.hao@whaley.cn,xiaoming@whaley.cn");
     }
 
 }

@@ -109,10 +109,11 @@ public class AzkabanService {
                     }
                 }
                 //写入 结束 end.job
+                FileUtil.write2AzkabanProperties(jobMap);
                 FileUtil.writeEndJob(path,projectCode,groupCode,taskNames);
             }
-            //copy properties,submit.sh
-            String[] zipExtensions = {"jar", "sh","properties"};
+            //copy jar,submit.sh
+            String[] zipExtensions = {"jar", "sh"};
             Collection<File> files = FileUtils.listFiles(FileUtils.getFile(path), zipExtensions, false);
             File destination = FileUtils.getFile(projectPath);
             for (File eachFile: files) {
