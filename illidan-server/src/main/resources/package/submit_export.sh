@@ -58,8 +58,8 @@ if [ "$platForm" = "" ];then
         filterCondition=" where 1=1 "
     fi
    echo "filterCondition is  $filterCondition"
-   java -cp  /opt/dw/guohao/illidan/lib/illidan-export-1.0.0.jar:/opt/dw/guohao/illidan/lib/*  cn.whaley.datawarehouse.illidan.export.Start --hiveDb $hiveDb --hiveTable $hiveTable --mysqlDb $mysqlDb --mysqlTable $mysqlTable --filterCondition "$filterCondition"
-  #java -cp ./*:/data/apps/azkaban/illidan/lib/*  cn.whaley.datawarehouse.illidan.export.Start --hiveDb $hiveDb --hiveTable $hiveTable --mysqlDb $mysqlDb --mysqlTable $mysqlTable --filterCondition "${filterCondition}"
+  #java -cp  /opt/dw/guohao/illidan/lib/illidan-export-1.0.0.jar:/opt/dw/guohao/illidan/lib/*  cn.whaley.datawarehouse.illidan.export.Start --hiveDb $hiveDb --hiveTable $hiveTable --mysqlDb $mysqlDb --mysqlTable $mysqlTable --filterCondition "$filterCondition"
+  java -cp ./*:/data/apps/azkaban/illidan_export/lib/*  cn.whaley.datawarehouse.illidan.export.Start --hiveDb $hiveDb --hiveTable $hiveTable --mysqlDb $mysqlDb --mysqlTable $mysqlTable --filterCondition "${filterCondition}"
   if [ $? -ne 0 ];then
      echo "  export is fail ..."
      exit 1
@@ -75,8 +75,8 @@ while [[ $startDate -le $endDate ]]
 do
 echo $startDate
 filterCondition=" where day_p = '${startDate}' "
- java -cp  /opt/dw/guohao/illidan/lib/illidan-export-1.0.0.jar:/opt/dw/guohao/illidan/lib/*  cn.whaley.datawarehouse.illidan.export.Start --hiveDb $hiveDb --hiveTable $hiveTable --mysqlDb $mysqlDb --mysqlTable $mysqlTable --filterCondition "${filterCondition}"
- #java -cp ./*:/data/apps/azkaban/illidan/lib/*  cn.whaley.datawarehouse.illidan.export.Start --hiveDb $hiveDb --hiveTable $hiveTable --mysqlDb $mysqlDb --mysqlTable $mysqlTable --filterCondition "${filterCondition}"
+ #java -cp  /opt/dw/guohao/illidan/lib/illidan-export-1.0.0.jar:/opt/dw/guohao/illidan/lib/*  cn.whaley.datawarehouse.illidan.export.Start --hiveDb $hiveDb --hiveTable $hiveTable --mysqlDb $mysqlDb --mysqlTable $mysqlTable --filterCondition "${filterCondition}"
+ java -cp ./*:/data/apps/azkaban/illidan_export/lib/*  cn.whaley.datawarehouse.illidan.export.Start --hiveDb $hiveDb --hiveTable $hiveTable --mysqlDb $mysqlDb --mysqlTable $mysqlTable --filterCondition "${filterCondition}"
 if [ $? -ne 0 ];then
    echo "  java -cp {$startDate} is fail ..."
    exit 1

@@ -12,8 +12,8 @@ import java.util.Map;
  * Created by guohao on 2017/7/11.
  */
 @Service
-public class HiveService {
-    private static Logger logger = LoggerFactory.getLogger(HiveService.class);
+public class HiveExportService {
+    private static Logger logger = LoggerFactory.getLogger(HiveExportService.class);
     @Autowired
     private MysqlService mysqlService;
     public List<Map<String, Object>> getHiveInfo(Map<String,String> map, MysqlDriver mysqlDriver){

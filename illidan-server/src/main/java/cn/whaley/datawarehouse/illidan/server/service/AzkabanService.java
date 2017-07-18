@@ -3,10 +3,13 @@ package cn.whaley.datawarehouse.illidan.server.service;
 import cn.whaley.datawarehouse.illidan.common.domain.group.TaskGroup;
 import cn.whaley.datawarehouse.illidan.common.domain.owner.Owner;
 import cn.whaley.datawarehouse.illidan.common.domain.project.Project;
+import cn.whaley.datawarehouse.illidan.common.domain.table.TableInfo;
+import cn.whaley.datawarehouse.illidan.common.domain.table.TableWithField;
 import cn.whaley.datawarehouse.illidan.common.domain.task.Task;
 import cn.whaley.datawarehouse.illidan.common.service.group.TaskGroupService;
 import cn.whaley.datawarehouse.illidan.common.service.owner.OwnerService;
 import cn.whaley.datawarehouse.illidan.common.service.project.ProjectService;
+import cn.whaley.datawarehouse.illidan.common.service.table.TableInfoService;
 import cn.whaley.datawarehouse.illidan.common.service.task.TaskService;
 import cn.whaley.datawarehouse.illidan.server.util.AzkabanUtil;
 import cn.whaley.datawarehouse.illidan.server.util.ConfigurationManager;
@@ -34,7 +37,8 @@ public class AzkabanService {
     private TaskGroupService taskGroupService;
     @Autowired
     private TaskService taskService;
-
+    @Autowired
+    private TableInfoService tableInfoService;
     public JSONObject publishProject(Long projectId){
         JSONObject result = new JSONObject();
         try {
@@ -54,10 +58,16 @@ public class AzkabanService {
                 result.put("message","project '"+projectCode+"' has no groups , please add  ...");
                 return result;
             }
+            Map<String,String> jobMap = new HashMap<>();
+            jobMap.put("projectCode",projectCode);
+            jobMap.put("path",path);
             for(TaskGroup taskGroup: taskGroupList){
                 Long groupId = taskGroup.getId();
                 String email = taskGroup.getEmail();
                 String groupCode = taskGroup.getGroupCode();
+
+                jobMap.put("groupCode",groupCode);
+                jobMap.put("emails",email);
                 List<Task> taskList = taskService.findTaskByGroupId(groupId);
                 //group下至少有一个task
                 if(taskList.size() == 0){
@@ -69,11 +79,34 @@ public class AzkabanService {
                 FileUtil.createDir(projectPath+File.separator+groupCode);
                 //写文件
                 List<String> taskNames = new ArrayList<>();
+
                 for(Task task:taskList){
                     String taskCode = task.getTaskCode();
+                    jobMap.put("taskCode",taskCode);
+                    jobMap.put("jobType","engine");
                     //写入 执行任务.job
-                    FileUtil.writeJob(path,projectCode,groupCode,taskCode,email);
-                    taskNames.add(taskCode);
+//                    FileUtil.writeJob(path,projectCode,groupCode,taskCode,email);
+                    FileUtil.writeJob(jobMap);
+                    //是否需要导出
+                    Long mysqlTableId = task.getMysqlTableId();
+                    if(mysqlTableId !=null){
+                        //需要导出 写入 export.job
+                        taskCode = taskCode+"_export";
+                        jobMap.put("taskCode",taskCode);
+                        jobMap.put("jobType","export");
+                        //1.目标mysql table,db信息
+                        TableWithField mysqlTableInfo = tableInfoService.getTableWithField(mysqlTableId);
+                        jobMap.put("mysqlTable",mysqlTableInfo.getTableCode());
+                        jobMap.put("mysqlDb",mysqlTableInfo.getDbInfo().getDbCode());
+                        //2.来源hive table,db信息
+                        TableWithField hiveTableInfo = tableInfoService.getTableWithField(task.getTableId());
+                        jobMap.put("hiveTable",hiveTableInfo.getTableCode());
+                        jobMap.put("hiveDb",hiveTableInfo.getDbInfo().getDbCode());
+                        FileUtil.writeJob(jobMap);
+                        taskNames.add(taskCode);
+                    }else {
+                        taskNames.add(taskCode);
+                    }
                 }
                 //写入 结束 end.job
                 FileUtil.writeEndJob(path,projectCode,groupCode,taskNames);

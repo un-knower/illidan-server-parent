@@ -1,11 +1,13 @@
 package cn.whaley.datawarehouse.illidan.server.util;
 
+import com.sun.javafx.collections.MappingChange;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 创建人：郭浩
@@ -104,6 +106,104 @@ public class FileUtil {
         }
     }
 
+
+    /**
+     * 创建执行job
+     * @param map
+     * @return
+     */
+    public static String createEngineJob(Map<String,String> map){
+        String taskName = map.get("taskCode");
+        String emails = map.get("emails");
+        StringBuffer buffer = new StringBuffer();
+        buffer.append("type=command");
+        buffer.append(System.getProperty("line.separator"));
+        buffer.append("failure.emails="+emails);
+        buffer.append(System.getProperty("line.separator"));
+        buffer.append("command=sh  ../submit_engine.sh --taskCode " +taskName +" --startDate ${startDate} --endDate ${endDate}");
+        return buffer.toString();
+    }
+
+    /**
+     * 创建导出job
+     * @param map
+     * @return
+     */
+    public static String createExportJob(Map<String,String> map){
+        String taskName = map.get("taskCode");
+        taskName = taskName.substring(0,taskName.lastIndexOf("_export"));
+        String emails = map.get("emails");
+        String hiveDb = map.get("hiveDb");
+        String hiveTable = map.get("hiveTable");
+        String mysqlDb = map.get("mysqlDb");
+        String mysqlTable = map.get("mysqlTable");
+        StringBuffer buffer = new StringBuffer();
+        buffer.append("type=command");
+        buffer.append(System.getProperty("line.separator"));
+        buffer.append("failure.emails="+emails);
+        buffer.append(System.getProperty("line.separator"));
+        buffer.append("dependencies="+taskName);
+        buffer.append(System.getProperty("line.separator"));
+        buffer.append("command=sh  ../submit_engine.sh --hiveDb " +hiveDb +" --hiveTable "+hiveTable+" --mysqlDb "+mysqlDb+" --mysqlTable "+mysqlTable+" --platForm 'illidan' --startDate ${startDate} --endDate ${endDate}");
+        return buffer.toString();
+    }
+
+
+    public static String createErrorJob(Map<String,String> map){
+        String taskName = map.get("taskCode");
+        String emails = map.get("emails");
+        String hiveDb = map.get("hiveDb");
+        String hiveTable = map.get("hiveTable");
+        String mysqlDb = map.get("mysqlDb");
+        String mysqlTable = map.get("mysqlTable");
+        StringBuffer buffer = new StringBuffer();
+        buffer.append("type=command");
+        buffer.append(System.getProperty("line.separator"));
+        buffer.append("command=echo "+taskName+" has some error ...");
+        return buffer.toString();
+    }
+
+    /**
+     * job文件中写入内容
+     * @param map
+     */
+    public static void writeJob(Map<String,String> map){
+        String dirPath = map.get("path");
+        String projecName = map.get("projectCode");
+        String groupName = map.get("groupCode");
+        String taskName = map.get("taskCode");
+        String jobType = map.get("jobType");
+        FileOutputStream fos  = null;
+        PrintWriter pw = null;
+        String filepath=dirPath+File.separator+projecName+File.separator+groupName+File.separator+taskName+".job";
+        String jobContent = "";
+        if("engine".equals(jobType)){
+            jobContent = createEngineJob(map);
+        }else if("export".equals(jobType)){
+            jobContent = createExportJob(map);
+        }else{
+            jobContent = createErrorJob(map);
+        }
+        try {
+            File file = new File(filepath);//文件路径(包括文件名称)
+            fos = new FileOutputStream(file);
+            pw = new PrintWriter(fos);
+            pw.write(jobContent.toCharArray());
+            pw.flush();
+        }catch (Exception e){
+            log.error("writeFile is err : "+e.getMessage());
+            throw new RuntimeException("writeFile is err ...");
+        }finally {
+            try {
+                fos.close();
+                pw.close();
+            }catch (Exception e){
+                log.error("writeFile is err : "+e.getMessage());
+                throw new RuntimeException("writeFile is err ...");
+            }
+        }
+    }
+
     /**
      * job文件中写入内容
      * @param taskName
@@ -118,7 +218,7 @@ public class FileUtil {
             buffer.append(System.getProperty("line.separator"));
             buffer.append("failure.emails="+emails);
             buffer.append(System.getProperty("line.separator"));
-            buffer.append("command=sh  ../submit.sh --taskCode " +taskName +" --startDate ${startDate} --endDate ${endDate}");
+            buffer.append("command=sh  ../submit_engine.sh --taskCode " +taskName +" --startDate ${startDate} --endDate ${endDate}");
             File file = new File(filepath);//文件路径(包括文件名称)
             fos = new FileOutputStream(file);
             pw = new PrintWriter(fos);

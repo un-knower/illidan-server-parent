@@ -1,7 +1,7 @@
 package cn.whaley.datawarehouse.illidan.export.execute;
 
 import cn.whaley.datawarehouse.illidan.export.driver.MysqlDriver;
-import cn.whaley.datawarehouse.illidan.export.service.HiveService;
+import cn.whaley.datawarehouse.illidan.export.service.HiveExportService;
 import cn.whaley.datawarehouse.illidan.export.util.ConfigurationManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,7 +17,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  public abstract class CommonExecute {
     private static Logger logger = LoggerFactory.getLogger(CommonExecute.class);
     @Autowired
-    private HiveService hiveService;
+    private HiveExportService hiveService;
 
     public static Queue<List<Object[]>> dataQueue = new ConcurrentLinkedQueue<List<Object[]>>();
     public void start(List<Map<String, Object>> hiveInfo,Map<String,String> map){
