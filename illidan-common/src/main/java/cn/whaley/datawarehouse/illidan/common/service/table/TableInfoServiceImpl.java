@@ -36,7 +36,7 @@ public class TableInfoServiceImpl implements TableInfoService {
 
     @Override
     public Long insert(TableInfo tableInfo) throws Exception {
-        Long count = tableInfoMapper.isExistTableInfo(tableInfo.getTableCode());
+        Long count = tableInfoMapper.isExistTableInfo(tableInfo.getTableCode(),tableInfo.getDbId());
         if (count > 0) {
             throw new Exception("表已经存在不能重复新增");
         }

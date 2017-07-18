@@ -86,6 +86,7 @@ public class TaskController extends Common {
             List<Task> tasks = taskService.findByTask(task);
             for (int i=0;i<=tasks.size()-1;++i){
                 tasks.get(i).setGroupCode(taskGroupService.get(tasks.get(i).getGroupId()).getGroupCode());
+                tasks.get(i).setIsExport2Mysql(taskService.isExport2Mysql(tasks.get(i).getId()));
             }
             outputTemplateJson(tasks, count);
         } catch (Exception e) {

@@ -59,6 +59,7 @@ public class Task implements Serializable {
      * 导入到mysql表
      */
     private Long mysqlTableId;
+    private Boolean isExport2Mysql;
 
     public Long getId() {
         return id;
@@ -162,6 +163,14 @@ public class Task implements Serializable {
 
     public void setMysqlTableId(Long mysqlTableId) {
         this.mysqlTableId = mysqlTableId;
+    }
+
+    public Boolean getIsExport2Mysql() {
+        return isExport2Mysql;
+    }
+
+    public void setIsExport2Mysql(Boolean isExport2Mysql) {
+        this.isExport2Mysql = isExport2Mysql;
     }
 
     @Override
