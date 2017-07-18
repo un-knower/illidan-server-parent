@@ -1,9 +1,9 @@
 package cn.whaley.datawarehouse.illidan.export.execute;
 
-import cn.whaley.datawarehouse.illidan.export.Start;
 import cn.whaley.datawarehouse.illidan.export.driver.MysqlDriver;
 import cn.whaley.datawarehouse.illidan.export.process.MysqlProcess;
 import cn.whaley.datawarehouse.illidan.export.service.MysqlService;
+import cn.whaley.datawarehouse.illidan.export.util.ConfigurationManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +12,8 @@ import org.springframework.stereotype.Service;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * Created by guohao on 2017/7/14.
@@ -33,17 +35,16 @@ public class MysqlExecute extends CommonExecute {
         int i = 0;
         Map<String,String> processMap = new HashMap<>();
         processMap.put("sql",insertSql);
+        ExecutorService exec = Executors.newFixedThreadPool(ConfigurationManager.getInteger("threadNum"));
         while (!isBreak()){
-            int poolParam = mysqlDriver.getPoolParam();
             List<Object[]> data = dataQueue.poll();
             i++;
             String threadName = "thread_"+i;
             processMap.put("threadName",threadName);
-            processMap.put("poolParam",String.valueOf(poolParam));
             MysqlProcess mysqlProcess = new MysqlProcess(processMap, data, mysqlDriver);
-            Thread thread = new Thread(mysqlProcess);
-            thread.start();
+            exec.execute(mysqlProcess);
         }
+        exec.shutdown();
     }
     public  Map<String,String> getMysqlDriveInfo(Map<String, String> map){
         return mysqlService.getMysqlDriveInfo(map);

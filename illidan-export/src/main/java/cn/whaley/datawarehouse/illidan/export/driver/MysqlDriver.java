@@ -15,7 +15,6 @@ public class MysqlDriver{
     /**
      * 控制线程并发数
      */
-    private LinkedList<Integer> pools = new LinkedList<Integer>();
     private Logger logger = LoggerFactory.getLogger(MysqlDriver.class);
     private JdbcTemplate jdbcTemplate ;
     private ComboPooledDataSource dataSource ;
@@ -25,7 +24,6 @@ public class MysqlDriver{
     private String passWord ;
     private int minPoolSize ;
     private int maxPoolSize ;
-    private int poolSize ;
     public MysqlDriver(Map<String,String> map){
         this.driver = map.get("driver");
         this.url =map.get("url");
@@ -33,11 +31,6 @@ public class MysqlDriver{
         this.passWord = map.get("passWord");
         this.minPoolSize= ConfigurationManager.getInteger("mysql.minPoolSize");
         this.maxPoolSize= ConfigurationManager.getInteger("mysql.maxPoolSize");
-        this.poolSize = ConfigurationManager.getInteger("poolSize");
-        logger.info("pool size is "+poolSize);
-        for(int i=0;i<poolSize;i++){
-            pools.add(i);
-        }
         //初始化线程池
         this.dataSource = getDataSource();
         this.jdbcTemplate = new JdbcTemplate(dataSource);
@@ -63,30 +56,11 @@ public class MysqlDriver{
             dataSource.setMinPoolSize(minPoolSize);
             dataSource.setMaxPoolSize(maxPoolSize);
         }catch (Exception e){
-            System.out.println(e.getMessage());
+            logger.error(e.getMessage());
         }
         return dataSource;
     }
 
-    public synchronized int getPoolParam(){
-        while(pools.size() == 0){
-            try {
-                logger.info("pools size is 0 sleep ... ");
-                Thread.sleep(300);
-            }catch (Exception e){
-                logger.error("get pools error ... "+e.getMessage());
-            }
-        }
-        return pools.poll();
-    }
-
-    /**
-     * 释放 param 到池中
-     * @param param
-     */
-    public void push(int param){
-        pools.push(param);
-    }
 
 }
 
