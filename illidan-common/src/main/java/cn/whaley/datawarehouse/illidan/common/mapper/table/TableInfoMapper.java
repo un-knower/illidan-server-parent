@@ -24,4 +24,6 @@ public interface TableInfoMapper {
     List<TableInfo> findByTableInfo(@Param("tableInfo") final TableInfoQuery tableInfo);
 
     Long updateById(@Param("tableInfo") final TableInfo tableInfo);
+
+    Long removeByIds(@Param("ids") final List<Long> ids);
 }

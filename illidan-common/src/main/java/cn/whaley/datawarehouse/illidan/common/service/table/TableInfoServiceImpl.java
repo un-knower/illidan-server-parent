@@ -80,4 +80,9 @@ public class TableInfoServiceImpl implements TableInfoService {
     public Long updateById(final TableInfo tableInfo){
         return tableInfoMapper.updateById(tableInfo);
     }
+
+    @Override
+    public Long removeByIds(List<Long> ids) {
+        return tableInfoMapper.removeByIds(ids);
+    }
 }

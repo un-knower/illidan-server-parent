@@ -41,9 +41,9 @@
             <if test="task.updateTime != null">
                 updateTime = #{task.updateTime},
             </if>
-            <if test="task.mysqlTableId != null">
+            <!--d<if test="task.mysqlTableId != null">-->
                 mysqlTableId = #{task.mysqlTableId},
-            </if>
+            <!--d</if>-->
 
         </set>
     </sql>

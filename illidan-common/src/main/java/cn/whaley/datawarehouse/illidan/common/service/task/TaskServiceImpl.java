@@ -20,6 +20,8 @@ import cn.whaley.datawarehouse.illidan.common.service.field.FieldInfoServiceImpl
 import cn.whaley.datawarehouse.illidan.common.service.storage.StorageInfoService;
 import cn.whaley.datawarehouse.illidan.common.service.table.TableInfoService;
 import cn.whaley.datawarehouse.illidan.common.service.table.TableInfoServiceImpl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -32,6 +34,7 @@ import java.util.*;
 
 @Service
 public class TaskServiceImpl implements TaskService {
+    private Logger logger = LoggerFactory.getLogger(TaskServiceImpl.class);
     @Autowired
     private TaskMapper taskMapper;
     @Autowired
@@ -218,13 +221,54 @@ public class TaskServiceImpl implements TaskService {
         //task
         Task task = new Task();
         BeanUtils.copyProperties(taskFull,task);
-        taskMapper.updateById(task);
+
         //table_info
         List<TableWithField> tableList = taskFull.getTableList();
         for (TableWithField t : tableList) {
+            DbInfoWithStorage dbInfo = dbInfoService.getDbWithStorage(t.getDbId());
+            //存储类型,1:hive,2:mysql
+            Long storageType = dbInfo.getStorageType();
+
             TableInfo tableInfo = new TableInfo();
             BeanUtils.copyProperties(t,tableInfo);
             Long tableId = tableInfo.getId();
+
+            Long mysqlTableId = null;
+            String mysqlTableCode = null;
+            if (storageType==2){
+                mysqlTableId = tableInfo.getId();
+                mysqlTableCode = tableInfo.getTableCode();
+//                logger.info("mysqlTableId: "+mysqlTableId);
+//                logger.info("mysqlTableCode: "+mysqlTableCode);
+            }
+            //不导出到mysql,将mysqlTableId的值置为空并删除table_info表里的这条记录
+            if (mysqlTableId!=null && !taskFull.getIsExport2Mysql()){
+//                logger.info("修改成不导出到mysql,task.mysqlTableId=null并删除table_info表里的记录");
+                List<Long> idList = new ArrayList<Long>();
+                idList.add(mysqlTableId);
+                tableInfoMapper.removeByIds(idList);
+                logger.error("删除了table：" + idList.toString());
+                task.setMysqlTableId(null);
+            }
+            //导出到mysql,将mysql table的信息插入到table_info
+            if (mysqlTableCode!=null && !mysqlTableCode.equals("") && taskFull.getIsExport2Mysql()){
+//                logger.info("修改成导出到mysql,修改task.mysqlTableId的值并向table_info表里插入记录");
+                try {
+                    Long count = tableInfoMapper.isExistTableInfo(mysqlTableCode,tableInfo.getDbId());
+//                    logger.info("count: "+count);
+                    if (count <= 0){
+//                        logger.info("插入到table_info");
+                        Long id = tableInfoService.insert(tableInfo);
+                        tableInfo.setCreateTime(new Date());
+                        task.setMysqlTableId(id);
+                    }else {
+                        task.setMysqlTableId(mysqlTableId);
+                    }
+                } catch (Exception e) {
+                    logger.error(e.getMessage());
+                }
+            }
+
             tableInfoMapper.updateById(tableInfo);
             //field_info,先删除再添加
             List<FieldInfo> fieldList = t.getFieldList();
@@ -243,6 +287,7 @@ public class TaskServiceImpl implements TaskService {
                 fieldInfoService.insertBatch(fieldInfoList1);
             }
         }
+        taskMapper.updateById(task);
         return task.getId();
     }
 
