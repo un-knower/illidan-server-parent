@@ -101,11 +101,22 @@
                     </div>
                 </div>
             </div>
+            <div class="col-sm-12">
+                <div class="form-group">
+                    <label class="col-md-1 control-label">导出到mysql</label>
+                    <label>
+                        <input type="radio" id="noExport2Mysql" name="export2Mysql" value="no" onclick="isExport2Mysql(this)"> 否
+                    </label>
+                    <label>
+                        <input type="radio" id="export2Mysql" name="export2Mysql" value="yes" onclick="isExport2Mysql(this)"> 是
+                    </label>
+                </div>
+            </div>
             <div class="col-sm-6" id="mysqlDataBaseDiv" style="display: none">
                 <div class="form-group">
                     <label class="col-md-1 control-label">mysql目标数据库</label>
                     <div class="col-md-6">
-                        <select disabled id="mysqlDataBase" name="mysqlDataBase" class="selectpicker show-tick form-control" title="请选择mysql目标数据库" data-live-search="true">
+                        <select id="mysqlDataBase" name="mysqlDataBase" class="selectpicker show-tick form-control" title="请选择mysql目标数据库" data-live-search="true">
                             <c:forEach begin="0" end="${mysqlDbInfoList.size()-1}"  var="index">
                                 <option value ="${mysqlDbInfoList.get(index).id}" >${mysqlDbInfoList.get(index).dbCode}</option>
                             </c:forEach>
@@ -117,7 +128,7 @@
                 <div class="form-group">
                     <label class="col-md-1 control-label">mysql目标表</label>
                     <div class="col-md-6">
-                        <input disabled class="form-control" id="mysqlTable" value="${mysqlTable}">
+                        <input class="form-control" id="mysqlTable" value="${mysqlTable}">
                     </div>
                 </div>
             </div>
@@ -160,12 +171,28 @@
         $('#dbId').selectpicker('val', dbId);
         $('#mysqlDataBase').selectpicker('val', ${mysqlDbId});
         $('#executeType').selectpicker('val', executeTypeArray);
+        var dDiv = document.getElementById("mysqlDataBaseDiv");
+        var tDiv = document.getElementById("mysqlTableDiv");
+        var noExport2Mysql = document.getElementById("noExport2Mysql");
+        var export2Mysql = document.getElementById("export2Mysql");
         if ('${flag}' == "true") {
-            var dDiv = document.getElementById("mysqlDataBaseDiv");
-            var tDiv = document.getElementById("mysqlTableDiv");
             dDiv.style.display = "block";
             tDiv.style.display = "block";
+            export2Mysql.checked = true;
+        }else{
+            noExport2Mysql.checked = true;
         }
+
+        if (($('#mysqlDataBase').val()!=null && $('#mysqlDataBase').val()!="") && ($('#mysqlTable').val()!=null && $('#mysqlTable').val()!="")){
+//            console.log("is not null");
+            $("#mysqlDataBase").attr("disabled", true);
+            $("#mysqlTable").attr("disabled", true);
+        }else {
+//            console.log("is null");
+            $("#mysqlDataBase").attr("disabled", false);
+            $("#mysqlTable").attr("disabled", false);
+        }
+
     });
 
     function add() {
@@ -209,6 +236,13 @@
         }
         taskFull.content = $("#content").val();
         taskFull.taskDes = $("#taskDes").val();
+        if($('input:radio[id="noExport2Mysql"]:checked').val()!=null){
+            taskFull.isExport2Mysql = false;
+        }
+        if($('input:radio[id="export2Mysql"]:checked').val()!=null){
+            taskFull.isExport2Mysql = true;
+        }
+
         $.ajax({
             type: 'POST',
             url: '/task/edit',
@@ -240,6 +274,24 @@
 
     function closeParentWindow(){
         window.parent.closeWindow();
+    }
+
+    function isExport2Mysql(obj) {
+        var dDiv = document.getElementById("mysqlDataBaseDiv");
+        var tDiv = document.getElementById("mysqlTableDiv");
+        var noExport2Mysql = document.getElementById("noExport2Mysql");
+        var export2Mysql = document.getElementById("export2Mysql");
+
+        if(obj.value=="yes"){
+            noExport2Mysql.checked = false;
+            dDiv.style.display = "block";
+            tDiv.style.display = "block";
+        }else{
+            export2Mysql.checked = false;
+            dDiv.style.display = "none";
+            tDiv.style.display = "none";
+//            $("#schedule").val("0");
+        }
     }
 </script>
 </body>

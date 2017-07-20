@@ -22,4 +22,6 @@ public interface TableInfoService {
     TableInfo findOne(final TableInfoQuery tableInfo);
 
     Long updateById(final TableInfo tableInfo);
+
+    Long removeByIds(final List<Long> ids);
 }
