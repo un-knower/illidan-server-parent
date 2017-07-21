@@ -3,8 +3,11 @@ package cn.whaley.datawarehouse.illidan.common.service.task;
 import cn.whaley.datawarehouse.illidan.common.domain.db.DbInfo;
 import cn.whaley.datawarehouse.illidan.common.domain.db.DbInfoWithStorage;
 import cn.whaley.datawarehouse.illidan.common.domain.field.FieldInfo;
+import cn.whaley.datawarehouse.illidan.common.domain.group.TaskGroup;
+import cn.whaley.datawarehouse.illidan.common.domain.project.Project;
 import cn.whaley.datawarehouse.illidan.common.domain.storage.StorageInfo;
 import cn.whaley.datawarehouse.illidan.common.domain.table.TableInfo;
+import cn.whaley.datawarehouse.illidan.common.domain.table.TableInfoQuery;
 import cn.whaley.datawarehouse.illidan.common.domain.table.TableWithField;
 import cn.whaley.datawarehouse.illidan.common.domain.task.Task;
 import cn.whaley.datawarehouse.illidan.common.domain.task.TaskFull;
@@ -17,6 +20,8 @@ import cn.whaley.datawarehouse.illidan.common.service.db.DbInfoService;
 import cn.whaley.datawarehouse.illidan.common.service.db.DbInfoServiceImpl;
 import cn.whaley.datawarehouse.illidan.common.service.field.FieldInfoService;
 import cn.whaley.datawarehouse.illidan.common.service.field.FieldInfoServiceImpl;
+import cn.whaley.datawarehouse.illidan.common.service.group.TaskGroupService;
+import cn.whaley.datawarehouse.illidan.common.service.project.ProjectService;
 import cn.whaley.datawarehouse.illidan.common.service.storage.StorageInfoService;
 import cn.whaley.datawarehouse.illidan.common.service.table.TableInfoService;
 import cn.whaley.datawarehouse.illidan.common.service.table.TableInfoServiceImpl;
@@ -51,13 +56,18 @@ public class TaskServiceImpl implements TaskService {
     private StorageInfoService storageInfoService;
     @Autowired
     private DbInfoService dbInfoService;
+    @Autowired
+    private ProjectService projectService;
+    @Autowired
+    private TaskGroupService taskGroupService;
 
     public Task get(final Long id) {
         return taskMapper.get(id);
     }
 
     public Long insert(final Task task) throws Exception{
-        Long count = taskMapper.isExistTask(task.getTaskCode(),task.getStatus());
+        List<Long> groupIdList = getAllGroupId(task);
+        Long count = taskMapper.isExistTask(groupIdList,task.getTaskCode(),task.getStatus());
         if(count > 0){
             throw new Exception("任务已经存在不能重复新增");
         }
@@ -172,7 +182,10 @@ public class TaskServiceImpl implements TaskService {
         HashMap<Long,Long> tableIdMap = new HashMap<Long,Long>();
         List<TableWithField> tableList = taskFull.getTableList();
         //判断task是否存在
-        Long count = taskMapper.isExistTask(taskFull.getTaskCode(), taskFull.getStatus());
+        Task task = new Task();
+        BeanUtils.copyProperties(taskFull,task);
+        List<Long> groupIdList = getAllGroupId(task);
+        Long count = taskMapper.isExistTask(groupIdList,task.getTaskCode(), task.getStatus());
         if (count > 0) {
             throw new Exception("任务已经存在不能重复新增");
         }
@@ -207,8 +220,6 @@ public class TaskServiceImpl implements TaskService {
             }
         }
         //插入task信息
-        Task task = new Task();
-        BeanUtils.copyProperties(taskFull,task);
         task.setTableId(tableIdMap.get(1L));//hive
         task.setMysqlTableId(tableIdMap.get(2L));//mysql
         taskMapper.insert(task);
@@ -217,7 +228,7 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public Long updateFullTask(TaskFull taskFull) {
+    public Long updateFullTask(TaskFull taskFull) throws Exception {
         //task
         Task task = new Task();
         BeanUtils.copyProperties(taskFull,task);
@@ -233,40 +244,12 @@ public class TaskServiceImpl implements TaskService {
             BeanUtils.copyProperties(t,tableInfo);
             Long tableId = tableInfo.getId();
 
-            Long mysqlTableId = null;
-            String mysqlTableCode = null;
-            if (storageType==2){
-                mysqlTableId = tableInfo.getId();
-                mysqlTableCode = tableInfo.getTableCode();
-//                logger.info("mysqlTableId: "+mysqlTableId);
-//                logger.info("mysqlTableCode: "+mysqlTableCode);
-            }
-            //不导出到mysql,将mysqlTableId的值置为空并删除table_info表里的这条记录
-            if (mysqlTableId!=null && !taskFull.getIsExport2Mysql()){
-//                logger.info("修改成不导出到mysql,task.mysqlTableId=null并删除table_info表里的记录");
-                List<Long> idList = new ArrayList<Long>();
-                idList.add(mysqlTableId);
-                tableInfoMapper.removeByIds(idList);
-                logger.error("删除了table：" + idList.toString());
-                task.setMysqlTableId(null);
-            }
-            //导出到mysql,将mysql table的信息插入到table_info
-            if (mysqlTableCode!=null && !mysqlTableCode.equals("") && taskFull.getIsExport2Mysql()){
-//                logger.info("修改成导出到mysql,修改task.mysqlTableId的值并向table_info表里插入记录");
-                try {
-                    Long count = tableInfoMapper.isExistTableInfo(mysqlTableCode,tableInfo.getDbId());
-//                    logger.info("count: "+count);
-                    if (count <= 0){
-//                        logger.info("插入到table_info");
-                        Long id = tableInfoService.insert(tableInfo);
-                        tableInfo.setCreateTime(new Date());
-                        task.setMysqlTableId(id);
-                    }else {
-                        task.setMysqlTableId(mysqlTableId);
-                    }
-                } catch (Exception e) {
-                    logger.error(e.getMessage());
-                }
+            Long exportTableId;
+            String exportTableCode;
+            if (storageType==2) {
+                exportTableId = tableInfo.getId();
+                exportTableCode = tableInfo.getTableCode();
+                changeExport(task,tableInfo,exportTableId,exportTableCode,taskFull.getIsExport2Mysql());
             }
 
             tableInfoMapper.updateById(tableInfo);
@@ -310,6 +293,45 @@ public class TaskServiceImpl implements TaskService {
             flag = true;
         }
         return flag;
+    }
+
+    public void changeExport(Task task ,TableInfo tableInfo, Long tableId, String tableCode, Boolean isExport) throws Exception{
+        //不导出 (是->否)
+        if (tableId != null && !isExport) {
+            logger.info("修改成不导出,task表的export table code置成空,并删除table_info表里的记录");
+            List<Long> idList = new ArrayList<Long>();
+            idList.add(tableId);
+            tableInfoMapper.removeByIds(idList);
+            logger.info("删除了table：" + idList.toString());
+            task.setMysqlTableId(null);
+        } else if (tableId == null && tableCode != null && !tableCode.equals("") && isExport) {//导出 (否->是)
+                logger.info("修改成导出,修改task表export table的值并向table_info表里插入记录");
+                Long count = tableInfoMapper.isExistTableInfo(tableCode, tableInfo.getDbId());
+                if (count <= 0) {
+                    Long id = tableInfoService.insert(tableInfo);
+                    logger.info("插入了table: "+ id);
+                    tableInfo.setCreateTime(new Date());
+                    task.setMysqlTableId(id);
+                } else {
+                    throw new Exception(tableCode+" 表已经存在不能重复新增");
+                }
+            } else {
+                TableInfoQuery tableInfoQuery = new TableInfoQuery();
+                tableInfoQuery.setTableCode(tableCode);
+                tableInfoQuery.setDbId(tableInfo.getDbId());
+                TableInfo tableInfo1 = tableInfoService.findOne(tableInfoQuery);
+                task.setMysqlTableId(tableInfo1.getId());
+            }
+    }
+
+    public List<Long> getAllGroupId(Task task){
+        Project project = projectService.findProjectByGroupId(task.getGroupId());
+        List<TaskGroup> taskGroupList = taskGroupService.findTaskGroupByProjectId(project.getId());
+        List<Long> groupIdList = new ArrayList<Long>();
+        for (TaskGroup taskGroup : taskGroupList){
+            groupIdList.add(taskGroup.getId());
+        }
+        return groupIdList;
     }
 
 }

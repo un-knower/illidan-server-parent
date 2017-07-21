@@ -81,6 +81,7 @@ public class ProjectController extends Common {
             }
             outputTemplateJson(projects, count);
         } catch (Exception e) {
+            logger.error(e.getMessage());
             e.printStackTrace();
         }
     }
@@ -101,6 +102,7 @@ public class ProjectController extends Common {
             modelMap.addAttribute("createTime",createTime);
             view = new ModelAndView("/project/detail");
         }catch (Exception e){
+            logger.error(e.getMessage());
             e.printStackTrace();
         }
         return view;
@@ -121,10 +123,12 @@ public class ProjectController extends Common {
     public void edit(@RequestBody Project project) {
         try {
             if(StringUtils.isEmpty(project)){
+                logger.error("修改项目失败!!!");
                 returnResult(false, "修改项目失败!!!");
             } else {
                 project.setUpdateTime(new Date());
                 projectService.updateById(project);
+                logger.info("修改项目成功!!!");
                 returnResult(true, "修改项目成功!!!");
             }
         } catch (Exception e) {
@@ -170,6 +174,7 @@ public class ProjectController extends Common {
                     projectService.deleteById(project.getId());
                     returnResult(false, reseult.getString("message").replaceAll("'","\\\\'"));
                 }
+                logger.info("新增项目成功!!!");
                 returnResult(true, "新增项目成功!!!");
             }
         } catch (Exception e) {
@@ -190,7 +195,7 @@ public class ProjectController extends Common {
             String[] idArray = ids.split(",");
             List<Long> idList = Arrays.asList(idArray).stream().map(x->Long.parseLong(x)).collect(Collectors.toList());
             projectService.removeByIds(idList);
-            logger.error("删除了项目：" + ids);
+            logger.info("删除了项目：" + ids);
             returnResult(true, "删除项目成功");
         } catch (Exception e) {
             e.printStackTrace();
@@ -216,8 +221,10 @@ public class ProjectController extends Common {
     public void toPublishProject(Long id) {
         JSONObject result = azkabanService.publishProject(id);
         if("success".equals(result.getString("status"))){
+            logger.info("发布项目成功,项目id: "+id);
             returnResult(true, "发布项目成功");
         }else{
+            logger.error("发布项目失败,"+result.getString("message"));
             returnResult(false,result.getString("message").replaceAll("'","\\\\'"));
         }
     }

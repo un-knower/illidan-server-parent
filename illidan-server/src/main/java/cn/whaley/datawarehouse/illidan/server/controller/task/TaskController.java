@@ -137,6 +137,7 @@ public class TaskController extends Common {
                 fieldInfoService.setFiledValue(fieldInfos);
                 taskService.insertFullTask(taskFull);
             }
+            logger.info("新增任务成功!!!");
             return returnResult(true, "新增任务成功!!!");
         } catch (Exception e) {
             e.printStackTrace();
@@ -195,11 +196,12 @@ public class TaskController extends Common {
 //                taskFull.getTable().setUpdateTime(new Date());
                 taskService.updateFullTask(taskFull);
             }
+            logger.info("修改任务成功!!!");
             return returnResult(true, "修改任务成功!!!");
         } catch (Exception e) {
             e.printStackTrace();
             logger.error(e.getMessage());
-            return returnResult(false, "修改任务失败" + e.getMessage());
+            return returnResult(false, "修改任务失败," + e.getMessage());
         }
     }
 

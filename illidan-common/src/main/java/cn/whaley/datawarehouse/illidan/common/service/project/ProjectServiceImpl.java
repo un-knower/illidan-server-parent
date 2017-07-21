@@ -1,7 +1,9 @@
 package cn.whaley.datawarehouse.illidan.common.service.project;
 
+import cn.whaley.datawarehouse.illidan.common.domain.group.TaskGroup;
 import cn.whaley.datawarehouse.illidan.common.domain.project.Project;
 import cn.whaley.datawarehouse.illidan.common.domain.project.ProjectQuery;
+import cn.whaley.datawarehouse.illidan.common.mapper.group.TaskGroupMapper;
 import cn.whaley.datawarehouse.illidan.common.mapper.project.ProjectMapper;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +17,8 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Autowired
     private ProjectMapper projectMapper;
+    @Autowired
+    private TaskGroupMapper taskGroupMapper;
 
     public Project get(final Long id) {
         return projectMapper.get(id);
@@ -92,5 +96,12 @@ public class ProjectServiceImpl implements ProjectService {
     @Override
     public void deleteById(Long id) {
         projectMapper.deleteById(id);
+    }
+
+    @Override
+    public Project findProjectByGroupId(Long groupId) {
+        TaskGroup taskGroup = taskGroupMapper.get(groupId);
+        Long projectId = taskGroup.getProjectId();
+        return projectMapper.get(projectId);
     }
 }

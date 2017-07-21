@@ -38,4 +38,6 @@ public interface ProjectService {
     List<Project> getByCodeLike(String projectCode);
 
     void deleteById(Long id);
+
+    Project findProjectByGroupId(Long groupId);
 }

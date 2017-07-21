@@ -61,7 +61,7 @@ public interface TaskService {
 
     Long insertFullTask(final TaskFull taskFull) throws Exception;
 
-    Long updateFullTask(final TaskFull taskFull);
+    Long updateFullTask(final TaskFull taskFull) throws Exception;
 
     List<Task> findTaskByGroupId(final Long groupId);
 

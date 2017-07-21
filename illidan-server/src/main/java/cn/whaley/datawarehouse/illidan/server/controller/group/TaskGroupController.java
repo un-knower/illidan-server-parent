@@ -74,6 +74,7 @@ public class TaskGroupController extends Common {
             }
             outputTemplateJson(taskGroups, count);
         } catch (Exception e) {
+            e.getMessage();
             e.printStackTrace();
         }
     }
@@ -103,6 +104,7 @@ public class TaskGroupController extends Common {
                 returnResult(false, "任务组code只能由英文字母,数字,-,_组成!!!");
             }else {
                 taskGroupService.insert(taskGroup);
+                logger.info("新增任务组成功!!!");
                 returnResult(true, "新增任务组成功!!!");
             }
         } catch (Exception e) {
@@ -122,7 +124,7 @@ public class TaskGroupController extends Common {
                 String[] idArray = ids.split(",");
                 List<Long> idList = Arrays.asList(idArray).stream().map(x->Long.parseLong(x)).collect(Collectors.toList());
                 taskGroupService.removeByIds(idList);
-                logger.error("删除了任务组：" + ids);
+                logger.info("删除了任务组：" + ids);
                 returnResult(true, "删除任务组成功");
             }
 
