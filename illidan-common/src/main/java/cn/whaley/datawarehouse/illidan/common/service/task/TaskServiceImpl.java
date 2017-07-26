@@ -62,12 +62,28 @@ public class TaskServiceImpl implements TaskService {
     private TaskGroupService taskGroupService;
 
     public Task get(final Long id) {
+        if (id == null){
+            logger.error("get: id is null.");
+            return null;
+        }
         return taskMapper.get(id);
     }
 
     public Long insert(final Task task) throws Exception{
+        if (task == null){
+            logger.error("insert: task is null.");
+            return null;
+        }
         List<Long> groupIdList = getAllGroupId(task);
+        if (groupIdList == null || groupIdList.size()<=0){
+            logger.error("insert: groupIdList is null. task: "+task.toString());
+            return null;
+        }
         Long count = taskMapper.isExistTask(groupIdList,task.getTaskCode(),task.getStatus());
+        if (count == null){
+            logger.error("insert: count is null. task: "+task.toString());
+            return null;
+        }
         if(count > 0){
             throw new Exception("任务已经存在不能重复新增");
         }
@@ -75,71 +91,132 @@ public class TaskServiceImpl implements TaskService {
     }
 
     public Long insertBatch(final List<Task> list) {
+        if (list == null || list.size()<=0){
+            logger.error("insertBatch: list is null.");
+            return null;
+        }
         return taskMapper.insertBatch(list);
     }
 
     public Long update(final Map<String, Object> params) {
+        if (params == null){
+            logger.error("update: params is null.");
+            return null;
+        }
         return taskMapper.update(params);
     }
 
     public Long remove(final Map<String, Object> params) {
+        if (params == null){
+            logger.error("remove: params is null.");
+            return null;
+        }
         return taskMapper.remove(params);
     }
 
     public List<Task> find(final TaskQuery task) {
+        if (task == null){
+            logger.error("find: task is null.");
+            return null;
+        }
         return taskMapper.find(task);
     }
 
     public Long count(final Map<String, String> params) {
+        if (params == null){
+            logger.error("count: params is null.");
+            return null;
+        }
         return taskMapper.count(params);
     }
 
     public Long countByTask(final TaskQuery task) {
+        if (task == null){
+            logger.error("countByTask: task is null.");
+            return null;
+        }
         return taskMapper.countByTask(task);
     }
 
     public Long updateByTask(final Task task) {
+        if (task == null){
+            logger.error("updateByTask: task is null.");
+            return null;
+        }
         return taskMapper.updateByTask(task);
     }
 
     public Long updateById(final Task task) {
+        if (task == null){
+            logger.error("updateById: task is null.");
+            return null;
+        }
         return taskMapper.updateById(task);
     }
 
     public Long removeByTask(final TaskQuery task) {
+        if (task == null){
+            logger.error("removeByTask: task is null.");
+            return null;
+        }
         return taskMapper.removeByTask(task);
     }
 
     public List<Task> findByTask(final TaskQuery task) {
+        if (task == null){
+            logger.error("findByTask: task is null.");
+            return null;
+        }
         return taskMapper.findByTask(task);
     }
 
     public Task findOne(final TaskQuery task) {
+        if (task == null){
+            logger.error("findOne: task is null.");
+            return null;
+        }
         task.setLimitStart(0);
         task.setLimitEnd(1);
         List<Task> datas = taskMapper.find(task);
         if (datas != null && datas.size() > 0) {
             return datas.get(0);
         }
+        logger.error("findOne: data list is null. task: "+task.toString());
         return null;
     }
 
     @Override
     public Long removeByIds(List<Long> ids) {
+        if (ids == null || ids.size()<=0){
+            logger.error("removeByIds: id list is null.");
+            return null;
+        }
         return taskMapper.removeByIds(ids);
     }
 
     @Override
     public List<Task> getByCodeLike(String taskCode) {
+        if (taskCode == null || taskCode.equals("")){
+            logger.error("getByCodeLike: taskCode is null.");
+            return null;
+        }
         return taskMapper.getByCodeLike(taskCode);
     }
 
     public TaskFull getFullTaskByCode(final String taskCode){
+        if (taskCode == null || taskCode.equals("")){
+            logger.error("getFullTaskByCode: taskCode is null.");
+            return null;
+        }
         return getFullTaskBy(taskCode, null);
     }
 
     @Override
     public TaskFull getFullTask(Long id) {
+        if (id == null){
+            logger.error("getFullTask: id is null.");
+            return null;
+        }
         return getFullTaskBy(null,id);
     }
 
@@ -168,6 +245,9 @@ public class TaskServiceImpl implements TaskService {
                 BeanUtils.copyProperties(task, taskFull);
                 taskFull.setTableList(tableWithFieldList);
                 taskFull.setExecuteTypeList(executeTypeList);
+            } else {
+                logger.error("getFullTaskBy: task is null. taskCode: "+taskCode+" ,taskId: "+id);
+                return null;
             }
 
         }catch (Exception e){
@@ -179,18 +259,30 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public Long insertFullTask(TaskFull taskFull) throws Exception {
+        if (taskFull == null){
+            logger.error("insertFullTask: taskFull is null.");
+            return null;
+        }
         HashMap<Long,Long> tableIdMap = new HashMap<Long,Long>();
         List<TableWithField> tableList = taskFull.getTableList();
         //判断task是否存在
         Task task = new Task();
         BeanUtils.copyProperties(taskFull,task);
         List<Long> groupIdList = getAllGroupId(task);
+        if (groupIdList == null || groupIdList.size()<=0){
+            logger.error("insertFullTask: groupIdList is null. taskFull: "+taskFull.toString());
+            return null;
+        }
         Long count = taskMapper.isExistTask(groupIdList,task.getTaskCode(), task.getStatus());
         if (count > 0) {
             throw new Exception("任务已经存在不能重复新增");
         }
         for (int i=0; i<=tableList.size()-1; ++i) {
             DbInfoWithStorage dbInfo = dbInfoService.getDbWithStorage(tableList.get(i).getDbId());
+            if (dbInfo == null){
+                logger.error("insertFullTask: dbInfo is null. taskFull: "+taskFull.toString());
+                return null;
+            }
             //存储类型,1:hive,2:mysql
             Long storageType = dbInfo.getStorageType();
             TableWithField tableWithField = tableList.get(i);
@@ -200,6 +292,10 @@ public class TaskServiceImpl implements TaskService {
             BeanUtils.copyProperties(tableWithField, tableInfo);
             //插入表信息,并返回其主键id
             Long tableId = tableInfoService.insert(tableInfo);
+            if (tableId == null){
+                logger.error("insertFullTask: 插入table_info返回的tableId is null. tableInfo: "+tableInfo.toString());
+                return null;
+            }
             tableIdMap.put(storageType,tableId);
 
             //插入字段到field_info
@@ -217,6 +313,9 @@ public class TaskServiceImpl implements TaskService {
                 fieldInfoService.removeByTableId(tableId);
                 //2.批量插入
                 fieldInfoService.insertBatch(fieldInfos);
+            } else {
+                logger.error("insertFullTask: fieldInfoList is null. tableWithField: "+tableWithField.toString());
+                return null;
             }
         }
         //插入task信息
@@ -229,14 +328,26 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public Long updateFullTask(TaskFull taskFull) throws Exception {
+        if (taskFull == null){
+            logger.error("updateFullTask: taskFull is null.");
+            return null;
+        }
         //task
         Task task = new Task();
         BeanUtils.copyProperties(taskFull,task);
 
         //table_info
         List<TableWithField> tableList = taskFull.getTableList();
+        if (tableList == null || tableList.size()<=0){
+            logger.error("updateFullTask: tableList is null. taskFull: "+taskFull.toString());
+            return null;
+        }
         for (TableWithField t : tableList) {
             DbInfoWithStorage dbInfo = dbInfoService.getDbWithStorage(t.getDbId());
+            if (dbInfo == null){
+                logger.error("updateFullTask: dbInfo is null. taskFull: "+taskFull);
+                return null;
+            }
             //存储类型,1:hive,2:mysql
             Long storageType = dbInfo.getStorageType();
 
@@ -268,6 +379,9 @@ public class TaskServiceImpl implements TaskService {
                 fieldInfoService.removeByTableId(tableId);
                 //2.批量插入
                 fieldInfoService.insertBatch(fieldInfoList1);
+            } else {
+                logger.error("updateFullTask: fieldList is null. tableWithField: "+t.toString());
+                return null;
             }
         }
         taskMapper.updateById(task);
@@ -276,11 +390,19 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public List<Task> findTaskByGroupId(Long groupId) {
+        if (groupId == null){
+            logger.error("findTaskByGroupId: groupId is null.");
+            return null;
+        }
         List<Task> taskList = null;
         try {
             TaskQuery task = new TaskQuery();
             task.setGroupId(groupId);
             taskList = findByTask(task);
+            if (taskList == null || taskList.size()<=0){
+                logger.error("findTaskByGroupId: taskList is null. groupId: "+groupId);
+                return null;
+            }
         }catch (Exception e){
             e.printStackTrace();
         }
@@ -288,6 +410,10 @@ public class TaskServiceImpl implements TaskService {
     }
 
     public Boolean isExport2Mysql(final Long id){
+        if (id == null){
+            logger.error("isExport2Mysql: id is null.");
+            return null;
+        }
         Boolean flag = false;
         if (taskMapper.get(id).getMysqlTableId() != null){
             flag = true;
@@ -325,8 +451,20 @@ public class TaskServiceImpl implements TaskService {
     }
 
     public List<Long> getAllGroupId(Task task){
+        if (task == null){
+            logger.error("getAllGroupId: task is null.");
+            return null;
+        }
         Project project = projectService.findProjectByGroupId(task.getGroupId());
+        if (project == null){
+            logger.error("getAllGroupId: project is null. task: "+task.toString());
+            return null;
+        }
         List<TaskGroup> taskGroupList = taskGroupService.findTaskGroupByProjectId(project.getId());
+        if (taskGroupList == null || taskGroupList.size()<=0){
+            logger.error("getAllGroupId: taskGroupList is null. task: "+task.toString());
+            return null;
+        }
         List<Long> groupIdList = new ArrayList<Long>();
         for (TaskGroup taskGroup : taskGroupList){
             groupIdList.add(taskGroup.getId());
