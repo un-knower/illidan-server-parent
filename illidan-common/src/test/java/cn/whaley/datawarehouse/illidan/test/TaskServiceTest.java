@@ -119,7 +119,8 @@ public class TaskServiceTest {
 //        TaskFull task = taskService.getFullTaskByCode("noMysql");
 //        String tableName = task.getTable().getDbInfo().getDbCode() + "." + task.getTable().getTableCode();
 //        System.out.println(tableName);
-        DbInfoWithStorage dbInfoWithStorage = dbInfoService.getDbWithStorageByCode("dws");
+        DbInfoWithStorage dbInfoWithStorage = dbInfoService.getDbWithStorageByCode("medusa");
+        System.out.println(dbInfoWithStorage);
         System.out.println(dbInfoWithStorage.getId());
         System.out.println(dbInfoWithStorage.getDbCode());
         System.out.println(dbInfoWithStorage.getDbDes());

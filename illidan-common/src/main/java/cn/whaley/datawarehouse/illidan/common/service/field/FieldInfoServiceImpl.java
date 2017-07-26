@@ -34,12 +34,7 @@ public class FieldInfoServiceImpl implements FieldInfoService {
             logger.error("getByTableId: tableId is null.");
             return null;
         }
-        List<FieldInfo> fieldInfos = fieldInfoMapper.getByTableId(tableId);
-        if(fieldInfos == null || fieldInfos.size()<=0) {
-            logger.error("getByTableId: fieldInfos is null. tableId: "+tableId);
-            return null;
-        }
-        return fieldInfos;
+        return fieldInfoMapper.getByTableId(tableId);
     }
 
     @Override
