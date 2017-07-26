@@ -313,9 +313,6 @@ public class TaskServiceImpl implements TaskService {
                 fieldInfoService.removeByTableId(tableId);
                 //2.批量插入
                 fieldInfoService.insertBatch(fieldInfos);
-            } else {
-                logger.error("insertFullTask: fieldInfoList is null. tableWithField: "+tableWithField.toString());
-                return null;
             }
         }
         //插入task信息
@@ -379,9 +376,6 @@ public class TaskServiceImpl implements TaskService {
                 fieldInfoService.removeByTableId(tableId);
                 //2.批量插入
                 fieldInfoService.insertBatch(fieldInfoList1);
-            } else {
-                logger.error("updateFullTask: fieldList is null. tableWithField: "+t.toString());
-                return null;
             }
         }
         taskMapper.updateById(task);

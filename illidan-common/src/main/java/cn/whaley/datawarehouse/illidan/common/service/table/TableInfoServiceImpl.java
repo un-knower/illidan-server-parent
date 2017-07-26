@@ -78,10 +78,10 @@ public class TableInfoServiceImpl implements TableInfoService {
         }
         //列名实体
         List<FieldInfo> fieldInfoList = fieldInfoService.getByTableId(tableInfo.getId());
-        if (fieldInfoList == null || fieldInfoList.size()<=0){
-            logger.error("getTableWithField: fieldInfoList is null. tableId: "+id+", dbId: "+tableInfo.getDbId());
-            return null;
-        }
+//        if (fieldInfoList == null || fieldInfoList.size()<=0){
+//            logger.error("getTableWithField: fieldInfoList is null. tableId: "+id+", dbId: "+tableInfo.getDbId());
+//            return null;
+//        }
         TableWithField tableWithField = new TableWithField();
         BeanUtils.copyProperties(tableInfo, tableWithField);
         tableWithField.setDbInfo(dbInfo);
