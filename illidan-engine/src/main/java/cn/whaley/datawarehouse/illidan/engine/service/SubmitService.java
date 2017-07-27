@@ -100,7 +100,7 @@ public class SubmitService {
      */
     private Map<String, String> parseTimeInterval(String selectSql, List<String> executeTypeList, Date dateDueTime) {
         Map<String, String> result = new HashMap<>();
-        if (selectSql.contains("${start_time}") || selectSql.contains("${end_time}")) {
+        if (selectSql.contains("${start_time") || selectSql.contains("${end_time")) {
             if (executeTypeList == null) {
                 executeTypeList = new ArrayList<>();
             }
@@ -115,8 +115,8 @@ public class SubmitService {
                 if (!intervalType.shouldExecute(dateDueTime)) {
                     continue;
                 }
-                String sql = selectSql.replace("${start_time}", "${" + intervalType.getStartParam().getParamName() + "}");
-                sql = sql.replace("${end_time}", "${" + intervalType.getEndParam().getParamName() + "}");
+                String sql = selectSql.replace("${start_time", "${" + intervalType.getStartParam().getParamName());
+                sql = sql.replace("${end_time", "${" + intervalType.getEndParam().getParamName());
                 result.put(executeType, sql);
             }
         } else {
