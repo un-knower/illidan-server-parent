@@ -185,7 +185,7 @@ public class TaskGroupController extends Common {
                         }else{
                             //回退更新数据
                             taskGroupService.updateById(oldtaskGroup);
-                            returnResult(true, "修改任务组成功!!!");
+//                            returnResult(true, "修改任务组成功!!!");
                             returnResult(false, result.getString("message").replaceAll("'","\\\\'") );
                         }
                     }

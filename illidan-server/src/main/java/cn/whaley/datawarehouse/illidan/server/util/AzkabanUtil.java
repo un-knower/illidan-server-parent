@@ -1,6 +1,5 @@
 package cn.whaley.datawarehouse.illidan.server.util;
 
-import cn.whaley.datawarehouse.illidan.server.controller.project.ProjectController;
 import cn.whaley.datawarehouse.illidan.server.domain.FormFieldKeyValuePair;
 import cn.whaley.datawarehouse.illidan.server.domain.UploadFileItem;
 import org.json.JSONObject;
@@ -21,7 +20,7 @@ import java.util.Map;
  */
 
 public class AzkabanUtil {
-    private Logger log = LoggerFactory.getLogger(ProjectController.class);
+    private Logger log = LoggerFactory.getLogger(AzkabanUtil.class);
     /**
      * 模拟form 表单提交
      * @param sessionId
