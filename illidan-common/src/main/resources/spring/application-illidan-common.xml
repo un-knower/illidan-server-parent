@@ -10,8 +10,8 @@
 
     <bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource" destroy-method="close">
         <property name="driverClass" value="com.mysql.jdbc.Driver"/>
-        <!--<property name="jdbcUrl" value="jdbc:mysql://10.255.130.7:3306/illidan_new?characterEncoding=utf-8"/>-->
-        <property name="jdbcUrl" value="jdbc:mysql://10.255.130.1:3306/illidan_new?characterEncoding=utf-8"/>
+        <property name="jdbcUrl" value="jdbc:mysql://10.255.130.7:3306/illidan_new?characterEncoding=utf-8"/>
+        <!--<property name="jdbcUrl" value="jdbc:mysql://10.255.130.1:3306/illidan_new?characterEncoding=utf-8"/>-->
         <property name="user" value="bigdata"/>
         <property name="password" value="bigdata@whaley666"/>
         <!--连接池中保留的最小连接数。-->

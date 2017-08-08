@@ -69,7 +69,7 @@ public class SubmitService {
         //根据配置的执行周期，生成多条执行sql
         Map<String, String> selectSqlMap = parseTimeInterval(content, task.getExecuteTypeList(), dataDueTime);
         if (selectSqlMap == null || selectSqlMap.size() == 0) {
-            throw new RuntimeException("请检查执行周期配置：" + taskCode);
+            System.out.println("无需要执行的sql，请检查执行周期配置：" + taskCode);
         }
 
         for (String executeType : selectSqlMap.keySet()) {
@@ -93,6 +93,7 @@ public class SubmitService {
     /**
      * 根据配置的执行周期，生成多条执行sql。
      * 并且将统配参数${start_time}和${end_time}替换成具体的时间参数
+     *
      * @param selectSql
      * @param executeTypeList
      * @param dateDueTime
@@ -100,33 +101,37 @@ public class SubmitService {
      */
     private Map<String, String> parseTimeInterval(String selectSql, List<String> executeTypeList, Date dateDueTime) {
         Map<String, String> result = new HashMap<>();
-        if (selectSql.contains("${start_time") || selectSql.contains("${end_time")) {
-            if (executeTypeList == null) {
-                executeTypeList = new ArrayList<>();
+        if (executeTypeList == null) {
+            executeTypeList = new ArrayList<>();
+        }
+//        if (executeTypeList.isEmpty()) {
+//            executeTypeList.add(ExecuteIntervalType.DAY.getName());
+//        }
+
+        for (String executeType : executeTypeList) {
+            ExecuteIntervalType intervalType = ExecuteIntervalType.getByName(executeType);
+            if (intervalType == null) {
+                System.out.println("不合法的executeType：" + executeType);
+                continue;
             }
-            if (executeTypeList.isEmpty()) {
-                executeTypeList.add(ExecuteIntervalType.DAY.getName());
+            if (!intervalType.shouldExecute(dateDueTime)) {
+                System.out.println("未到executeType执行时间：" + executeType);
+                continue;
             }
-            for (String executeType : executeTypeList) {
-                ExecuteIntervalType intervalType = ExecuteIntervalType.getByName(executeType);
-                if (intervalType == null) {
-                    continue;
-                }
-                if (!intervalType.shouldExecute(dateDueTime)) {
-                    continue;
-                }
+            if (selectSql.contains("${start_time") || selectSql.contains("${end_time")) {
                 String sql = selectSql.replace("${start_time", "${" + intervalType.getStartParam().getParamName());
                 sql = sql.replace("${end_time", "${" + intervalType.getEndParam().getParamName());
                 result.put(executeType, sql);
+            } else {
+                result.put(executeType, selectSql);
             }
-        } else {
-            result.put(ExecuteIntervalType.DAY.getName(), selectSql);
         }
         return result;
     }
 
     /**
      * 根据select语句补充insert overwrite
+     *
      * @param selectSql
      * @param task
      * @param executeType
@@ -149,8 +154,8 @@ public class SubmitService {
                 insertStatement += "product_line='${product_line}'";
             } else {
                 if (DateParam.findByParamName(field) != null) {
-                    insertStatement += field + "='${" + field+ "}'";
-                }else {
+                    insertStatement += field + "='${" + field + "}'";
+                } else {
                     throw new RuntimeException("未知的分区字段" + field + "， task=" + task.getTaskCode());
                 }
             }
@@ -165,11 +170,12 @@ public class SubmitService {
                 "set tez.am.resource.memory.mb=4096;\n" +
                 "set hive.tez.container.size=4096;\n";
 
-        return tezStatement + insertStatement +  " " + selectSql;
+        return tezStatement + insertStatement + " " + selectSql;
     }
 
     /**
      * 替换sql中的时间参数
+     *
      * @param selectSql
      * @param dataDueTime
      * @param paramMap
@@ -243,7 +249,6 @@ public class SubmitService {
         Date date = DateParamMethod.invokeMethod(dataDueTime, dateParam.getMethodName());
         return DateFormat.format(date, dateFormat);
     }
-
 
 
     private String parseCustomParams(String sql, Map<String, String> paramMap) {
