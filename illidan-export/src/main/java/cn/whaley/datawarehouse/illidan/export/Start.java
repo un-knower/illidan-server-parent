@@ -62,6 +62,10 @@ public class Start {
         Map<String, String> hiveDriveInfo = commonExecute.getHiveDriveInfo(paramMap);
         MysqlDriver mysqlDriver = new MysqlDriver(hiveDriveInfo);
         List<Map<String, Object>> hiveInfo = commonExecute.getHiveInfo(hiveDriveInfo,mysqlDriver);
+        if(hiveInfo == null || hiveInfo.isEmpty()) {
+            System.out.println("没有数据 ... ");
+            return;
+        }
         //把数据放入缓存队列中
         commonExecute.addToQueue(hiveInfo);
         start(context,hiveInfo,hiveDriveInfo);
