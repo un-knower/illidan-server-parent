@@ -103,7 +103,7 @@
                 <div class="form-group">
                     <label class="col-md-1 control-label">导出到mysql</label>
                     <label>
-                        <input type="radio" name="export2Mysql" checked value="no" onclick="isExport2Mysql(this)"> 否
+                        <input type="radio" id="noExport2Mysql" name="export2Mysql" checked value="no" onclick="isExport2Mysql(this)"> 否
                     </label>
                     <label>
                         <input type="radio" name="export2Mysql" value="yes" onclick="isExport2Mysql(this)"> 是
@@ -206,6 +206,12 @@
         table1.tableDes = $("#tableDes").val().toString();
         table1.fieldList = fieldList;
         tableList.push(table1);
+
+        if($('input:radio[id="noExport2Mysql"]:checked').val()!=null){
+            $("#mysqlTable").val("");
+            $("#mysqlDataBase").val("");
+        }
+
         //mysql table
         if($("#mysqlTable").val().toString()!=null && $("#mysqlTable").val().toString()!="" && $("#mysqlDataBase").val().toString()!=null && $("#mysqlDataBase").val().toString()!=""){
             table2.tableCode = $("#mysqlTable").val().toString();

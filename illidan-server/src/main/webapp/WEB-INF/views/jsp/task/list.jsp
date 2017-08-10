@@ -110,7 +110,7 @@
                     },
                     {
                         data: function (row) {
-                            return "<a href='javascript:void(0);' onclick='edit(" + row.id + ");'>编辑</a>";
+                            return "<a href='javascript:void(0);' onclick='edit(" + row.id + ");'>编辑</a> <a href='javascript:void(0);' onclick='copyTask(" + row.id + ");'>复制</a>";
                         }
                     },
                     {data: "taskCode"},
@@ -243,38 +243,21 @@
     }
 
     function add() {
-        modalWindow("/task/toAdd?groupId=" + ${groupId}, "新增任务", 600, 800);
+        if(getCookie('taskId')!='' && getCookie('taskId')!=null){
+            modalWindow("/task/toEdit?id=" + getCookie('taskId') + "&groupId=" + ${groupId} + "&isCopy=1", "新增任务", 600, 800);
+        }else{
+            modalWindow("/task/toAdd?groupId=" + ${groupId}, "新增任务", 600, 800);
+        }
     }
 
     function edit(id) {
-        modalWindow("/task/toEdit?id=" + id + "&groupId=" + ${groupId}, "编辑任务", 600, 800);
+        modalWindow("/task/toEdit?id=" + id + "&groupId=" + ${groupId} + "&isCopy=0", "编辑任务", 600, 800);
     }
 
-    function publish(projectId) {
-        modalConfirm("提示", "你确定要发布吗?", function () {
-            publishProject(projectId)
-        }, cancle);
-    }
+    function copyTask(id){
+        setCookie('taskId', id, 30);
+        modalAlert("提示", "任务复制成功", searchList, "ok");
 
-    function publishProject(projectId) {
-        $.ajax({
-            type: 'POST',
-            url: '/project/toPublishProject',
-            data: "id=" + projectId,
-            dataType: 'json',
-            async: false,
-            success: function (data) {
-                if (data.result == true) {
-                    modalAlert("提示", data.msg, searchList, "ok");
-                } else {
-                    modalAlert("提示", data.msg, searchList, "error");
-                }
-            }
-        });
-    }
-
-    function project_detail(id){
-        modalWindow("/group/detail?id=" + id, "任务详情", 450, 700);
     }
 
     function remove() {
@@ -321,14 +304,6 @@
                 }
             }
         });
-    }
-
-    function exportExcel_f() {
-        $.download('/project/projectExportDate.xls',getParam(),'post' );
-    }
-
-    function goBack() {
-        window.location.href = "/group/list?projectId=${projectId}";
     }
 </script>
 </body>
