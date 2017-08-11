@@ -1,5 +1,8 @@
 <%@ page language="java" import="java.util.*" pageEncoding="utf-8" %>
 <%@include file="../taglibs.jsp"%>
+<%
+    String path = request.getContextPath();
+%>
 <!DOCTYPE html>
 <html >
 <head>
@@ -13,7 +16,7 @@
 <body>
 <div class="container">
     <ul class="pager" style="margin-top: 10px;margin-bottom: 0px;">
-        <li class="previous"><a href="/project/list"><span aria-hidden="true">&larr;</span> 返回项目列表</a></li>
+        <li class="previous"><a href="<%=path%>/project/list"><span aria-hidden="true">&larr;</span> 返回项目列表</a></li>
     </ul>
     <div class="page-header objhid">
         <div class="form-inline ">
@@ -95,7 +98,7 @@
                 bFilter: false,
                 bInfo: false,
                 ajax: {
-                    url: '/group/groupList',
+                    url: '<%=path%>/group/groupList',
                     type: 'POST',
                     dataType: 'json',
                     data: getParamWithProjectId()
@@ -140,7 +143,7 @@
                 "aoColumnDefs": [
                     {
                         "render": function(data, type, row, meta) {
-                            return '<a href="/task/list?groupId=' + row.id + '">' + row.groupCode + '</a>';
+                            return '<a href="<%=path%>/task/list?groupId=' + row.id + '">' + row.groupCode + '</a>';
                         },
                         //指定是第三列
                         "targets": 2
@@ -228,11 +231,11 @@
     }
 
     function add(projectId) {
-        modalWindow("/group/toAdd?projectId=" + projectId, "新增任务组", 450, 350);
+        modalWindow("<%=path%>/group/toAdd?projectId=" + projectId, "新增任务组", 450, 350);
     }
 
     function edit(id) {
-        modalWindow("/group/toEdit?id=" + id, "编辑任务组", 410, 350);
+        modalWindow("<%=path%>/group/toEdit?id=" + id, "编辑任务组", 410, 350);
     }
 
     function publish(projectId) {
@@ -244,7 +247,7 @@
     function publishProject(projectId) {
         $.ajax({
             type: 'POST',
-            url: '/project/toPublishProject',
+            url: '<%=path%>/project/toPublishProject',
             data: "id=" + projectId,
             dataType: 'json',
             async: false,
@@ -259,7 +262,7 @@
     }
 
     function project_detail(id){
-        modalWindow("/group/detail?id=" + id, "任务组详情", 450, 700);
+        modalWindow("<%=path%>/group/detail?id=" + id, "任务组详情", 450, 700);
     }
 
     function remove() {
@@ -294,7 +297,7 @@
     function deleteGroup(ids) {
         $.ajax({
             type: 'POST',
-            url: '/group/delete',
+            url: '<%=path%>/group/delete',
             data: "ids=" + ids,
             dataType: 'json',
             async: false,

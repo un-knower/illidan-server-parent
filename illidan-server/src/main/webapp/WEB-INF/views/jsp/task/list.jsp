@@ -1,5 +1,8 @@
 <%@ page language="java" import="java.util.*" pageEncoding="utf-8" %>
 <%@include file="../taglibs.jsp"%>
+<%
+    String path = request.getContextPath();
+%>
 <!DOCTYPE html>
 <html >
 <head>
@@ -13,7 +16,7 @@
 <body>
 <div class="container">
     <ul class="pager" style="margin-top: 10px;margin-bottom: 0px;">
-        <li class="previous"><a href="/group/list?projectId=${projectId}"><span aria-hidden="true">&larr;</span> 返回组列表</a></li>
+        <li class="previous"><a href="<%=path%>/group/list?projectId=${projectId}"><span aria-hidden="true">&larr;</span> 返回组列表</a></li>
     </ul>
     <div class="page-header objhid">
 
@@ -97,7 +100,7 @@
                 bFilter: false,
                 bInfo: false,
                 ajax: {
-                    url: '/task/taskList',
+                    url: '<%=path%>/task/taskList',
                     type: 'POST',
                     dataType: 'json',
                     data: getParamWithGroupId()
@@ -244,14 +247,14 @@
 
     function add() {
         if(getCookie('taskId')!='' && getCookie('taskId')!=null){
-            modalWindow("/task/toEdit?id=" + getCookie('taskId') + "&groupId=" + ${groupId} + "&isCopy=1", "新增任务", 600, 800);
+            modalWindow("<%=path%>/task/toEdit?id=" + getCookie('taskId') + "&groupId=" + ${groupId} + "&isCopy=1", "新增任务", 600, 800);
         }else{
-            modalWindow("/task/toAdd?groupId=" + ${groupId}, "新增任务", 600, 800);
+            modalWindow("<%=path%>/task/toAdd?groupId=" + ${groupId}, "新增任务", 600, 800);
         }
     }
 
     function edit(id) {
-        modalWindow("/task/toEdit?id=" + id + "&groupId=" + ${groupId} + "&isCopy=0", "编辑任务", 600, 800);
+        modalWindow("<%=path%>/task/toEdit?id=" + id + "&groupId=" + ${groupId} + "&isCopy=0", "编辑任务", 600, 800);
     }
 
     function copyTask(id){
