@@ -183,7 +183,7 @@
             noExport2Mysql.checked = true;
         }
 
-        if (($('#mysqlDataBase').val()!=null && $('#mysqlDataBase').val()!="") && ($('#mysqlTable').val()!=null && $('#mysqlTable').val()!="")){
+        if (($('#mysqlDataBase').val()!=null && $('#mysqlDataBase').val()!="") && ($('#mysqlTable').val()!=null && $('#mysqlTable').val()!="") && '${isCopy}'=='0'){
 //            console.log("is not null");
             $("#mysqlDataBase").attr("disabled", true);
             $("#mysqlTable").attr("disabled", true);
@@ -218,6 +218,18 @@
         table1.tableDes = $("#tableDes").val().toString();
         table1.fieldList = fieldList;
         tableList.push(table1);
+
+        if($('input:radio[id="noExport2Mysql"]:checked').val()!=null){
+            taskFull.isExport2Mysql = false;
+            if('${isCopy}'=='1'){
+                $("#mysqlTable").val("");
+                $("#mysqlDataBase").val("");
+            }
+        }
+        if($('input:radio[id="export2Mysql"]:checked').val()!=null){
+            taskFull.isExport2Mysql = true;
+        }
+
         //mysql table
         if($("#mysqlTable").val().toString()!=null && $("#mysqlTable").val().toString()!="" && $("#mysqlDataBase").val().toString()!=null && $("#mysqlDataBase").val().toString()!=""){
             table2.id = $("#mysqlTableId").val();
@@ -236,16 +248,18 @@
         }
         taskFull.content = $("#content").val();
         taskFull.taskDes = $("#taskDes").val();
-        if($('input:radio[id="noExport2Mysql"]:checked').val()!=null){
-            taskFull.isExport2Mysql = false;
-        }
-        if($('input:radio[id="export2Mysql"]:checked').val()!=null){
-            taskFull.isExport2Mysql = true;
+
+
+        var method = "edit";
+        if('${isCopy}'=='0'){
+            method = "edit";
+        }else{
+            method = "add";
         }
 
         $.ajax({
             type: 'POST',
-            url: '/task/edit',
+            url: '/task/'+method,
             data: JSON.stringify(taskFull),
             contentType: 'application/json', //设置请求头信息
             dataType: 'json',
@@ -257,12 +271,8 @@
                     modalAlert("提示", data.msg, closeWindow, "error");
                 }
             },
-            error: function (XMLHttpRequest, data, textStatus) {
-//                alert(eval(data));
-//                alert("status:" + XMLHttpRequest.status);
-//                alert("readyState:" + XMLHttpRequest.readyState);
-//                alert("textStatus:" + textStatus);
-                modalAlert("提示", "修改任务失败,请重新修改", closeWindow, "error");
+            error: function (data) {
+                modalAlert("提示", "修改任务失败,请重新修改"+data.msg, closeWindow, "error");
             }
         });
     }

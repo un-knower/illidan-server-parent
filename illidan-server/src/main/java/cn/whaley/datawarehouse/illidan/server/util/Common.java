@@ -214,6 +214,13 @@ public class Common {
         return null;
     }
 
+    public void clearCookie(String key){
+        Cookie newCookie = new Cookie(key, null);
+        newCookie.setMaxAge(0);
+//        newCookie.setPath("/");
+        this.getResponse().addCookie(newCookie);
+    }
+
     protected void writeJson(Object obj) {
         PrintWriter out = null;
         this.getResponse().setContentType("application/json; charset=utf-8");

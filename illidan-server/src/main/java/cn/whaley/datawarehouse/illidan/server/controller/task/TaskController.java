@@ -137,6 +137,10 @@ public class TaskController extends Common {
                 fieldInfoService.setFiledValue(fieldInfos);
                 taskService.insertFullTask(taskFull);
             }
+            if (getCookieValue("taskId")!=null && !getCookieValue("taskId").equals("")){
+                clearCookie("taskId");
+                logger.info("清除cookie");
+            }
             logger.info("新增任务成功!!!");
             return returnResult(true, "新增任务成功!!!");
         } catch (Exception e) {
@@ -147,7 +151,7 @@ public class TaskController extends Common {
     }
 
     @RequestMapping("toEdit")
-    public ModelAndView toEdit(Long id, ModelAndView mav, Long groupId) {
+    public ModelAndView toEdit(Long id, ModelAndView mav, Long groupId, int isCopy) {
         mav.setViewName("/task/edit");
         TaskFull task = taskService.getFullTask(id);
         List<FieldInfo> fieldInfoList = task.getTable().getFieldList();
@@ -174,6 +178,7 @@ public class TaskController extends Common {
         }
         Boolean flag = taskService.isExport2Mysql(task.getId());
         mav.addObject("flag" , flag);
+        mav.addObject("isCopy" , isCopy);
         mav.addObject("dbInfo", dbInfoList);
         mav.addObject("mysqlDbInfoList", mysqlDbInfoList);
         mav.addObject("task", task);
