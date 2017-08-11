@@ -1,5 +1,8 @@
 <%@ page language="java" pageEncoding="utf-8" %>
 <%@include file="../taglibs.jsp"%>
+<%
+    String path = request.getContextPath();
+%>
 <!DOCTYPE html>
 <html >
 <head>
@@ -98,7 +101,7 @@
         group.projectId = $("#projectId").val();
         $.ajax({
             type: 'POST',
-            url: '/group/add',
+            url: '<%=path%>/group/add',
             data: JSON.stringify(group),
             contentType: 'application/json', //设置请求头信息
             dataType: 'json',

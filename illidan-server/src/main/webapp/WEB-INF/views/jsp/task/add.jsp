@@ -1,6 +1,9 @@
 <%@ page import="java.util.List" %>
 <%@ page language="java" pageEncoding="utf-8" %>
 <%@include file="../taglibs.jsp"%>
+<%
+    String path = request.getContextPath();
+%>
 <!DOCTYPE html>
 <html >
 <head>
@@ -230,7 +233,7 @@
 
         $.ajax({
             type: 'POST',
-            url: '/task/add',
+            url: '<%=path%>/task/add',
             data: JSON.stringify(taskFull),
             contentType: 'application/json', //设置请求头信息
             dataType: 'json',

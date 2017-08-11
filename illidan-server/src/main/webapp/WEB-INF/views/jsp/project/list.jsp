@@ -1,5 +1,8 @@
 <%@ page language="java" import="java.util.*" pageEncoding="utf-8" %>
 <%@include file="../taglibs.jsp"%>
+<%
+    String path = request.getContextPath();
+%>
 <!DOCTYPE html>
 <html >
 <head>
@@ -89,7 +92,7 @@
                 bFilter: false,
                 bInfo: false,
                 ajax: {
-                    url: '/project/projectList',
+                    url: '<%=path%>/project/projectList',
                     type: 'POST',
                     dataType: 'json',
                     data: getParam()
@@ -225,15 +228,15 @@
     }
 
     function add() {
-        modalWindow("/project/toAdd", "新增项目", 410, 350);
+        modalWindow("<%=path%>/project/toAdd", "新增项目", 410, 350);
     }
 
     function edit(id) {
-        modalWindow("/project/toEdit?id=" + id, "编辑项目", 410, 350);
+        modalWindow("<%=path%>/project/toEdit?id=" + id, "编辑项目", 410, 350);
     }
 
     function project_detail(id){
-        modalWindow("/project/detail?id=" + id, "项目详情", 450, 700);
+        modalWindow("<%=path%>/project/detail?id=" + id, "项目详情", 450, 700);
     }
     
     function publish(id) {
@@ -245,7 +248,7 @@
     function publishProject(id) {
         $.ajax({
             type: 'POST',
-            url: '/project/toPublishProject',
+            url: '<%=path%>/project/toPublishProject',
             data: "id=" + id,
             dataType: 'json',
             async: false,
@@ -291,7 +294,7 @@
     function deleteProject(ids) {
         $.ajax({
             type: 'POST',
-            url: '/project/delete',
+            url: '<%=path%>/project/delete',
             data: "ids=" + ids,
             dataType: 'json',
             async: false,
