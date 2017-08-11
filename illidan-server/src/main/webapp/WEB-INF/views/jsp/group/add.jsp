@@ -45,7 +45,7 @@
             <div class="col-sm-6" id="scheduleDiv" style="display: none">
                 <div class="form-group">
                     <div class="col-md-6">
-                        <input class="form-control" id="schedule" placeholder="调度策略" value="0">
+                        <input class="form-control" id="schedule" placeholder="调度策略">
                     </div>
                 </div>
             </div>

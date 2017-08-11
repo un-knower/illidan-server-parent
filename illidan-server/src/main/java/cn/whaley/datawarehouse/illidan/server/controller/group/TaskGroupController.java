@@ -173,7 +173,7 @@ public class TaskGroupController extends Common {
                         String scheduleId = oldtaskGroup.getScheduleId();
                         JSONObject result = null;
                         //cronExpression修改
-                        if("0".equals(cronExpression)){
+                        if("".equals(cronExpression)){
                             //取消调度
                             result = azkabanService.deleteSchedule(project.getId(), oldtaskGroup, scheduleId);
                         }else{
