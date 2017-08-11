@@ -145,7 +145,7 @@
                     {
                         "render": function(data, type, row, meta) {
 //                            return '<a href="javascript:void(0);" onclick="goToGroup(' + row.id + ');">' + row.projectCode + '</a>';
-                            return '<a href="/group/list?projectId=' + row.id + '">' + row.projectCode + '</a>';
+                            return '<a href="<%=path%>/group/list?projectId=' + row.id + '">' + row.projectCode + '</a>';
                         },
                         //指定是第三列
                         "targets": 2

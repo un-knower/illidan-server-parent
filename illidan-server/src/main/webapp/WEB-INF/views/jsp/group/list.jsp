@@ -143,7 +143,7 @@
                 "aoColumnDefs": [
                     {
                         "render": function(data, type, row, meta) {
-                            return '<a href="/task/list?groupId=' + row.id + '">' + row.groupCode + '</a>';
+                            return '<a href="<%=path%>/task/list?groupId=' + row.id + '">' + row.groupCode + '</a>';
                         },
                         //指定是第三列
                         "targets": 2
