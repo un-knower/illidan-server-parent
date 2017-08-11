@@ -16,7 +16,7 @@
 <body>
 <div class="container">
     <ul class="pager" style="margin-top: 10px;margin-bottom: 0px;">
-        <li class="previous"><a href="/group/list?projectId=${projectId}"><span aria-hidden="true">&larr;</span> 返回组列表</a></li>
+        <li class="previous"><a href="<%=path%>/group/list?projectId=${projectId}"><span aria-hidden="true">&larr;</span> 返回组列表</a></li>
     </ul>
     <div class="page-header objhid">
 

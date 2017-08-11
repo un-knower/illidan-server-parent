@@ -16,7 +16,7 @@
 <body>
 <div class="container">
     <ul class="pager" style="margin-top: 10px;margin-bottom: 0px;">
-        <li class="previous"><a href="/project/list"><span aria-hidden="true">&larr;</span> 返回项目列表</a></li>
+        <li class="previous"><a href="<%=path%>/project/list"><span aria-hidden="true">&larr;</span> 返回项目列表</a></li>
     </ul>
     <div class="page-header objhid">
         <div class="form-inline ">
