@@ -1,6 +1,6 @@
 package cn.whaley.datawarehouse.illidan.export.execute;
 
-import cn.whaley.datawarehouse.illidan.export.driver.MysqlDriver;
+import cn.whaley.datawarehouse.illidan.export.driver.JdbcDriver;
 import cn.whaley.datawarehouse.illidan.export.service.HiveExportService;
 import cn.whaley.datawarehouse.illidan.export.util.ConfigurationManager;
 import org.slf4j.Logger;
@@ -13,7 +13,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 /**
  * Created by guohao on 2017/7/14.
  */
-@Service
+
  public abstract class CommonExecute {
     private static Logger logger = LoggerFactory.getLogger(CommonExecute.class);
     @Autowired
@@ -55,17 +55,17 @@ import java.util.concurrent.ConcurrentLinkedQueue;
      * @return
      */
     public static Boolean isBreak(){
-        return dataQueue.size()==0 ?true:false ;
+        return dataQueue.size() == 0;
     }
 
     /**
      * 获取hive数据
      * @param map
-     * @param mysqlDriver
+     * @param jdbcDriver
      * @return
      */
-    public List<Map<String, Object>> getHiveInfo(Map<String,String> map, MysqlDriver mysqlDriver){
-        return hiveService.getHiveInfo(map,mysqlDriver);
+    public List<Map<String, Object>> getHiveInfo(Map<String,String> map, JdbcDriver jdbcDriver){
+        return hiveService.getHiveInfo(map, jdbcDriver);
     }
     /**
      * 获取驱动的相关信息,同时把已有的数据向下传递
