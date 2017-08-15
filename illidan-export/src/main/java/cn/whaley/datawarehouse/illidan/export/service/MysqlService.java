@@ -60,20 +60,20 @@ public class MysqlService {
         return deleteSql;
     }
 
-    public Map<String, String> getMysqlDriveInfo(Map<String, String> map) {
-        return getDriveInfo("mysqlDb", map);
-    }
+//    public Map<String, String> getMysqlDriveInfo(Map<String, String> map) {
+//        return getDriveInfo("mysqlDb", map);
+//    }
 
-    public Map<String, String> getDriveInfo(String db, Map<String, String> map) {
-        DbInfoWithStorage dbWithStorageByCode = dbInfoService.getDbWithStorageByCode(map.get(db));
-        String url = dbWithStorageByCode.getAddress();
-        String driver = dbWithStorageByCode.getDriver();
-        String userName = dbWithStorageByCode.getUser();
-        String passWord = dbWithStorageByCode.getPassword();
-        map.put("url", url);
-        map.put("driver", driver);
-        map.put("userName", userName);
-        map.put("passWord", passWord);
-        return map;
-    }
+//    public Map<String, String> getDriveInfo(String db, Map<String, String> map) {
+//        DbInfoWithStorage dbWithStorageByCode = dbInfoService.getDbWithStorageByCode(map.get(db));
+//        String url = dbWithStorageByCode.getAddress();
+//        String driver = dbWithStorageByCode.getDriver();
+//        String userName = dbWithStorageByCode.getUser();
+//        String passWord = dbWithStorageByCode.getPassword();
+//        map.put("url", url);
+//        map.put("driver", driver);
+//        map.put("userName", userName);
+//        map.put("passWord", passWord);
+//        return map;
+//    }
 }

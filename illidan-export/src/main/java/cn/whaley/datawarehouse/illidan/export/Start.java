@@ -1,7 +1,7 @@
 package cn.whaley.datawarehouse.illidan.export;
 
 
-import cn.whaley.datawarehouse.illidan.export.driver.JdbcDriver;
+import cn.whaley.datawarehouse.illidan.export.driver.JdbcFactory;
 import cn.whaley.datawarehouse.illidan.export.execute.CommonExecute;
 import cn.whaley.datawarehouse.illidan.export.execute.MysqlExecute;
 import org.slf4j.Logger;
@@ -60,23 +60,22 @@ public class Start {
         System.out.println("filterCondition is ... " + filterCondition);
         //获取hive数据
         CommonExecute commonExecute = context.getBean(CommonExecute.class);
-        Map<String, String> hiveDriveInfo = commonExecute.getHiveDriveInfo(paramMap);
-        JdbcDriver jdbcDriver = new JdbcDriver(hiveDriveInfo);
-        List<Map<String, Object>> hiveInfo = commonExecute.getHiveInfo(hiveDriveInfo, jdbcDriver);
+
+        List<Map<String, Object>> hiveInfo = commonExecute.getHiveInfo(paramMap);
         if (hiveInfo == null || hiveInfo.isEmpty()) {
             System.out.println("没有数据 ... ");
             return;
         }
         //把数据放入缓存队列中
         commonExecute.addToQueue(hiveInfo);
-        start(context, hiveInfo, hiveDriveInfo);
+        start(context, hiveInfo, paramMap);
     }
 
     public static void start(GenericXmlApplicationContext context, List<Map<String, Object>> hiveInfo, Map<String, String> map) {
         //mysql 插入数据
         MysqlExecute mysqlExecute = context.getBean(MysqlExecute.class);
-        Map<String, String> mysqlDriveInfo = mysqlExecute.getMysqlDriveInfo(map);
-        mysqlExecute.start(hiveInfo, mysqlDriveInfo);
+//        Map<String, String> mysqlDriveInfo = mysqlExecute.getMysqlDriveInfo(map);
+        mysqlExecute.start(hiveInfo, map);
     }
 
 }

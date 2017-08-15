@@ -1,12 +1,12 @@
 package cn.whaley.datawarehouse.illidan.export.execute;
 
-import cn.whaley.datawarehouse.illidan.export.driver.JdbcDriver;
+import cn.whaley.datawarehouse.illidan.export.driver.JdbcFactory;
 import cn.whaley.datawarehouse.illidan.export.service.HiveExportService;
 import cn.whaley.datawarehouse.illidan.export.util.ConfigurationManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+
 import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -64,15 +64,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
      * @param jdbcDriver
      * @return
      */
-    public List<Map<String, Object>> getHiveInfo(Map<String,String> map, JdbcDriver jdbcDriver){
-        return hiveService.getHiveInfo(map, jdbcDriver);
-    }
-    /**
-     * 获取驱动的相关信息,同时把已有的数据向下传递
-     * @param map
-     * @return
-     */
-    public  Map<String,String> getHiveDriveInfo(Map<String, String> map){
-        return hiveService.getHiveDriveInfo(map);
+    public List<Map<String, Object>> getHiveInfo(Map<String,String> map){
+        return hiveService.getHiveInfo(map);
     }
 }

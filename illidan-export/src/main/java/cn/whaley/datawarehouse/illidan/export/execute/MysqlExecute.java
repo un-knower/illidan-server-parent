@@ -1,12 +1,13 @@
 package cn.whaley.datawarehouse.illidan.export.execute;
 
-import cn.whaley.datawarehouse.illidan.export.driver.JdbcDriver;
+import cn.whaley.datawarehouse.illidan.export.driver.JdbcFactory;
 import cn.whaley.datawarehouse.illidan.export.process.MysqlProcess;
 import cn.whaley.datawarehouse.illidan.export.service.MysqlService;
 import cn.whaley.datawarehouse.illidan.export.util.ConfigurationManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -23,6 +24,8 @@ public class MysqlExecute extends CommonExecute {
     private static Logger logger = LoggerFactory.getLogger(MysqlExecute.class);
     @Autowired
     private MysqlService mysqlService;
+    @Autowired
+    private JdbcFactory jdbcFactory;
 
     @Override
     public void execute(List<Map<String, Object>> hiveInfo, Map<String, String> map) {
@@ -30,8 +33,8 @@ public class MysqlExecute extends CommonExecute {
         String insertSql = mysqlService.getInsertSql(hiveInfo, map);
         String deleteSql = mysqlService.getDeleteSql(map);
         //根据数据库名查找数据库相关信息
-        JdbcDriver jdbcDriver = new JdbcDriver(map);
-        jdbcDriver.getJdbcTemplate().update(deleteSql);
+        JdbcTemplate jdbcTemplate = jdbcFactory.create(map.get("mysqlDb"));
+        jdbcTemplate.update(deleteSql);
         logger.info("delete success ...");
         int i = 0;
         Map<String, String> processMap = new HashMap<>();
@@ -42,15 +45,12 @@ public class MysqlExecute extends CommonExecute {
             i++;
             String threadName = "thread_" + i;
             processMap.put("threadName", threadName);
-            MysqlProcess mysqlProcess = new MysqlProcess(processMap, data, jdbcDriver);
+            MysqlProcess mysqlProcess = new MysqlProcess(processMap, data, jdbcTemplate);
             exec.execute(mysqlProcess);
         }
         exec.shutdown();
     }
 
-    public Map<String, String> getMysqlDriveInfo(Map<String, String> map) {
-        return mysqlService.getMysqlDriveInfo(map);
-    }
 
 }
 
