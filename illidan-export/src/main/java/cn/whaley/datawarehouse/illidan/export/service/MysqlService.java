@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * Created by guohao on 2017/7/14.
@@ -19,14 +18,13 @@ public class MysqlService {
     /**
      * 拼接insert sql
      *
-     * @param hiveInfo 从hive获取的数据
+     * @param keys 从hive获取的数据列名
      * @return
      */
-    public String getInsertSql(List<Map<String, Object>> hiveInfo, Map<String, String> map) {
+    public String getInsertSql(List<String> keys, Map<String, String> map) {
 
         String tableName = map.get("mysqlTable");
         String database = map.get("mysqlDb");
-        Set<String> keys = hiveInfo.get(0).keySet();
         //字段拼接
         StringBuffer fieldSb = new StringBuffer();
         //问号拼接

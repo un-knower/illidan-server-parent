@@ -18,9 +18,9 @@ public class MysqlProcess implements Runnable {
     private String sql;
     private List<Object[]> data;
 
-    public MysqlProcess(Map<String, String> map, List<Object[]> data, JdbcTemplate jdbcTemplate) {
-        this.threadName = map.get("threadName");
-        this.sql = map.get("sql");
+    public MysqlProcess(Map<String, Object> map, List<Object[]> data, JdbcTemplate jdbcTemplate) {
+        this.threadName = map.get("threadName").toString();
+        this.sql = map.get("sql").toString();
         this.data = data;
         this.jdbcTemplate = jdbcTemplate;
     }

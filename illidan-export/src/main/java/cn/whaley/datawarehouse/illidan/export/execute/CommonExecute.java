@@ -11,6 +11,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * Created by guohao on 2017/7/14.
@@ -18,20 +20,40 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 public abstract class CommonExecute {
     private static Logger logger = LoggerFactory.getLogger(CommonExecute.class);
-    public Queue<List<Object[]>> dataQueue = new ConcurrentLinkedQueue<List<Object[]>>();
+    protected Queue<List<Map<String, Object>>> dataQueue = new ConcurrentLinkedQueue<>();
+    protected List<String> hiveColumnNames;
 
     @Autowired
     private HiveExportService hiveService;
 
-    public void start(Map<String, String> map) {
-        List<Map<String, Object>> hiveInfo = hiveService.getHiveInfo(map);
+    public void start(Map<String, String> paramMap) {
+        List<Map<String, Object>> hiveInfo = hiveService.getHiveInfo(paramMap);
         if (hiveInfo == null || hiveInfo.isEmpty()) {
             System.out.println("没有数据 ... ");
             return;
         }
+        hiveColumnNames = new ArrayList<>(hiveInfo.get(0).keySet());
+
         addToQueue(hiveInfo);
 
-        execute(hiveInfo, map);
+        logger.info("export start ...");
+        if(!delete(paramMap)) {
+            logger.error("清理数据失败...");
+        }
+
+        Map<String, Object> processMap = prepareExecute(paramMap);
+
+        ExecutorService exec = Executors.newFixedThreadPool(ConfigurationManager.getInteger("threadNum"));
+
+        int batchIndex = 0;
+        while (!isBreak()) {
+            List<Map<String, Object>> data = dataQueue.poll();
+            batchIndex ++;
+            processMap.put("batchIndex", batchIndex);
+            Runnable process = process(data, paramMap, processMap);
+            exec.execute(process);
+        }
+        exec.shutdown();
     }
 
     /**
@@ -45,16 +67,16 @@ public abstract class CommonExecute {
         int slice = hiveInfo.size() / batchNum;
         logger.info("slice num is " + batchNum);
         for (int i = 1; i <= slice; i++) {
-            List<Object[]> dataList = new ArrayList<Object[]>();
+            List<Map<String, Object>> dataList = new ArrayList<>();
             for (int j = batchNum * (i - 1); j < batchNum * i; j++) {
-                Object[] data = hiveInfo.get(j).values().toArray();
+                Map<String, Object> data = hiveInfo.get(j);
                 dataList.add(data);
             }
             dataQueue.add(dataList);
         }
-        List<Object[]> dataList = new ArrayList<Object[]>();
+        List<Map<String, Object>> dataList = new ArrayList<>();
         for (int i = batchNum * slice; i < hiveInfo.size(); i++) {
-            Object[] data = hiveInfo.get(i).values().toArray();
+            Map<String, Object> data = hiveInfo.get(i);
             dataList.add(data);
         }
         dataQueue.add(dataList);
@@ -70,6 +92,10 @@ public abstract class CommonExecute {
         return dataQueue.size() == 0;
     }
 
-    public abstract void execute(List<Map<String, Object>> hiveInfo, Map<String, String> map);
+    protected abstract boolean delete(Map<String, String> paramMap);
+
+    protected abstract Map<String, Object> prepareExecute(Map<String, String> paramMap);
+
+    protected abstract Runnable process(List<Map<String, Object>> data, Map<String, String> paramMap, Map<String, Object> processMap);
 
 }

@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,27 +29,34 @@ public class MysqlExecute extends CommonExecute {
     private JdbcFactory jdbcFactory;
 
     @Override
-    public void execute(List<Map<String, Object>> hiveInfo, Map<String, String> map) {
-        logger.info("mysql export start ...");
-        String insertSql = mysqlService.getInsertSql(hiveInfo, map);
-        String deleteSql = mysqlService.getDeleteSql(map);
+    protected boolean delete(Map<String, String> paramMap) {
+        String deleteSql = mysqlService.getDeleteSql(paramMap);
         //根据数据库名查找数据库相关信息
-        JdbcTemplate jdbcTemplate = jdbcFactory.create(map.get("mysqlDb"));
+        JdbcTemplate jdbcTemplate = jdbcFactory.create(paramMap.get("mysqlDb"));
         jdbcTemplate.update(deleteSql);
         logger.info("delete success ...");
-        int i = 0;
-        Map<String, String> processMap = new HashMap<>();
+        return true;
+    }
+
+    @Override
+    protected Map<String, Object> prepareExecute(Map<String, String> paramMap) {
+        String insertSql = mysqlService.getInsertSql(hiveColumnNames, paramMap);
+        Map<String, Object> processMap = new HashMap<>();
         processMap.put("sql", insertSql);
-        ExecutorService exec = Executors.newFixedThreadPool(ConfigurationManager.getInteger("threadNum"));
-        while (!isBreak()) {
-            List<Object[]> data = dataQueue.poll();
-            i++;
-            String threadName = "thread_" + i;
-            processMap.put("threadName", threadName);
-            MysqlProcess mysqlProcess = new MysqlProcess(processMap, data, jdbcTemplate);
-            exec.submit(mysqlProcess);
+        return processMap;
+    }
+
+    @Override
+    protected Runnable process(List<Map<String, Object>> data, Map<String, String> paramMap, Map<String, Object> processMap) {
+        String threadName = "thread_" + processMap.get("batchIndex");
+        processMap.put("threadName", threadName);
+        JdbcTemplate jdbcTemplate = jdbcFactory.create(paramMap.get("mysqlDb"));
+        List<Object[]> processData = new ArrayList<>();
+        for(Map<String, Object> d : data) {
+            processData.add(d.values().toArray());
         }
-        exec.shutdown();
+        MysqlProcess mysqlProcess = new MysqlProcess(processMap, processData, jdbcTemplate);
+        return mysqlProcess;
     }
 
 
