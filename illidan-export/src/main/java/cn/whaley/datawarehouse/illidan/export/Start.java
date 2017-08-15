@@ -1,14 +1,12 @@
 package cn.whaley.datawarehouse.illidan.export;
 
 
-import cn.whaley.datawarehouse.illidan.export.driver.JdbcFactory;
 import cn.whaley.datawarehouse.illidan.export.execute.CommonExecute;
-import cn.whaley.datawarehouse.illidan.export.execute.MysqlExecute;
+import cn.whaley.datawarehouse.illidan.export.execute.ExecuteFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.support.GenericXmlApplicationContext;
 
-import java.util.*;
+import java.util.HashMap;
 
 /**
  * Created by guohao on 2017/7/11.
@@ -44,11 +42,6 @@ public class Start {
             logger.error("please input correct parameter ...");
             System.exit(-1);
         }
-        //从数据库中获取数据
-        GenericXmlApplicationContext context = new GenericXmlApplicationContext();
-        context.setValidating(false);
-        context.load("classpath*:spring/application-illidan-*.xml");
-        context.refresh();
 
         HashMap<String, String> paramMap = new HashMap<>();
         paramMap.put("hiveDb", hiveDb);
@@ -58,24 +51,11 @@ public class Start {
         paramMap.put("filterCondition", filterCondition);
 
         System.out.println("filterCondition is ... " + filterCondition);
-        //获取hive数据
-        CommonExecute commonExecute = context.getBean(CommonExecute.class);
 
-        List<Map<String, Object>> hiveInfo = commonExecute.getHiveInfo(paramMap);
-        if (hiveInfo == null || hiveInfo.isEmpty()) {
-            System.out.println("没有数据 ... ");
-            return;
-        }
-        //把数据放入缓存队列中
-        commonExecute.addToQueue(hiveInfo);
-        start(context, hiveInfo, paramMap);
+        CommonExecute commonExecute = ExecuteFactory.create(paramMap);
+
+        commonExecute.start(paramMap);
     }
 
-    public static void start(GenericXmlApplicationContext context, List<Map<String, Object>> hiveInfo, Map<String, String> map) {
-        //mysql 插入数据
-        MysqlExecute mysqlExecute = context.getBean(MysqlExecute.class);
-//        Map<String, String> mysqlDriveInfo = mysqlExecute.getMysqlDriveInfo(map);
-        mysqlExecute.start(hiveInfo, map);
-    }
 
 }

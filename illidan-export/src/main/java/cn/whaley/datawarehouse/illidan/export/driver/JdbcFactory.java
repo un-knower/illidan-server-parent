@@ -29,11 +29,11 @@ public class JdbcFactory {
     private DbInfoService dbInfoService;
 
     public JdbcTemplate create(String dbName) {
-        if(dbName == null || dbName.isEmpty()) {
+        if (dbName == null || dbName.isEmpty()) {
             return null;
         }
         JdbcTemplate result = jdbcMap.get(dbName);
-        if(result != null) {
+        if (result != null) {
             return result;
         }
 
@@ -83,26 +83,6 @@ public class JdbcFactory {
     public JdbcTemplate getJdbcTemplate(String dbName) {
         return create(dbName);
     }
-
-//    /**
-//     * 创建dataSource
-//     *
-//     * @return
-//     */
-//    private ComboPooledDataSource getDataSource(Map<String, String> map) {
-//        ComboPooledDataSource dataSource = new ComboPooledDataSource();
-//        try {
-//            dataSource.setJdbcUrl(map.get("url"));
-//            dataSource.setDriverClass(map.get("driver"));
-//            dataSource.setUser(map.get("userName"));
-//            dataSource.setPassword(map.get("passWord"));
-//            dataSource.setMinPoolSize(map.get("minPoolSize"));
-//            dataSource.setMaxPoolSize(maxPoolSize);
-//        } catch (Exception e) {
-//            logger.error(e.getMessage());
-//        }
-//        return dataSource;
-//    }
 
 
 }

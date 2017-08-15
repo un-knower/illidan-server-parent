@@ -46,7 +46,7 @@ public class MysqlExecute extends CommonExecute {
             String threadName = "thread_" + i;
             processMap.put("threadName", threadName);
             MysqlProcess mysqlProcess = new MysqlProcess(processMap, data, jdbcTemplate);
-            exec.execute(mysqlProcess);
+            exec.submit(mysqlProcess);
         }
         exec.shutdown();
     }

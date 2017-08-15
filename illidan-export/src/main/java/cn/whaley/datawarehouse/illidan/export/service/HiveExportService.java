@@ -32,14 +32,5 @@ public class HiveExportService {
         return hiveData;
     }
 
-//    /**
-//     * 获取驱动的相关信息,同时把已有的数据向下传递
-//     *
-//     * @param map
-//     * @return
-//     */
-//    public Map<String, String> getHiveDriveInfo(Map<String, String> map) {
-//        return mysqlService.getDriveInfo("hiveDb", map);
-//    }
 
 }
