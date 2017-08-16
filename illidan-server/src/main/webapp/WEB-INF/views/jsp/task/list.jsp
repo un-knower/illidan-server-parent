@@ -295,7 +295,7 @@
     function deleteTask(ids) {
         $.ajax({
             type: 'POST',
-            url: '/task/delete',
+            url: '<%=path%>/task/delete',
             data: "ids=" + ids,
             dataType: 'json',
             async: false,
