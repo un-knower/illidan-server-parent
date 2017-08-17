@@ -10,10 +10,7 @@ import cn.whaley.datawarehouse.illidan.common.service.owner.OwnerService;
 import cn.whaley.datawarehouse.illidan.common.service.project.ProjectService;
 import cn.whaley.datawarehouse.illidan.common.service.table.TableInfoService;
 import cn.whaley.datawarehouse.illidan.common.service.task.TaskService;
-import cn.whaley.datawarehouse.illidan.server.util.AzkabanUtil;
-import cn.whaley.datawarehouse.illidan.server.util.ConfigurationManager;
-import cn.whaley.datawarehouse.illidan.server.util.FileUtil;
-import cn.whaley.datawarehouse.illidan.server.util.ZipUtils;
+import cn.whaley.datawarehouse.illidan.server.util.*;
 import org.apache.commons.io.FileUtils;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,7 +42,7 @@ public class AzkabanService {
             Owner owner = ownerService.get(project.getOwnerId());
             String projectCode = project.getProjectCode();
             //删除原来project的文件
-            String path = ConfigurationManager.getProperty("zipdir");
+            String path = ConfigUtils.get("newillidan.package.zipdir");
             String projectPath = path+ File.separator+projectCode;
             File file = new File(projectPath);
             FileUtil.deleteDFile(file);

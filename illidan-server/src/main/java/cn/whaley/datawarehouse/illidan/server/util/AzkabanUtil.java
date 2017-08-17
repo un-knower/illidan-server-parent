@@ -28,7 +28,7 @@ public class AzkabanUtil {
      * @return
      */
     public JSONObject uploadProject(String sessionId,String projectName,String loadFile){
-        String url = ConfigurationManager.getProperty("managerUrl");
+        String url = ConfigUtils.get("newillidan.azkaban.managerUrl");
         ArrayList<FormFieldKeyValuePair> ffkvp = new ArrayList<FormFieldKeyValuePair>();
         ffkvp.add(new FormFieldKeyValuePair("session.id", sessionId));//其他参数
         ffkvp.add(new FormFieldKeyValuePair("ajax", "upload"));
@@ -57,7 +57,7 @@ public class AzkabanUtil {
      * @param projectName
      */
     public void deleteProject(String sessionId,String projectName){
-        String url = ConfigurationManager.getProperty("managerUrl");
+        String url = ConfigUtils.get("newillidan.azkaban.managerUrl");
         Map<String, String> params = new HashMap<String,String>();
         params.put("delete","true");
         params.put("session.id",sessionId);
@@ -74,7 +74,7 @@ public class AzkabanUtil {
      */
     public JSONObject createProject(String sessionId,String projectName,String projectDes){
         JSONObject result = new JSONObject();
-        String url = ConfigurationManager.getProperty("createUrl");
+        String url = ConfigUtils.get("newillidan.azkaban.createUrl");
         Map<String, String> params = new HashMap<String,String>();
         params.put("action","create");
         params.put("session.id",sessionId);
@@ -105,7 +105,7 @@ public class AzkabanUtil {
         params.put("action","removeSched");
         params.put("scheduleId",scheduleId);
         params.put("azkaban.browser.session.id",sessionId);
-        String url = ConfigurationManager.getProperty("scheduleUrl");
+        String url = ConfigUtils.get("newillidan.azkaban.scheduleUrl");
         String response = getPostResponse(url,params,"UTF-8");
         JSONObject result = new JSONObject(response);
         return result;
@@ -118,7 +118,7 @@ public class AzkabanUtil {
         params.put("azkaban.browser.session.id",sessionId);
         params.put("cronExpression",cronExpression);
         params.put("ajax","scheduleCronFlow");
-        String url = ConfigurationManager.getProperty("scheduleUrl");
+        String url = ConfigUtils.get("newillidan.azkaban.scheduleUrl");
         String response = getPostResponse(url,params,"UTF-8");
         JSONObject result = new JSONObject(response);
         if(!result.has("status")){
@@ -137,7 +137,7 @@ public class AzkabanUtil {
      */
     public JSONObject getSeesionId(String username,String password){
         JSONObject result = new JSONObject();
-        String url = ConfigurationManager.getProperty("domainUrl");
+        String url = ConfigUtils.get("newillidan.azkaban.domainUrl");
         Map<String, String> params = new HashMap<String,String>();
         params.put("action","login");
         params.put("username",username);
@@ -157,7 +157,7 @@ public class AzkabanUtil {
     }
     public JSONObject addPermission(String projectName,String azkabanUser){
         JSONObject result = new JSONObject();
-        String url = ConfigurationManager.getProperty("managerUrl");
+        String url = ConfigUtils.get("newillidan.azkaban.managerUrl");
         Map<String, String> params = new HashMap<String,String>();
         params.put("project",projectName);
         params.put("name",azkabanUser);
