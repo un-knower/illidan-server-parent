@@ -10,7 +10,15 @@ import java.util.Map;
 public class ExecuteFactory {
 
     public static CommonExecute create(Map<String, String> paramMap) {
-        return create("mysql");
+        if (paramMap.get("mysqlDb") != null && !paramMap.get("mysqlDb").trim().isEmpty()
+                && paramMap.get("mysqlTable") != null && !paramMap.get("mysqlTable").trim().isEmpty()) {
+            return create("mysql");
+        }
+        if (paramMap.get("phoenixDb") != null && !paramMap.get("phoenixDb").trim().isEmpty()
+                && paramMap.get("phoenixTable") != null && !paramMap.get("phoenixTable").trim().isEmpty()) {
+            return create("phoenix");
+        }
+        return null;
     }
 
     public static CommonExecute createMysqlExecute() {

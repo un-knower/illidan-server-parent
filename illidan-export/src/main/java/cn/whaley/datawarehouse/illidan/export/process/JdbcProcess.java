@@ -1,6 +1,5 @@
 package cn.whaley.datawarehouse.illidan.export.process;
 
-import cn.whaley.datawarehouse.illidan.export.driver.JdbcFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -11,17 +10,16 @@ import java.util.Map;
 /**
  * Created by guohao on 2017/7/13.
  */
-public class MysqlProcess implements Runnable {
-    private static Logger logger = LoggerFactory.getLogger(MysqlProcess.class);
+public class JdbcProcess implements Runnable {
+    private static Logger logger = LoggerFactory.getLogger(JdbcProcess.class);
     private JdbcTemplate jdbcTemplate;
     private String threadName;
     private String sql;
     private List<Object[]> data;
 
-    public MysqlProcess(Map<String, Object> map, List<Object[]> data, JdbcTemplate jdbcTemplate) {
+    public JdbcProcess(Map<String, Object> map, List<Object[]> data, JdbcTemplate jdbcTemplate) {
         this.threadName = map.get("threadName").toString();
-        this.sql = map.get("sql").toString();
-        this.data = data;
+        illidan-export/        this.data = data;
         this.jdbcTemplate = jdbcTemplate;
     }
 

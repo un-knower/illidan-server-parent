@@ -22,6 +22,8 @@ public class Start {
         String hiveTable = null;
         String mysqlDb = null;
         String mysqlTable = null;
+        String phoenixDb = null;
+        String phoenixTable = null;
         String filterCondition = null;
         for (int i = 0; i < args.length; i = i + 2) {
             if (args[i].equalsIgnoreCase("--hiveDb")) {
@@ -32,6 +34,10 @@ public class Start {
                 mysqlDb = args[i + 1];
             } else if (args[i].equalsIgnoreCase("--mysqlTable")) {
                 mysqlTable = args[i + 1];
+            } else if (args[i].equalsIgnoreCase("--phoenixDb")) {
+                phoenixDb = args[i + 1];
+            } else if (args[i].equalsIgnoreCase("--phoenixTable")) {
+                phoenixTable = args[i + 1];
             } else if (args[i].equalsIgnoreCase("--filterCondition")) {
                 filterCondition = args[i + 1];
             }
@@ -48,6 +54,8 @@ public class Start {
         paramMap.put("hiveTable", hiveTable);
         paramMap.put("mysqlDb", mysqlDb);
         paramMap.put("mysqlTable", mysqlTable);
+        paramMap.put("phoenixDb", phoenixDb);
+        paramMap.put("phoenixTable", phoenixTable);
         paramMap.put("filterCondition", filterCondition);
 
         System.out.println("filterCondition is ... " + filterCondition);
