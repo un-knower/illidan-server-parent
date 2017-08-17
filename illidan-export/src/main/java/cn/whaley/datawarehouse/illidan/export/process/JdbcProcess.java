@@ -19,7 +19,7 @@ public class JdbcProcess implements Runnable {
 
     public JdbcProcess(Map<String, Object> map, List<Object[]> data, JdbcTemplate jdbcTemplate) {
         this.threadName = map.get("threadName").toString();
-        illidan-export/        this.data = data;
+        this.data = data;
         this.jdbcTemplate = jdbcTemplate;
     }
 
