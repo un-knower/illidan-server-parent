@@ -21,6 +21,7 @@ public class JdbcProcess implements Runnable {
         this.threadName = map.get("threadName").toString();
         this.data = data;
         this.jdbcTemplate = jdbcTemplate;
+        this.sql = map.get("sql").toString();
     }
 
     @Override

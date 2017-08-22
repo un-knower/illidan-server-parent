@@ -46,7 +46,7 @@ public class MysqlUtils {
         String database = map.get("mysqlDb");
         String filerCondition = map.get("filterCondition");
         String deleteSql = "delete from " + database + "." + tableName + " " + filerCondition;
-        logger.info("insertSql is " + deleteSql);
+        logger.info("deleteSql is " + deleteSql);
         return deleteSql;
     }
 

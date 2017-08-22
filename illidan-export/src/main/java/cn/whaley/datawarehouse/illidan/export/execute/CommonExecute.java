@@ -65,7 +65,7 @@ public abstract class CommonExecute {
         int batchNum = ConfigurationManager.getInteger("batchNum");
         logger.info("batch size is " + batchNum);
         int slice = hiveInfo.size() / batchNum;
-        logger.info("slice num is " + batchNum);
+        logger.info("slice num is " + slice);
         for (int i = 1; i <= slice; i++) {
             List<Map<String, Object>> dataList = new ArrayList<>();
             for (int j = batchNum * (i - 1); j < batchNum * i; j++) {
@@ -74,12 +74,14 @@ public abstract class CommonExecute {
             }
             dataQueue.add(dataList);
         }
-        List<Map<String, Object>> dataList = new ArrayList<>();
-        for (int i = batchNum * slice; i < hiveInfo.size(); i++) {
-            Map<String, Object> data = hiveInfo.get(i);
-            dataList.add(data);
+        if(hiveInfo.size() % batchNum > 0) {
+            List<Map<String, Object>> dataList = new ArrayList<>();
+            for (int i = batchNum * slice; i < hiveInfo.size(); i++) {
+                Map<String, Object> data = hiveInfo.get(i);
+                dataList.add(data);
+            }
+            dataQueue.add(dataList);
         }
-        dataQueue.add(dataList);
         logger.info("add queue is success ...");
     }
 
