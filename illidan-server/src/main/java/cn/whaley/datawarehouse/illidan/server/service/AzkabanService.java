@@ -49,7 +49,7 @@ public class AzkabanService {
 
             List<TaskGroup> taskGroupList = taskGroupService.findTaskGroupByProjectId(projectId);
             //没有group直接返回
-            if(taskGroupList.size() == 0){
+            if(taskGroupList == null || taskGroupList.size() == 0){
                 result.put("status","error");
                 result.put("message","project '"+projectCode+"' has no groups , please add  ...");
                 return result;
@@ -159,7 +159,7 @@ public class AzkabanService {
             result.put("message","success");
         }catch (Exception e){
             result.put("status","error");
-            result.put("message",e.getMessage());
+            result.put("message", "发布azkaban过程中出现异常：" + e.getMessage());
         }
         return result ;
     }
