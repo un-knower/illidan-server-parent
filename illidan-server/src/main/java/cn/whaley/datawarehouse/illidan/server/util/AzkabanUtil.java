@@ -1,12 +1,12 @@
 package cn.whaley.datawarehouse.illidan.server.util;
 
+import cn.whaley.datawarehouse.illidan.common.util.ConfigUtils;
 import cn.whaley.datawarehouse.illidan.server.domain.FormFieldKeyValuePair;
 import cn.whaley.datawarehouse.illidan.server.domain.UploadFileItem;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;

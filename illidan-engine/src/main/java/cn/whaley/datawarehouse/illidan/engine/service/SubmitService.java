@@ -3,6 +3,7 @@ package cn.whaley.datawarehouse.illidan.engine.service;
 import cn.whaley.datawarehouse.illidan.common.domain.task.TaskFull;
 import cn.whaley.datawarehouse.illidan.common.service.field.FieldInfoService;
 import cn.whaley.datawarehouse.illidan.common.service.task.TaskService;
+import cn.whaley.datawarehouse.illidan.common.util.ConfigUtils;
 import cn.whaley.datawarehouse.illidan.engine.param.DateFormat;
 import cn.whaley.datawarehouse.illidan.engine.param.DateParam;
 import cn.whaley.datawarehouse.illidan.engine.param.DateParamMethod;
@@ -76,8 +77,14 @@ public class SubmitService {
 
             String selectSql = selectSqlMap.get(executeType);
 
-            //拼装insert overwrite语句
-            String executeSql = getExecuteSql(selectSql, task, executeType);
+            String executeSql;
+
+            if("true".equals(ConfigUtils.get("newillidan.engine.executeSelectOnly"))) {
+                executeSql = selectSql;
+            } else {
+                //拼装insert overwrite语句
+                executeSql = getExecuteSql(selectSql, task, executeType);
+            }
 
             String completeSql = parseSqlParams(executeSql, dataDueTime, paramMap);
 
