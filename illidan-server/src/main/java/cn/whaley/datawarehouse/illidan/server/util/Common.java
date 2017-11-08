@@ -260,16 +260,20 @@ public class Common {
         try {
             response.setContentType("text/json; charset=utf-8");
             out = response.getWriter();
-            result = "{\"result\" :" + flag + ", \"msg\" : '" + msg + "'}";
-            out.print(JSONObject.parseObject(result));
-//            out.print(result);
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("result", flag);
+            jsonObject.put("msg", msg);
+            result = jsonObject.toString();
+            out.print(jsonObject);
             out.flush();
         } catch (Exception e) {
             e.printStackTrace();
-            result = "{\"result\" :" + false + ", \"msg\" : '" + e.getMessage() + "'}";
-            System.out.println("----"+result);
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("result", false);
+            jsonObject.put("msg", "系统错误");
+            result = jsonObject.toString();
             if (out != null){
-                out.print(JSONObject.parseObject(result));
+                out.print(jsonObject);
             }
         } finally {
             if (out != null) {
