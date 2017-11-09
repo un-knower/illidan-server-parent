@@ -256,8 +256,8 @@ public class TableInfoServiceImpl implements TableInfoService {
             throw new RuntimeException("table已有的字段临时不支持修改");
         }
 
-        //处理mysql配置变动的情况
-        if(hiveTable.getMysqlTableId() == null || oldHiveTable.getMysqlTableId() != null) {
+        //处理mysql配置变动的情况,如果变动，新信息中管理的mysqlId需要设为null
+        if(hiveTable.getMysqlTableId() == null && oldHiveTable.getMysqlTableId() != null) {
             if(table.getMysqlTable() == null) {
                 updateById(hiveTable);
             } else {
