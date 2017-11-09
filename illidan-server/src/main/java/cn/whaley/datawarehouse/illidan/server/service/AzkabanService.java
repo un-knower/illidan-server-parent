@@ -84,8 +84,9 @@ public class AzkabanService {
                     //写入 执行任务.job
 //                    FileUtil.writeJob(path,projectCode,groupCode,taskCode,email);
                     FileUtil.writeJob(jobMap);
+                    TableWithField hiveTableInfo = tableInfoService.getTableWithField(task.getTableId());
                     //是否需要导出
-                    Long mysqlTableId = task.getMysqlTableId();
+                    Long mysqlTableId = hiveTableInfo.getMysqlTableId();
                     if(mysqlTableId !=null){
                         //需要导出 写入 export.job
                         taskCode = taskCode+"_export";
@@ -96,7 +97,6 @@ public class AzkabanService {
                         jobMap.put("mysqlTable",mysqlTableInfo.getTableCode());
                         jobMap.put("mysqlDb",mysqlTableInfo.getDbInfo().getDbCode());
                         //2.来源hive table,db信息
-                        TableWithField hiveTableInfo = tableInfoService.getTableWithField(task.getTableId());
                         jobMap.put("hiveTable",hiveTableInfo.getTableCode());
                         jobMap.put("hiveDb",hiveTableInfo.getDbInfo().getDbCode());
                         FileUtil.writeJob(jobMap);
