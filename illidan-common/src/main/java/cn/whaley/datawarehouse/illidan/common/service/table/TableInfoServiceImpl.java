@@ -155,6 +155,9 @@ public class TableInfoServiceImpl implements TableInfoService {
             //复制tableWithField信息到tableInfo中
             BeanUtils.copyProperties(tableWithField, tableInfo);
             //插入表信息,并返回其主键id
+            if(tableIdMap.get(2L)!=null){
+                tableInfo.setMysqlTableId(tableIdMap.get(2L));
+            }
             Long tableId = insert(tableInfo);
             if (tableId == null){
                 logger.error("insertTableWithField: 插入table_info返回的tableId is null. tableInfo: "+tableInfo.toString());

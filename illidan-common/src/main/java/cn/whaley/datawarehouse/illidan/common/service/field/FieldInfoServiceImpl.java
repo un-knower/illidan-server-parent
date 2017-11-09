@@ -87,24 +87,12 @@ public class FieldInfoServiceImpl implements FieldInfoService {
             logger.error("setFiledValue: fieldInfos is null.");
             return;
         }
+        int i = 1;
         for (FieldInfo fieldInfo:fieldInfos){
-            fieldInfo.setColType("string");
-            fieldInfo.setIsPartitionCol("1");
             fieldInfo.setCreateTime(new Date());
             fieldInfo.setUpdateTime(new Date());
-            if (fieldInfo.getColName().equals("date_type")){
-                fieldInfo.setColDes("日期类型");
-                fieldInfo.setColIndex(1);
-            } else if (fieldInfo.getColName().equals("product_line")){
-                fieldInfo.setColDes("产品线");
-                fieldInfo.setColIndex(2);
-            } else if (fieldInfo.getColName().equals("month_p")){
-                fieldInfo.setColDes("月分区");
-                fieldInfo.setColIndex(3);
-            } else if (fieldInfo.getColName().equals("day_p")){
-                fieldInfo.setColDes("天分区");
-                fieldInfo.setColIndex(4);
-            }
+            fieldInfo.setColIndex(i);
+            i++;
         }
 
     }
