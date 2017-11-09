@@ -77,6 +77,10 @@ public class TableInfoServiceImpl implements TableInfoService {
             logger.error("getTableWithField: tableInfo is null. tableId: "+id);
             return null;
         }
+        if(!"1".equals(tableInfo.getStatus())) {
+            logger.error("getTableWithField: table is invalid. tableId: "+id);
+            return null;
+        }
         //目标数据库实体
         DbInfoWithStorage dbInfo = dbInfoService.getDbWithStorage(tableInfo.getDbId());
         if (dbInfo == null){
@@ -252,9 +256,21 @@ public class TableInfoServiceImpl implements TableInfoService {
             throw new RuntimeException("table已有的字段临时不支持修改");
         }
 
-        fieldInfoService.insertBatch(newFields);
-
         //处理mysql配置变动的情况
+        if(hiveTable.getMysqlTableId() == null || oldHiveTable.getMysqlTableId() != null) {
+            if(table.getMysqlTable() == null) {
+                updateById(hiveTable);
+            } else {
+                removeById(oldHiveTable.getMysqlTableId());
+                TableWithField mysqlTable = new TableWithField();
+                BeanUtils.copyProperties(table.getMysqlTable(), mysqlTable);
+                Long mysqlTableId = insertTableWithField(mysqlTable);
+                hiveTable.setMysqlTableId(mysqlTableId);
+                updateById(hiveTable);
+            }
+        }
+
+        fieldInfoService.insertBatch(newFields);
 
         return 0L;
     }
