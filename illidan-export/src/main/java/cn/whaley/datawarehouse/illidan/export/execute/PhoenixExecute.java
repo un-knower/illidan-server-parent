@@ -1,6 +1,6 @@
 package cn.whaley.datawarehouse.illidan.export.execute;
 
-import cn.whaley.datawarehouse.illidan.export.driver.JdbcFactory;
+import cn.whaley.datawarehouse.illidan.common.processor.JdbcFactory;
 import cn.whaley.datawarehouse.illidan.export.process.JdbcProcess;
 import cn.whaley.datawarehouse.illidan.export.util.PhoenixUtils;
 import org.slf4j.Logger;

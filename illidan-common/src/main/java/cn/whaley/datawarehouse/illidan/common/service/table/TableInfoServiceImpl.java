@@ -1,12 +1,13 @@
 package cn.whaley.datawarehouse.illidan.common.service.table;
 
-import cn.whaley.datawarehouse.illidan.common.domain.db.DbInfo;
 import cn.whaley.datawarehouse.illidan.common.domain.db.DbInfoWithStorage;
 import cn.whaley.datawarehouse.illidan.common.domain.field.FieldInfo;
+import cn.whaley.datawarehouse.illidan.common.domain.table.FullHiveTable;
 import cn.whaley.datawarehouse.illidan.common.domain.table.TableInfo;
 import cn.whaley.datawarehouse.illidan.common.domain.table.TableInfoQuery;
 import cn.whaley.datawarehouse.illidan.common.domain.table.TableWithField;
 import cn.whaley.datawarehouse.illidan.common.mapper.table.TableInfoMapper;
+import cn.whaley.datawarehouse.illidan.common.processor.TableProcessor;
 import cn.whaley.datawarehouse.illidan.common.service.db.DbInfoService;
 import cn.whaley.datawarehouse.illidan.common.service.field.FieldInfoService;
 import org.slf4j.Logger;
@@ -35,6 +36,9 @@ public class TableInfoServiceImpl implements TableInfoService {
     @Autowired
     private FieldInfoService fieldInfoService;
 
+    @Autowired
+    private TableProcessor tableProcessor;
+
     public TableInfo get(final Long id) {
         if (id == null){
             logger.error("get: id is null.");
@@ -49,6 +53,7 @@ public class TableInfoServiceImpl implements TableInfoService {
             logger.error("insert: tableInfo is null.");
             return null;
         }
+        tableInfo.setStatus("1");
         Long count = tableInfoMapper.isExistTableInfo(tableInfo.getTableCode(),tableInfo.getDbId());
         if (count == null){
             logger.error("insert: count is null.");
@@ -124,11 +129,11 @@ public class TableInfoServiceImpl implements TableInfoService {
     }
 
     @Override
-    public Long removeByIds(List<Long> ids) {
-        if (ids == null || ids.size()<=0){
-            logger.error("removeByIds: id list is null.");
+    public Long removeById(Long id) {
+        if (id == null){
+            logger.error("removeByIds: id is null.");
         }
-        return tableInfoMapper.removeByIds(ids);
+        return tableInfoMapper.removeById(id);
     }
 
     public Long countByTableInfo(final TableInfoQuery tableInfo) {
@@ -184,4 +189,131 @@ public class TableInfoServiceImpl implements TableInfoService {
         }
         return tableIdMap;
     }
+
+    @Override
+    public Long insertFullHiveTable(FullHiveTable table) throws Exception {
+        if (table == null) {
+            throw new RuntimeException("参数不合法");
+        }
+
+        //保存hive和mysql表描述
+        TableWithField hiveTable = new TableWithField();
+        BeanUtils.copyProperties(table, hiveTable);
+        Long mysqlTableId = null;
+        if (table.getMysqlTable() != null) {
+            TableWithField mysqlTable = new TableWithField();
+            BeanUtils.copyProperties(table.getMysqlTable(), mysqlTable);
+            mysqlTableId = insertTableWithField(mysqlTable);
+        }
+        hiveTable.setMysqlTableId(mysqlTableId);
+
+        Long hiveTableId = null;
+        try {
+            hiveTableId = insertTableWithField(hiveTable);
+        } catch (Exception e) {
+            if(mysqlTableId != null) {
+                removeById(mysqlTableId);
+            }
+            throw e;
+        }
+
+        //创建实体表
+        tableProcessor.createTable(hiveTable);
+
+        return hiveTableId;
+    }
+
+
+    public Long updateFullHiveTable(final FullHiveTable table) throws Exception {
+        if (table == null) {
+            throw new RuntimeException("参数不合法");
+        }
+        Long hiveTableId = table.getId();
+        if (hiveTableId == null || hiveTableId <= 0) {
+            throw new RuntimeException("tableId不合法");
+        }
+        TableWithField oldHiveTable = getTableWithField(hiveTableId);
+        if (oldHiveTable == null) {
+            throw new RuntimeException("table不存在, tableId = " + hiveTableId);
+        }
+
+        TableWithField hiveTable = new TableWithField();
+        BeanUtils.copyProperties(table, hiveTable);
+
+        List<FieldInfo> newFields = new ArrayList<>();
+        int containSize = 0;
+        for (FieldInfo fieldInfo : hiveTable.getFieldList()) {
+            if (oldHiveTable.getFieldList().contains(fieldInfo)) {
+                containSize++;
+            } else {
+                fieldInfo.setTableId(hiveTableId);
+                newFields.add(fieldInfo);
+            }
+        }
+        if (containSize != oldHiveTable.getFieldList().size()) {
+            throw new RuntimeException("table已有的字段临时不支持修改");
+        }
+
+        fieldInfoService.insertBatch(newFields);
+
+        //处理mysql配置变动的情况
+
+        return 0L;
+    }
+
+
+    public FullHiveTable getFullHiveTable(final Long id) {
+        TableWithField hiveTable = getTableWithField(id);
+        FullHiveTable fullHiveTable = new FullHiveTable();
+        BeanUtils.copyProperties(hiveTable, fullHiveTable);
+
+        Long mysqlTableId = hiveTable.getMysqlTableId();
+        TableWithField mysqlTableWithDb = getTableWithField(mysqlTableId);
+
+        TableInfo mysqlTable = new TableInfo();
+        BeanUtils.copyProperties(mysqlTableWithDb, mysqlTable);
+        fullHiveTable.setMysqlTable(mysqlTable);
+
+        return fullHiveTable;
+    }
+
+
+    private Long insertTableWithField(TableWithField tableWithField) throws Exception {
+
+        DbInfoWithStorage dbInfo = dbInfoService.getDbWithStorage(tableWithField.getDbId());
+        if (dbInfo == null) {
+            return null;
+        }
+        //存储类型,1:hive,2:mysql
+        Long storageType = dbInfo.getStorageType();
+        tableWithField.setDbInfo(dbInfo);
+        TableInfo tableInfo = new TableInfo();
+        //复制tableWithField信息到tableInfo中
+        BeanUtils.copyProperties(tableWithField, tableInfo);
+        //插入表信息,并返回其主键id
+        Long tableId = insert(tableInfo);
+        if (tableId == null || tableId <= 0) {
+            logger.error("insertTableWithField: 插入table_info返回的tableId is null. tableInfo: " + tableInfo.toString());
+            throw new RuntimeException("保存表失败，tableCode = " + tableWithField.getTableCode());
+        }
+
+        //插入字段到field_info
+        List<FieldInfo> fieldInfoList = tableWithField.getFieldList();
+        List<FieldInfo> fieldInfos = new ArrayList<FieldInfo>();
+        if (fieldInfoList != null && fieldInfoList.size() > 0) {
+            for (FieldInfo f : fieldInfoList) {
+                FieldInfo fieldInfo = new FieldInfo();
+                BeanUtils.copyProperties(f, fieldInfo);
+                fieldInfo.setTableId(tableId);
+                fieldInfos.add(fieldInfo);
+            }
+            //批量插入fieldInfos
+            //1.删除历史记录
+            fieldInfoService.removeByTableId(tableId);
+            //2.批量插入
+            fieldInfoService.insertBatch(fieldInfos);
+        }
+        return tableId;
+    }
+
 }

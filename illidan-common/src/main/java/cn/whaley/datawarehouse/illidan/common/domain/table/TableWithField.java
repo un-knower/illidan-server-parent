@@ -21,6 +21,15 @@ public class TableWithField extends TableInfo {
      */
     private DbInfoWithStorage dbInfo;
 
+    public boolean containsField(FieldInfo fieldInfo) {
+        for(FieldInfo field : fieldList) {
+            if(field.same(fieldInfo)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public List<FieldInfo> getFieldList() {
         return fieldList;
     }

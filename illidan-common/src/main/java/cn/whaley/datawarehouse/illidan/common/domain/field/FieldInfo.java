@@ -120,4 +120,17 @@ public class FieldInfo implements Serializable {
     public String toString() {
         return ToStringBuilder.reflectionToString(this);
     }
+
+    public boolean same(FieldInfo o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        FieldInfo fieldInfo = (FieldInfo) o;
+
+        if (colIndex != fieldInfo.colIndex) return false;
+        if (colName != null ? !colName.equals(fieldInfo.colName) : fieldInfo.colName != null) return false;
+        if (colType != null ? !colType.equals(fieldInfo.colType) : fieldInfo.colType != null) return false;
+        return isPartitionCol != null ? isPartitionCol.equals(fieldInfo.isPartitionCol) : fieldInfo.isPartitionCol == null;
+    }
+
 }

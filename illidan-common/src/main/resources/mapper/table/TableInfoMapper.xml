@@ -3,10 +3,18 @@
 
 <mapper namespace="cn.whaley.datawarehouse.illidan.common.mapper.table.TableInfoMapper">
 
-    <!--The user defined SQL!-->
+    <resultMap id="returnTableInfo" type="cn.whaley.datawarehouse.illidan.common.domain.table.TableInfo">
+        <id column="id" javaType="Long" jdbcType="BIGINT" property="id"/>
+        <result column="tableCode" javaType="String" jdbcType="VARCHAR" property="tableCode"/>
+        <result column="tableDes" javaType="String" jdbcType="VARCHAR" property="tableDes"/>
+        <result column="createTime" javaType="Date" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="updateTime" javaType="Date" jdbcType="TIMESTAMP" property="updateTime"/>
+        <result column="dataType" javaType="String" jdbcType="VARCHAR" property="dataType"/>
+        <result column="dbId" javaType="Long" jdbcType="BIGINT" property="dbId"/>
+        <result column="status" javaType="String" jdbcType="VARCHAR" property="status"/>
+        <result column="mysqlTableId" javaType="Long" jdbcType="BIGINT" property="mysqlTableId"/>
+    </resultMap>
 
-
-    <!--The user defined SQL!-->
 
     <sql id="updateSql">
         update table_info tableInfo
@@ -22,6 +30,9 @@
             </if>
             <if test="tableInfo.dbId != null">
                 dbId = #{tableInfo.dbId},
+            </if>
+            <if test="tableInfo.mysqlTableId != null">
+                mysqlTableId = #{tableInfo.mysqlTableId},
             </if>
             <if test="tableInfo.createTime != null">
                 createTime = #{tableInfo.createTime},
@@ -45,39 +56,10 @@
             , tableInfo.createTime AS createTime
             , tableInfo.updateTime AS updateTime
             , tableInfo.id AS id
+            , tableInfo.status AS status
+            , tableInfo.mysqlTableId AS mysqlTableId
 
         </trim>
-    </sql>
-
-    <sql id="whereCase">
-        <where>
-            tableInfo.status = '1'
-            <if test="tableInfo != null and tableInfo.id != null">and tableInfo.id = #{tableInfo.id}</if>
-            <if test="tableInfo != null and tableInfo.idGT != null">and tableInfo.id > #{tableInfo.idGT}</if><if test="idLT != null">and #{idLT} > tableInfo.id</if>
-            <if test="tableInfo != null and tableInfo.tableCode != null">and tableInfo.tableCode = #{tableInfo.tableCode}</if>
-            <if test="tableInfo != null and tableInfo.tableCodeLK != null">and tableInfo.tableCode LIKE #{tableInfo.tableCodeLK}</if>
-            <if test="tableInfo != null and tableInfo.tableDes != null">and tableInfo.tableDes = #{tableInfo.tableDes}</if>
-            <if test="tableInfo != null and tableInfo.tableDesLK != null">and tableInfo.tableDes LIKE #{tableInfo.tableDesLK}</if>
-            <if test="tableInfo != null and tableInfo.createTime != null">and tableInfo.createTime = #{tableInfo.createTime}</if>
-            <if test="tableInfo != null and tableInfo.updateTime != null">and tableInfo.updateTime = #{tableInfo.updateTime}</if>
-            <if test="tableInfo != null and tableInfo.dataType != null">and tableInfo.dataType = #{tableInfo.dataType}</if>
-            <if test="tableInfo != null and tableInfo.dataTypeLK != null">and tableInfo.dataType LIKE #{tableInfo.dataTypeLK}</if>
-            <if test="tableInfo != null and tableInfo.dbId != null">and tableInfo.dbId = #{tableInfo.dbId}</if>
-            <if test="tableInfo != null and tableInfo.dbIdLK != null">and tableInfo.dbId LIKE #{tableInfo.dbIdLK}</if>
-        </where>
-    </sql>
-
-    <sql id="smallWhereCase">
-        <where>
-            tableInfo.status = '1'
-            <if test="tableInfo != null and tableInfo.id != null">and tableInfo.id = #{tableInfo.id}</if>
-            <if test="tableInfo != null and tableInfo.tableCode != null">and tableInfo.tableCode = #{tableInfo.tableCode}</if>
-            <if test="tableInfo != null and tableInfo.tableDes != null">and tableInfo.tableDes = #{tableInfo.tableDes}</if>
-            <if test="tableInfo != null and tableInfo.createTime != null">and tableInfo.createTime = #{tableInfo.createTime}</if>
-            <if test="tableInfo != null and tableInfo.updateTime != null">and tableInfo.updateTime = #{tableInfo.updateTime}</if>
-            <if test="tableInfo != null and tableInfo.dataType != null">and tableInfo.dataType = #{tableInfo.dataType}</if>
-            <if test="tableInfo != null and tableInfo.dbId != null">and tableInfo.dbId = #{tableInfo.dbId}</if>
-        </where>
     </sql>
 
     <sql id="likeWhereCase">
@@ -89,87 +71,30 @@
         </where>
     </sql>
 
-    <resultMap id="returnTableInfo" type="cn.whaley.datawarehouse.illidan.common.domain.table.TableInfo">
-        <id column="id" javaType="Long" jdbcType="BIGINT" property="id"/>
-        <result column="tableCode" javaType="String" jdbcType="VARCHAR" property="tableCode"/>
-        <result column="tableDes" javaType="String" jdbcType="VARCHAR" property="tableDes"/>
-        <result column="createTime" javaType="Date" jdbcType="TIMESTAMP" property="createTime"/>
-        <result column="updateTime" javaType="Date" jdbcType="TIMESTAMP" property="updateTime"/>
-        <result column="dataType" javaType="String" jdbcType="VARCHAR" property="dataType"/>
-        <result column="dbId" javaType="Long" jdbcType="BIGINT" property="dbId"/>
-    </resultMap>
 
     <select id="get"  resultMap="returnTableInfo">
         select * from table_info tableInfo where  tableInfo.id = #{id}
     </select>
-
-    <update id="update">
-        <include refid="updateSql"/>
-        <include refid="whereCase"/>
-    </update>
-
-    <insert id="insertBatch" >
-        insert into table_info
-        (
-        <trim prefix="" prefixOverrides=",">
-            ,tableCode,tableDes,createTime,updateTime,dataType,dbId
-        </trim>
-        ) values
-        <foreach collection="list" item="item" index="index" separator=",">
-            (
-            <trim prefix="" prefixOverrides=",">
-                ,#{tableCode} ,#{tableDes} ,#{createTime} ,#{updateTime} ,#{dataType} ,#{dbId}
-            </trim>
-            )
-        </foreach>
-    </insert>
 
     <insert id="insert" parameterType="TableInfo" useGeneratedKeys="true" keyProperty="tableInfo.id" >
 
         insert into table_info
         (
         <trim prefix="" prefixOverrides=",">
-            ,tableCode,tableDes,createTime,updateTime,dataType,dbId
+            ,tableCode,tableDes,createTime,updateTime,dataType,dbId,status,mysqlTableId
         </trim>
         )values(
         <trim prefix="" prefixOverrides=",">
-            ,#{tableInfo.tableCode},#{tableInfo.tableDes},#{tableInfo.createTime},#{tableInfo.updateTime},#{tableInfo.dataType},#{tableInfo.dbId}
+            ,#{tableInfo.tableCode},#{tableInfo.tableDes},#{tableInfo.createTime},#{tableInfo.updateTime},#{tableInfo.dataType},#{tableInfo.dbId},#{tableInfo.status},#{tableInfo.mysqlTableId}
         </trim>
         )
 
     </insert>
 
-    <delete id="remove" >
-        delete tableInfo from table_info tableInfo <include refid="whereCase"/>
-    </delete>
-
-    <select id="find"  resultMap="returnTableInfo">
-        select <include refid="colList" /> from table_info tableInfo
-        <include refid="joinTables"/>
-        <include refid="smallWhereCase"/>
-        <if test="tableInfo != null and tableInfo.orderBy != null">order by #{tableInfo.orderBy}</if>
-        <if test="tableInfo != null and tableInfo.limitStart != null and tableInfo.limitEnd != null">limit #{tableInfo.limitStart}, #{tableInfo.limitEnd}</if>
-    </select>
-
-    <select id="count"  resultType="long">
-        select count(1) from table_info tableInfo
-        <include refid="joinTables"/>
-        <include refid="smallWhereCase"/>
-    </select>
-
-    <update id="updateByTableInfo" >
-        <include refid="updateSql"/>
-        <include refid="smallWhereCase"/>
-    </update>
-
     <update id="updateById">
         <include refid="updateSql"/>
         where id = #{tableInfo.id}
     </update>
-
-    <delete id="removeByTableInfo">
-        delete from table_info tableInfo <include refid="smallWhereCase"/>
-    </delete>
 
     <select id="findByTableInfo" resultMap="returnTableInfo">
         select <include refid="colList" /> from table_info tableInfo
@@ -179,24 +104,22 @@
         <if test="tableInfo != null and tableInfo.limitStart != null and tableInfo.limitEnd != null">limit #{tableInfo.limitStart}, #{tableInfo.limitEnd}</if>
     </select>
 
-    <!--<select id="countByTableInfo"  resultType="long">-->
-        <!--select count(1) from table_info tableInfo-->
-        <!--<include refid="joinTables"/>-->
-        <!--<include refid="smallWhereCase"/>-->
-    <!--</select>-->
-
     <select id="isExistTableInfo"  resultType="long">
         select count(1) from table_info tableInfo
         where tableCode = #{tableCode} and dbId = #{dbId}
     </select>
 
-    <delete id="removeByIds">
-        delete from table_info where id in
-        <foreach item="item" collection="ids" open="(" separator="," close=")" >
-            #{item}
-        </foreach>
+    <!--<delete id="removeByIds">-->
+        <!--delete from table_info where id in-->
+        <!--<foreach item="item" collection="ids" open="(" separator="," close=")" >-->
+            <!--#{item}-->
+        <!--</foreach>-->
 
-    </delete>
+    <!--</delete>-->
+
+    <update id="removeById">
+        update table_info tableInfo set status = '0' WHERE tableInfo.id = #{id}
+    </update>
 
     <select id="getByCodeLike"  resultMap="returnTableInfo">
         select <include refid="colList" /> from table_info tableInfo where  tableInfo.tableCode like concat('%',#{tableCode},'%') limit 10

@@ -1,7 +1,7 @@
 package cn.whaley.datawarehouse.illidan.export.service;
 
 
-import cn.whaley.datawarehouse.illidan.export.driver.JdbcFactory;
+import cn.whaley.datawarehouse.illidan.common.processor.JdbcFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

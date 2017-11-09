@@ -422,10 +422,8 @@ public class TaskServiceImpl implements TaskService {
         //不导出 (是->否)
         if (tableId != null && !isExport) {
             logger.info("修改成不导出,task表的export table code置成空,并删除table_info表里的记录");
-            List<Long> idList = new ArrayList<Long>();
-            idList.add(tableId);
-            tableInfoMapper.removeByIds(idList);
-            logger.info("删除了table：" + idList.toString());
+            tableInfoMapper.removeById(tableId);
+            logger.info("删除了table：" + tableId.toString());
             task.setMysqlTableId(null);
         } else if (tableId == null && tableCode != null && !tableCode.equals("") && isExport) {//导出 (否->是)
                 logger.info("修改成导出,修改task表export table的值并向table_info表里插入记录");

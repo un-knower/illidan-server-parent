@@ -1,5 +1,6 @@
 package cn.whaley.datawarehouse.illidan.common.service.table;
 
+import cn.whaley.datawarehouse.illidan.common.domain.table.FullHiveTable;
 import cn.whaley.datawarehouse.illidan.common.domain.table.TableInfo;
 import cn.whaley.datawarehouse.illidan.common.domain.table.TableInfoQuery;
 import cn.whaley.datawarehouse.illidan.common.domain.table.TableWithField;
@@ -24,9 +25,16 @@ public interface TableInfoService {
 
     Long updateById(final TableInfo tableInfo);
 
-    Long removeByIds(final List<Long> ids);
+    Long removeById(final Long id);
 
     Long countByTableInfo(final TableInfoQuery tableInfo);
 
     HashMap<Long,Long> insertTableWithField(final List<TableWithField> tableList) throws Exception;
+
+    Long insertFullHiveTable(final FullHiveTable table)  throws Exception;
+
+    Long updateFullHiveTable(final FullHiveTable table)  throws Exception;
+
+    FullHiveTable getFullHiveTable(final Long id);
+
 }

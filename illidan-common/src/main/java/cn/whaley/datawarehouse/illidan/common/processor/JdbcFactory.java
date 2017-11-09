@@ -1,8 +1,7 @@
-package cn.whaley.datawarehouse.illidan.export.driver;
+package cn.whaley.datawarehouse.illidan.common.processor;
 
 import cn.whaley.datawarehouse.illidan.common.domain.db.DbInfoWithStorage;
 import cn.whaley.datawarehouse.illidan.common.service.db.DbInfoService;
-import cn.whaley.datawarehouse.illidan.export.util.ConfigurationManager;
 import com.mchange.v2.c3p0.ComboPooledDataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,15 +12,13 @@ import org.springframework.stereotype.Service;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Created by guohao on 2017/7/14.
- */
 @Service
 public class JdbcFactory {
-    /**
-     * 控制线程并发数
-     */
+
     private Logger logger = LoggerFactory.getLogger(JdbcFactory.class);
+
+    private static final int MYSQL_MIN_POOL_SIZE = 1;
+    private static final int MYSQL_MAX_POOL_SIZE = 5;
 
     private Map<String, JdbcTemplate> jdbcMap = new HashMap<>();
 
@@ -56,8 +53,8 @@ public class JdbcFactory {
 
     private JdbcTemplate create(Map<String, String> map) {
         try {
-            int minPoolSize = ConfigurationManager.getInteger("mysql.minPoolSize");
-            int maxPoolSize = ConfigurationManager.getInteger("mysql.maxPoolSize");
+            int minPoolSize = MYSQL_MIN_POOL_SIZE;
+            int maxPoolSize = MYSQL_MAX_POOL_SIZE;
             //初始化线程池
             ComboPooledDataSource dataSource = new ComboPooledDataSource();
             dataSource.setJdbcUrl(map.get("url"));
