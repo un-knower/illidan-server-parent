@@ -197,8 +197,7 @@ public class TableInfoServiceImpl implements TableInfoService {
         }
 
         //保存hive和mysql表描述
-        TableWithField hiveTable = new TableWithField();
-        BeanUtils.copyProperties(table, hiveTable);
+        TableWithField hiveTable = table.getHiveTable();
         Long mysqlTableId = null;
         if (table.getMysqlTable() != null) {
             TableWithField mysqlTable = new TableWithField();
@@ -228,7 +227,7 @@ public class TableInfoServiceImpl implements TableInfoService {
         if (table == null) {
             throw new RuntimeException("参数不合法");
         }
-        Long hiveTableId = table.getId();
+        Long hiveTableId = table.getHiveTable().getId();
         if (hiveTableId == null || hiveTableId <= 0) {
             throw new RuntimeException("tableId不合法");
         }
@@ -237,8 +236,7 @@ public class TableInfoServiceImpl implements TableInfoService {
             throw new RuntimeException("table不存在, tableId = " + hiveTableId);
         }
 
-        TableWithField hiveTable = new TableWithField();
-        BeanUtils.copyProperties(table, hiveTable);
+        TableWithField hiveTable = table.getHiveTable();
 
         List<FieldInfo> newFields = new ArrayList<>();
         int containSize = 0;
@@ -265,7 +263,7 @@ public class TableInfoServiceImpl implements TableInfoService {
     public FullHiveTable getFullHiveTable(final Long id) {
         TableWithField hiveTable = getTableWithField(id);
         FullHiveTable fullHiveTable = new FullHiveTable();
-        BeanUtils.copyProperties(hiveTable, fullHiveTable);
+        fullHiveTable.setHiveTable(hiveTable);
 
         Long mysqlTableId = hiveTable.getMysqlTableId();
         TableWithField mysqlTableWithDb = getTableWithField(mysqlTableId);
