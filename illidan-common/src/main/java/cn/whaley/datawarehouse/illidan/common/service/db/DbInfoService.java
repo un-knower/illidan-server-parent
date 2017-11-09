@@ -17,4 +17,6 @@ public interface DbInfoService {
     DbInfoWithStorage getDbWithStorageByCode(final String dbCode);
 
     List<DbInfo> findByDbInfo(final DbInfoQuery dbInfo);
+
+    List<DbInfo> getDbInfo(Long storageType);
 }

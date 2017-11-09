@@ -37,6 +37,14 @@ public class TableInfoQuery extends BaseQueryEntity {
     private Date updateTime;
     private String createTimeBegin;
     private String createTimeEnd;
+    /**
+     * 状态（1：有效，0无效）
+     */
+    private String status;
+    /**
+     * 对应的mysql输出表
+     */
+    private Long mysqlTableId;
 
     public Long getId() {
         return id;
@@ -108,6 +116,22 @@ public class TableInfoQuery extends BaseQueryEntity {
 
     public void setCreateTimeEnd(String createTimeEnd) {
         this.createTimeEnd = createTimeEnd;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public Long getMysqlTableId() {
+        return mysqlTableId;
+    }
+
+    public void setMysqlTableId(Long mysqlTableId) {
+        this.mysqlTableId = mysqlTableId;
     }
 
     @Override

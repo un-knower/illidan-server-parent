@@ -79,7 +79,8 @@ public class TaskServiceImpl implements TaskService {
             logger.error("insert: groupIdList is null. task: "+task.toString());
             return null;
         }
-        Long count = taskMapper.isExistTask(groupIdList,task.getTaskCode(),task.getStatus());
+//        Long count = taskMapper.isExistTaskInProject(groupIdList,task.getTaskCode(),task.getStatus());
+        Long count = taskMapper.isExistTask(task.getTaskCode(),task.getStatus());
         if (count == null){
             logger.error("insert: count is null. task: "+task.toString());
             return null;
@@ -273,48 +274,50 @@ public class TaskServiceImpl implements TaskService {
             logger.error("insertFullTask: groupIdList is null. taskFull: "+taskFull.toString());
             return null;
         }
-        Long count = taskMapper.isExistTask(groupIdList,task.getTaskCode(), task.getStatus());
+//        Long count = taskMapper.isExistTaskInProject(groupIdList,task.getTaskCode(), task.getStatus());
+        Long count = taskMapper.isExistTask(task.getTaskCode(), task.getStatus());
         if (count > 0) {
             throw new Exception("任务已经存在不能重复新增");
         }
-        for (int i=0; i<=tableList.size()-1; ++i) {
-            DbInfoWithStorage dbInfo = dbInfoService.getDbWithStorage(tableList.get(i).getDbId());
-            if (dbInfo == null){
-                logger.error("insertFullTask: dbInfo is null. taskFull: "+taskFull.toString());
-                return null;
-            }
-            //存储类型,1:hive,2:mysql
-            Long storageType = dbInfo.getStorageType();
-            TableWithField tableWithField = tableList.get(i);
-            tableWithField.setDbInfo(dbInfo);
-            TableInfo tableInfo = new TableInfo();
-            //复制tableWithField信息到tableInfo中
-            BeanUtils.copyProperties(tableWithField, tableInfo);
-            //插入表信息,并返回其主键id
-            Long tableId = tableInfoService.insert(tableInfo);
-            if (tableId == null){
-                logger.error("insertFullTask: 插入table_info返回的tableId is null. tableInfo: "+tableInfo.toString());
-                return null;
-            }
-            tableIdMap.put(storageType,tableId);
-
-            //插入字段到field_info
-            List<FieldInfo> fieldInfoList = tableWithField.getFieldList();
-            List<FieldInfo> fieldInfos = new ArrayList<FieldInfo>();
-            if (fieldInfoList!=null && fieldInfoList.size()>0){
-                for (FieldInfo f : fieldInfoList) {
-                    FieldInfo fieldInfo = new FieldInfo();
-                    BeanUtils.copyProperties(f, fieldInfo);
-                    fieldInfo.setTableId(tableId);
-                    fieldInfos.add(fieldInfo);
-                }
-                //批量插入fieldInfos
-                //1.删除历史记录
-                fieldInfoService.removeByTableId(tableId);
-                //2.批量插入
-                fieldInfoService.insertBatch(fieldInfos);
-            }
-        }
+        tableIdMap = tableInfoService.insertTableWithField(tableList);
+//        for (int i=0; i<=tableList.size()-1; ++i) {
+//            DbInfoWithStorage dbInfo = dbInfoService.getDbWithStorage(tableList.get(i).getDbId());
+//            if (dbInfo == null){
+//                logger.error("insertFullTask: dbInfo is null. taskFull: "+taskFull.toString());
+//                return null;
+//            }
+//            //存储类型,1:hive,2:mysql
+//            Long storageType = dbInfo.getStorageType();
+//            TableWithField tableWithField = tableList.get(i);
+//            tableWithField.setDbInfo(dbInfo);
+//            TableInfo tableInfo = new TableInfo();
+//            //复制tableWithField信息到tableInfo中
+//            BeanUtils.copyProperties(tableWithField, tableInfo);
+//            //插入表信息,并返回其主键id
+//            Long tableId = tableInfoService.insert(tableInfo);
+//            if (tableId == null){
+//                logger.error("insertFullTask: 插入table_info返回的tableId is null. tableInfo: "+tableInfo.toString());
+//                return null;
+//            }
+//            tableIdMap.put(storageType,tableId);
+//
+//            //插入字段到field_info
+//            List<FieldInfo> fieldInfoList = tableWithField.getFieldList();
+//            List<FieldInfo> fieldInfos = new ArrayList<FieldInfo>();
+//            if (fieldInfoList!=null && fieldInfoList.size()>0){
+//                for (FieldInfo f : fieldInfoList) {
+//                    FieldInfo fieldInfo = new FieldInfo();
+//                    BeanUtils.copyProperties(f, fieldInfo);
+//                    fieldInfo.setTableId(tableId);
+//                    fieldInfos.add(fieldInfo);
+//                }
+//                //批量插入fieldInfos
+//                //1.删除历史记录
+//                fieldInfoService.removeByTableId(tableId);
+//                //2.批量插入
+//                fieldInfoService.insertBatch(fieldInfos);
+//            }
+//        }
         //插入task信息
         task.setTableId(tableIdMap.get(1L));//hive
         task.setMysqlTableId(tableIdMap.get(2L));//mysql

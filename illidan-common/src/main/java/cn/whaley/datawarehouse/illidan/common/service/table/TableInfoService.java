@@ -4,6 +4,7 @@ import cn.whaley.datawarehouse.illidan.common.domain.table.TableInfo;
 import cn.whaley.datawarehouse.illidan.common.domain.table.TableInfoQuery;
 import cn.whaley.datawarehouse.illidan.common.domain.table.TableWithField;
 
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -24,4 +25,8 @@ public interface TableInfoService {
     Long updateById(final TableInfo tableInfo);
 
     Long removeByIds(final List<Long> ids);
+
+    Long countByTableInfo(final TableInfoQuery tableInfo);
+
+    HashMap<Long,Long> insertTableWithField(final List<TableWithField> tableList) throws Exception;
 }

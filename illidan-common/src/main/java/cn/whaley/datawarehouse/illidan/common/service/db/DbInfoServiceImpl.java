@@ -4,14 +4,17 @@ import cn.whaley.datawarehouse.illidan.common.domain.db.DbInfo;
 import cn.whaley.datawarehouse.illidan.common.domain.db.DbInfoQuery;
 import cn.whaley.datawarehouse.illidan.common.domain.db.DbInfoWithStorage;
 import cn.whaley.datawarehouse.illidan.common.domain.storage.StorageInfo;
+import cn.whaley.datawarehouse.illidan.common.domain.storage.StorageInfoQuery;
 import cn.whaley.datawarehouse.illidan.common.mapper.db.DbInfoMapper;
 import cn.whaley.datawarehouse.illidan.common.mapper.storage.StorageInfoMapper;
+import cn.whaley.datawarehouse.illidan.common.service.storage.StorageInfoService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -25,6 +28,8 @@ public class DbInfoServiceImpl implements DbInfoService {
     private DbInfoMapper dbInfoMapper;
     @Autowired
     private StorageInfoMapper storageInfoMapper;
+    @Autowired
+    private StorageInfoService storageInfoService;
 
     public DbInfo get(final Long id) {
         if (id == null){
@@ -90,6 +95,22 @@ public class DbInfoServiceImpl implements DbInfoService {
             return null;
         }
         return dbInfoMapper.findByDbInfo(dbInfo);
+    }
+
+    @Override
+    public List<DbInfo> getDbInfo(Long storageType) {
+        StorageInfoQuery storageInfo = new StorageInfoQuery();
+        storageInfo.setStorageType(storageType);
+        List<StorageInfo> storageInfos = storageInfoService.findByStorageInfo(storageInfo);
+
+        List<DbInfo> dbInfoList = new ArrayList<DbInfo>();
+        DbInfoQuery dbInfo = new DbInfoQuery();
+        for (StorageInfo s : storageInfos){
+            dbInfo.setStorageId(s.getId());
+            List<DbInfo> dbInfos = findByDbInfo(dbInfo);
+            dbInfoList.addAll(dbInfos);
+        }
+        return dbInfoList;
     }
 
     public DbInfo findOne(final DbInfoQuery dbInfo) {

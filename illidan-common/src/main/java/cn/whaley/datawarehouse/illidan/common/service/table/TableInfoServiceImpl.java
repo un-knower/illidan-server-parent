@@ -15,6 +15,8 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -127,5 +129,56 @@ public class TableInfoServiceImpl implements TableInfoService {
             logger.error("removeByIds: id list is null.");
         }
         return tableInfoMapper.removeByIds(ids);
+    }
+
+    public Long countByTableInfo(final TableInfoQuery tableInfo) {
+        if (tableInfo == null){
+            logger.error("countByTableInfo: tableInfo is null.");
+            return null;
+        }
+        return tableInfoMapper.countByTableInfo(tableInfo);
+    }
+
+    @Override
+    public HashMap<Long,Long> insertTableWithField(List<TableWithField> tableList) throws Exception {
+        HashMap<Long,Long> tableIdMap = new HashMap<Long,Long>();
+        for (int i=0; i<=tableList.size()-1; ++i) {
+            DbInfoWithStorage dbInfo = dbInfoService.getDbWithStorage(tableList.get(i).getDbId());
+            if (dbInfo == null){
+                return null;
+            }
+            //存储类型,1:hive,2:mysql
+            Long storageType = dbInfo.getStorageType();
+            TableWithField tableWithField = tableList.get(i);
+            tableWithField.setDbInfo(dbInfo);
+            TableInfo tableInfo = new TableInfo();
+            //复制tableWithField信息到tableInfo中
+            BeanUtils.copyProperties(tableWithField, tableInfo);
+            //插入表信息,并返回其主键id
+            Long tableId = insert(tableInfo);
+            if (tableId == null){
+                logger.error("insertTableWithField: 插入table_info返回的tableId is null. tableInfo: "+tableInfo.toString());
+                return null;
+            }
+            tableIdMap.put(storageType,tableId);
+
+            //插入字段到field_info
+            List<FieldInfo> fieldInfoList = tableWithField.getFieldList();
+            List<FieldInfo> fieldInfos = new ArrayList<FieldInfo>();
+            if (fieldInfoList!=null && fieldInfoList.size()>0){
+                for (FieldInfo f : fieldInfoList) {
+                    FieldInfo fieldInfo = new FieldInfo();
+                    BeanUtils.copyProperties(f, fieldInfo);
+                    fieldInfo.setTableId(tableId);
+                    fieldInfos.add(fieldInfo);
+                }
+                //批量插入fieldInfos
+                //1.删除历史记录
+                fieldInfoService.removeByTableId(tableId);
+                //2.批量插入
+                fieldInfoService.insertBatch(fieldInfos);
+            }
+        }
+        return tableIdMap;
     }
 }

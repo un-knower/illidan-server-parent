@@ -225,12 +225,17 @@
         <include refid="likeWhereCase"/>
     </select>
 
-    <select id="isExistTask"  resultType="long">
+    <select id="isExistTaskInProject"  resultType="long">
         select count(1) from task task
         where taskCode = #{taskCode} and (status=#{status}) and groupId in
         <foreach item="item" collection="groupIds" open="(" separator="," close=")" >
             #{item}
         </foreach>
+    </select>
+
+    <select id="isExistTask"  resultType="long">
+        select count(1) from task task
+        where taskCode = #{taskCode} and (status=#{status})
     </select>
 
     <delete id="removeByIds">

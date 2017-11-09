@@ -40,7 +40,9 @@ public interface TaskMapper {
 
     List<Task> findByTask(@Param("task") final TaskQuery task);
 
-    Long isExistTask(@Param("groupIds") final List<Long> groupIds,@Param("taskCode") String taskCode, @Param("status") String status);
+    Long isExistTaskInProject(@Param("groupIds") final List<Long> groupIds,@Param("taskCode") String taskCode, @Param("status") String status);
+
+    Long isExistTask(@Param("taskCode") String taskCode, @Param("status") String status);
 
     Long removeByIds(@Param("ids") final List<Long> ids);
 

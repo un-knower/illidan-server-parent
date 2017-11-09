@@ -26,4 +26,6 @@ public interface TableInfoMapper {
     Long updateById(@Param("tableInfo") final TableInfo tableInfo);
 
     Long removeByIds(@Param("ids") final List<Long> ids);
+
+    Long countByTableInfo(@Param("tableInfo") final TableInfoQuery tableInfo);
 }

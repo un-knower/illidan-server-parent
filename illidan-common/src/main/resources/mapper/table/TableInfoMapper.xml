@@ -51,7 +51,7 @@
 
     <sql id="whereCase">
         <where>
-            1=1
+            tableInfo.status = '1'
             <if test="tableInfo != null and tableInfo.id != null">and tableInfo.id = #{tableInfo.id}</if>
             <if test="tableInfo != null and tableInfo.idGT != null">and tableInfo.id > #{tableInfo.idGT}</if><if test="idLT != null">and #{idLT} > tableInfo.id</if>
             <if test="tableInfo != null and tableInfo.tableCode != null">and tableInfo.tableCode = #{tableInfo.tableCode}</if>
@@ -69,6 +69,7 @@
 
     <sql id="smallWhereCase">
         <where>
+            tableInfo.status = '1'
             <if test="tableInfo != null and tableInfo.id != null">and tableInfo.id = #{tableInfo.id}</if>
             <if test="tableInfo != null and tableInfo.tableCode != null">and tableInfo.tableCode = #{tableInfo.tableCode}</if>
             <if test="tableInfo != null and tableInfo.tableDes != null">and tableInfo.tableDes = #{tableInfo.tableDes}</if>
@@ -76,6 +77,15 @@
             <if test="tableInfo != null and tableInfo.updateTime != null">and tableInfo.updateTime = #{tableInfo.updateTime}</if>
             <if test="tableInfo != null and tableInfo.dataType != null">and tableInfo.dataType = #{tableInfo.dataType}</if>
             <if test="tableInfo != null and tableInfo.dbId != null">and tableInfo.dbId = #{tableInfo.dbId}</if>
+        </where>
+    </sql>
+
+    <sql id="likeWhereCase">
+        <where>
+            tableInfo.status = '1'
+            <if test="tableInfo != null and tableInfo.id != null">and tableInfo.id = #{tableInfo.id}</if>
+            <if test="tableInfo != null and tableInfo.tableCode != null">and tableInfo.tableCode LIKE concat('%',#{tableInfo.tableCode},'%')</if>
+            <if test="tableInfo != null and tableInfo.tableDes != null">and tableInfo.tableDes LIKE concat('%',#{tableInfo.tableDes},'%')</if>
         </where>
     </sql>
 
@@ -164,16 +174,16 @@
     <select id="findByTableInfo" resultMap="returnTableInfo">
         select <include refid="colList" /> from table_info tableInfo
         <include refid="joinTables"/>
-        <include refid="smallWhereCase"/>
+        <include refid="likeWhereCase"/>
         order by tableInfo.updateTime desc
         <if test="tableInfo != null and tableInfo.limitStart != null and tableInfo.limitEnd != null">limit #{tableInfo.limitStart}, #{tableInfo.limitEnd}</if>
     </select>
 
-    <select id="countByTableInfo"  resultType="long">
-        select count(1) from table_info tableInfo
-        <include refid="joinTables"/>
-        <include refid="smallWhereCase"/>
-    </select>
+    <!--<select id="countByTableInfo"  resultType="long">-->
+        <!--select count(1) from table_info tableInfo-->
+        <!--<include refid="joinTables"/>-->
+        <!--<include refid="smallWhereCase"/>-->
+    <!--</select>-->
 
     <select id="isExistTableInfo"  resultType="long">
         select count(1) from table_info tableInfo
@@ -190,5 +200,11 @@
 
     <select id="getByCodeLike"  resultMap="returnTableInfo">
         select <include refid="colList" /> from table_info tableInfo where  tableInfo.tableCode like concat('%',#{tableCode},'%') limit 10
+    </select>
+
+    <select id="countByTableInfo"  resultType="long">
+        select count(1) from table_info tableInfo
+        <include refid="joinTables"/>
+        <include refid="likeWhereCase"/>
     </select>
 </mapper>

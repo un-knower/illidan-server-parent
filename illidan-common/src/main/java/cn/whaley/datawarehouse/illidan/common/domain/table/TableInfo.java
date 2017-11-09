@@ -35,6 +35,14 @@ public class TableInfo implements Serializable {
      * 修改时间
      */
     private Date updateTime;
+    /**
+     * 状态（1：有效，0无效）
+     */
+    private String status;
+    /**
+     * 对应的mysql输出表
+     */
+    private Long mysqlTableId;
 
     public Long getId() {
         return id;
@@ -90,6 +98,22 @@ public class TableInfo implements Serializable {
 
     public void setUpdateTime(Date updateTime) {
         this.updateTime = updateTime;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public Long getMysqlTableId() {
+        return mysqlTableId;
+    }
+
+    public void setMysqlTableId(Long mysqlTableId) {
+        this.mysqlTableId = mysqlTableId;
     }
 
     @Override
