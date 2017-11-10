@@ -100,8 +100,8 @@ public class TaskController extends Common {
     public ModelAndView toAdd(ModelAndView mav, Long groupId) {
         mav.setViewName("task/add");
         List<TaskGroup> groupList = getTaskGroup();
-        List<DbInfo> hiveDbInfoList = getDbInfo(1L);//hive
-        List<DbInfo> mysqlDbInfoList = getDbInfo(2L);//mysql
+        List<DbInfo> hiveDbInfoList = dbInfoService.getDbInfo(1L);//hive
+        List<DbInfo> mysqlDbInfoList = dbInfoService.getDbInfo(2L);//mysql
         mav.addObject("group",groupList);
         mav.addObject("hiveDbInfoList",hiveDbInfoList);
         mav.addObject("mysqlDbInfoList",mysqlDbInfoList);
@@ -162,8 +162,8 @@ public class TaskController extends Common {
         }
         fieldList = fieldList.substring(1,fieldList.length());
         List<TaskGroup> groupList = getTaskGroup();
-        List<DbInfo> dbInfoList = getDbInfo(1L);
-        List<DbInfo> mysqlDbInfoList = getDbInfo(2L);
+        List<DbInfo> dbInfoList = dbInfoService.getDbInfo(1L);
+        List<DbInfo> mysqlDbInfoList = dbInfoService.getDbInfo(2L);
         List<TableWithField> tableList = task.getTableList();
         for (TableWithField t : tableList){
             if (t.getDbInfo().getStorageType() == 1L){
@@ -220,7 +220,11 @@ public class TaskController extends Common {
                 String[] idArray = ids.split(",");
                 List<Long> idList = Arrays.asList(idArray).stream().map(x->Long.parseLong(x)).collect(Collectors.toList());
                 taskService.removeByIds(idList);
-                logger.error("删除了任务：" + ids);
+                logger.info("删除了任务：" + ids);
+                if (getCookieValue("taskId")!=null && !getCookieValue("taskId").equals("")){
+                    clearCookie("taskId");
+                    logger.info("清除cookie");
+                }
                 returnResult(true, "删除任务成功");
             }
 
@@ -235,20 +239,20 @@ public class TaskController extends Common {
         return taskGroupService.findByTaskGroup(new TaskGroupQuery());
     }
 
-    public List<DbInfo> getDbInfo(Long storageType){
-        StorageInfoQuery storageInfo = new StorageInfoQuery();
-        storageInfo.setStorageType(storageType);
-        List<StorageInfo> storageInfos = storageInfoService.findByStorageInfo(storageInfo);
-
-        List<DbInfo> dbInfoList = new ArrayList<>();
-        DbInfoQuery dbInfo = new DbInfoQuery();
-        for (StorageInfo s : storageInfos){
-            dbInfo.setStorageId(s.getId());
-            List<DbInfo> dbInfos = dbInfoService.findByDbInfo(dbInfo);
-            dbInfoList.addAll(dbInfos);
-        }
-        return dbInfoList;
-    }
+//    public List<DbInfo> getDbInfo(Long storageType){
+//        StorageInfoQuery storageInfo = new StorageInfoQuery();
+//        storageInfo.setStorageType(storageType);
+//        List<StorageInfo> storageInfos = storageInfoService.findByStorageInfo(storageInfo);
+//
+//        List<DbInfo> dbInfoList = new ArrayList<>();
+//        DbInfoQuery dbInfo = new DbInfoQuery();
+//        for (StorageInfo s : storageInfos){
+//            dbInfo.setStorageId(s.getId());
+//            List<DbInfo> dbInfos = dbInfoService.findByDbInfo(dbInfo);
+//            dbInfoList.addAll(dbInfos);
+//        }
+//        return dbInfoList;
+//    }
 
     public TableInfo getOneTableInfo(String tableCode){
         TableInfoQuery tableInfoQuery = new TableInfoQuery();
@@ -277,17 +281,23 @@ public class TaskController extends Common {
         if (!validateColumnNull(tableList.get(0).getTableCode())){
             return validateMessage("目标表");
         }
+        if (!codeReg(tableList.get(0).getTableCode())){
+            return returnResult(false, "目标表名只能由英文字母,数字,-,_组成!!!");
+        }
         if (tableList.get(0).getFieldList()==null || tableList.get(0).getFieldList().size()==0){
             return validateMessage("分区字段");
         }
         if (!validateColumnNull(tableList.get(0).getDataType())){
             return validateMessage("存储格式");
         }
-        if (!validateColumnNull(tableList.get(0).getDbId())){
+        if (tableList.size()>1&&!validateColumnNull(tableList.get(1).getDbId())){
             return validateMessage("mysql目标数据库");
         }
-        if (!validateColumnNull(tableList.get(0).getTableCode())){
+        if (tableList.size()>1&&!validateColumnNull(tableList.get(1).getTableCode())){
             return validateMessage("mysql目标表");
+        }
+        if (tableList.size()>1&&!codeReg(tableList.get(1).getTableCode())){
+            return returnResult(false, "mysql目标表名只能由英文字母,数字,-,_组成!!!");
         }
         if (!validateColumnNull(taskFull.getExecuteType())){
             return validateMessage("执行方式");
