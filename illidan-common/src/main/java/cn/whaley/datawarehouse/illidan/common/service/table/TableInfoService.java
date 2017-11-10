@@ -37,4 +37,6 @@ public interface TableInfoService {
 
     FullHiveTable getFullHiveTable(final Long id);
 
+    Boolean isExport2Mysql(final Long id);
+
 }

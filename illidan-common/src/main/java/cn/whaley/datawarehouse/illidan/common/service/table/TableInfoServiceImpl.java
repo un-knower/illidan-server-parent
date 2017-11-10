@@ -291,6 +291,19 @@ public class TableInfoServiceImpl implements TableInfoService {
         return fullHiveTable;
     }
 
+    @Override
+    public Boolean isExport2Mysql(final Long id){
+        if (id == null){
+            logger.error("isExport2Mysql: id is null.");
+            return null;
+        }
+        Boolean flag = false;
+        if (tableInfoMapper.get(id).getMysqlTableId() != null){
+            flag = true;
+        }
+        return flag;
+    }
+
 
     private Long insertTableWithField(TableWithField tableWithField) throws Exception {
 
