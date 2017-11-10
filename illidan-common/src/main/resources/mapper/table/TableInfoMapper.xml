@@ -37,9 +37,6 @@
             <if test="tableInfo.createTime != null">
                 createTime = #{tableInfo.createTime},
             </if>
-            <if test="tableInfo.updateTime != null">
-                updateTime = #{tableInfo.updateTime},
-            </if>
 
         </set>
     </sql>
@@ -85,7 +82,7 @@
         </trim>
         )values(
         <trim prefix="" prefixOverrides=",">
-            ,#{tableInfo.tableCode},#{tableInfo.tableDes},#{tableInfo.createTime},#{tableInfo.updateTime},#{tableInfo.dataType},#{tableInfo.dbId},#{tableInfo.status},#{tableInfo.mysqlTableId}
+            ,#{tableInfo.tableCode},#{tableInfo.tableDes},now(),now(),#{tableInfo.dataType},#{tableInfo.dbId},#{tableInfo.status},#{tableInfo.mysqlTableId}
         </trim>
         )
 

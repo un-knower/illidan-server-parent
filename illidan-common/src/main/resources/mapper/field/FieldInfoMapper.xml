@@ -32,9 +32,6 @@
             <if test="fieldInfo.createTime != null">
                 createTime = #{fieldInfo.createTime},
             </if>
-            <if test="fieldInfo.updateTime != null">
-                updateTime = #{fieldInfo.updateTime},
-            </if>
 
         </set>
     </sql>
@@ -129,7 +126,7 @@
         <foreach collection="list" item="item" index="index" separator=",">
             (
             <trim prefix="" prefixOverrides=",">
-                ,#{item.colName} ,#{item.colType},#{item.colDes},#{item.colIndex},#{item.isPartitionCol},#{item.tableId} ,#{item.createTime} ,#{item.updateTime}
+                ,#{item.colName} ,#{item.colType},#{item.colDes},#{item.colIndex},#{item.isPartitionCol},#{item.tableId} ,now() ,now()
             </trim>
             )
         </foreach>
@@ -147,7 +144,7 @@
         </trim>
         )values(
         <trim prefix="" prefixOverrides=",">
-            ,#{fieldInfo.colName},#{fieldInfo.colType},#{fieldInfo.colDes},#{fieldInfo.colIndex},#{fieldInfo.isPartitionCol},#{fieldInfo.tableId},#{fieldInfo.createTime},#{fieldInfo.updateTime}
+            ,#{fieldInfo.colName},#{fieldInfo.colType},#{fieldInfo.colDes},#{fieldInfo.colIndex},#{fieldInfo.isPartitionCol},#{fieldInfo.tableId},now(),now()
         </trim>
         )
     </insert>

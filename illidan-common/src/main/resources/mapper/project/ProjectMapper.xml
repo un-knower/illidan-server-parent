@@ -26,9 +26,6 @@
             <if test="project.createTime != null">
                 createTime = #{project.createTime},
             </if>
-            <if test="project.updateTime != null">
-                updateTime = #{project.updateTime},
-            </if>
             <if test="project.isPublish != null">
                 isPublish = #{project.isPublish},
             </if>
@@ -131,7 +128,7 @@
         <foreach collection="list" item="item" index="index" separator=",">
             (
             <trim prefix="" prefixOverrides=",">
-                ,#{projectCode} ,#{projectDes} ,#{createTime} ,#{updateTime} ,#{ownerId} ,#{status} ,#{isPublish} ,#{publishTime}
+                ,#{projectCode} ,#{projectDes} ,now(),now(),#{ownerId} ,#{status} ,#{isPublish} ,#{publishTime}
             </trim>
             )
         </foreach>
@@ -141,7 +138,7 @@
         insert into project
         (
         <trim prefix="" prefixOverrides=",">
-            ,projectCode,projectDes,createTime,updateTime,ownerId,status,isPublish,publishTime
+            ,projectCode,projectDes,now(),now(),ownerId,status,isPublish,publishTime
         </trim>
         )values(
         <trim prefix="" prefixOverrides=",">

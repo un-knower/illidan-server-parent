@@ -38,9 +38,9 @@
             <if test="task.createTime != null">
                 createTime = #{task.createTime},
             </if>
-            <if test="task.updateTime != null">
-                updateTime = #{task.updateTime},
-            </if>
+            <!--<if test="task.updateTime != null">-->
+                <!--updateTime = #{task.updateTime},-->
+            <!--</if>-->
             <!--d<if test="task.mysqlTableId != null">-->
                 mysqlTableId = #{task.mysqlTableId},
             <!--d</if>-->
@@ -158,7 +158,7 @@
         <foreach collection="list" item="item" index="index" separator=",">
             (
             <trim prefix="" prefixOverrides=",">
-                ,#{taskCode} ,#{taskDes} ,#{createTime} ,#{updateTime} ,#{content} ,#{status} ,#{addUser} ,#{groupId},#{tableId} ,#{executeType} ,#{mysqlTableId}
+                ,#{taskCode}, #{taskDes}, now(), now(), #{content} ,#{status} ,#{addUser} ,#{groupId},#{tableId} ,#{executeType} ,#{mysqlTableId}
             </trim>
             )
         </foreach>
@@ -172,7 +172,7 @@
         </trim>
         )values(
         <trim prefix="" prefixOverrides=",">
-            ,#{task.taskCode},#{task.taskDes},#{task.createTime},#{task.updateTime},#{task.content},#{task.status},#{task.addUser},#{task.groupId},#{task.tableId},#{task.executeType},#{task.mysqlTableId}
+            ,#{task.taskCode},#{task.taskDes},now(),now(),#{task.content},#{task.status},#{task.addUser},#{task.groupId},#{task.tableId},#{task.executeType},#{task.mysqlTableId}
         </trim>
         )
     </insert>

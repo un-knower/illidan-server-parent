@@ -32,9 +32,6 @@
             <if test="taskGroup.createTime != null">
                 createTime = #{taskGroup.createTime},
             </if>
-            <if test="taskGroup.updateTime != null">
-                updateTime = #{taskGroup.updateTime},
-            </if>
             <if test="taskGroup.scheduleId != null">
                 scheduleId = #{taskGroup.scheduleId},
             </if>
@@ -141,7 +138,7 @@
         <foreach collection="list" item="item" index="index" separator=",">
             (
             <trim prefix="" prefixOverrides=",">
-                ,#{groupCode} ,#{groupDes} ,#{createTime} ,#{updateTime} ,#{schedule} ,#{status} ,#{email} ,#{projectId} ,#{scheduleId}
+                ,#{groupCode} ,#{groupDes} ,now() ,now() ,#{schedule} ,#{status} ,#{email} ,#{projectId} ,#{scheduleId}
             </trim>
             )
         </foreach>
@@ -159,7 +156,7 @@
         </trim>
         )values(
         <trim prefix="" prefixOverrides=",">
-            ,#{taskGroup.groupCode},#{taskGroup.groupDes},#{taskGroup.createTime},#{taskGroup.updateTime},#{taskGroup.schedule},#{taskGroup.status},#{taskGroup.email},#{taskGroup.projectId},#{taskGroup.scheduleId}
+            ,#{taskGroup.groupCode},#{taskGroup.groupDes},now(),now(),#{taskGroup.schedule},#{taskGroup.status},#{taskGroup.email},#{taskGroup.projectId},#{taskGroup.scheduleId}
         </trim>
         )
     </insert>
