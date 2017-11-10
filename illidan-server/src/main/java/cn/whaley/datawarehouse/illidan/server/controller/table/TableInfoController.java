@@ -106,11 +106,15 @@ public class TableInfoController extends Common {
     public ModelAndView toEdit(Long id, ModelAndView mav) {
         mav.setViewName("table/edit");
         FullHiveTable fullHiveTable = tableInfoService.getFullHiveTable(id);
-        String mysqlTableDbCode = dbInfoService.get(fullHiveTable.getMysqlTable().getDbId()).getDbCode();
-        Boolean flag = tableInfoService.isExport2Mysql(fullHiveTable.getHiveTable().getId());
+        TableWithField mysqlTable = (TableWithField) fullHiveTable.getMysqlTable();
+        Boolean flag = fullHiveTable.getHiveTable().getMysqlTableId() != null;
         mav.addObject("flag" , flag);
         mav.addObject("hiveTable",fullHiveTable.getHiveTable());
         mav.addObject("mysqlTable",fullHiveTable.getMysqlTable());
+        String mysqlTableDbCode = "";
+        if(mysqlTable!=null){
+            mysqlTableDbCode = mysqlTable.getDbInfo().getDbCode();
+        }
         mav.addObject("mysqlTableDbCode",mysqlTableDbCode);
         return mav;
     }
