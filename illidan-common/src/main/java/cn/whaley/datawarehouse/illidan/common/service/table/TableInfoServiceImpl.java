@@ -221,7 +221,17 @@ public class TableInfoServiceImpl implements TableInfoService {
         }
 
         //创建实体表
-        tableProcessor.createTable(hiveTable);
+        try {
+            tableProcessor.createTable(hiveTableId);
+        } catch (Exception e) {
+            logger.error("创建目标表失败", e);
+            //回滚保存的配置
+            removeById(hiveTableId);
+            if(mysqlTableId != null) {
+                removeById(mysqlTableId);
+            }
+            throw e;
+        }
 
         return hiveTableId;
     }
@@ -282,11 +292,10 @@ public class TableInfoServiceImpl implements TableInfoService {
         fullHiveTable.setHiveTable(hiveTable);
 
         Long mysqlTableId = hiveTable.getMysqlTableId();
-        TableWithField mysqlTableWithDb = getTableWithField(mysqlTableId);
-
-        TableInfo mysqlTable = new TableInfo();
-        BeanUtils.copyProperties(mysqlTableWithDb, mysqlTable);
-        fullHiveTable.setMysqlTable(mysqlTable);
+        if(mysqlTableId != null) {
+            TableWithField mysqlTableWithDb = getTableWithField(mysqlTableId);
+            fullHiveTable.setMysqlTable(mysqlTableWithDb);
+        }
 
         return fullHiveTable;
     }
