@@ -15,12 +15,10 @@ import java.util.Map;
 @Service
 public class JdbcFactory {
 
+    private static final Integer MYSQL_MIN_POOL_SIZE = 1;
+    private static final Integer MYSQL_MAX_POOL_SIZE = 5;
     private Logger logger = LoggerFactory.getLogger(JdbcFactory.class);
-
-    private static final int MYSQL_MIN_POOL_SIZE = 1;
-    private static final int MYSQL_MAX_POOL_SIZE = 5;
-
-    private Map<String, JdbcTemplate> jdbcMap = new HashMap<>();
+    private Map<Long, JdbcTemplate> jdbcMap = new HashMap<>();
 
     @Autowired
     private DbInfoService dbInfoService;
@@ -29,12 +27,14 @@ public class JdbcFactory {
         if (dbName == null || dbName.isEmpty()) {
             return null;
         }
-        JdbcTemplate result = jdbcMap.get(dbName);
+
+        DbInfoWithStorage dbWithStorageByCode = dbInfoService.getDbWithStorageByCode(dbName);
+        Long storageId = dbWithStorageByCode.getStorageId();
+
+        JdbcTemplate result = jdbcMap.get(storageId);
         if (result != null) {
             return result;
         }
-
-        DbInfoWithStorage dbWithStorageByCode = dbInfoService.getDbWithStorageByCode(dbName);
         String url = dbWithStorageByCode.getAddress();
         String driver = dbWithStorageByCode.getDriver();
         String userName = dbWithStorageByCode.getUser();
@@ -44,25 +44,27 @@ public class JdbcFactory {
         map.put("driver", driver);
         map.put("userName", userName);
         map.put("passWord", passWord);
+        map.put("minPoolSize", MYSQL_MIN_POOL_SIZE.toString());
+        map.put("maxPoolSize", MYSQL_MAX_POOL_SIZE.toString());
+
         result = create(map);
 
-        jdbcMap.put(dbName, result);
+        jdbcMap.put(storageId, result);
 
         return result;
     }
 
     private JdbcTemplate create(Map<String, String> map) {
         try {
-            int minPoolSize = MYSQL_MIN_POOL_SIZE;
-            int maxPoolSize = MYSQL_MAX_POOL_SIZE;
+
             //初始化线程池
             ComboPooledDataSource dataSource = new ComboPooledDataSource();
             dataSource.setJdbcUrl(map.get("url"));
             dataSource.setDriverClass(map.get("driver"));
             dataSource.setUser(map.get("userName"));
             dataSource.setPassword(map.get("passWord"));
-            dataSource.setMinPoolSize(minPoolSize);
-            dataSource.setMaxPoolSize(maxPoolSize);
+            dataSource.setMinPoolSize(Integer.parseInt(map.get("minPoolSize")));
+            dataSource.setMaxPoolSize(Integer.parseInt(map.get("maxPoolSize")));
 
             JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
             return jdbcTemplate;
