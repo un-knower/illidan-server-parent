@@ -42,6 +42,8 @@
     </sql>
 
     <sql id="joinTables">
+        LEFT JOIN db_info dbInfo on tableInfo.dbId = dbInfo.id
+        LEFT JOIN storage_info storageInfo on dbInfo.storageId = storageInfo.id
     </sql>
 
     <sql id="colList">
@@ -61,7 +63,7 @@
 
     <sql id="likeWhereCase">
         <where>
-            tableInfo.status = '1'
+            tableInfo.status = '1' AND storageInfo.storageType = 1
             <if test="tableInfo != null and tableInfo.id != null">and tableInfo.id = #{tableInfo.id}</if>
             <if test="tableInfo != null and tableInfo.tableCode != null">and tableInfo.tableCode LIKE concat('%',#{tableInfo.tableCode},'%')</if>
             <if test="tableInfo != null and tableInfo.tableDes != null">and tableInfo.tableDes LIKE concat('%',#{tableInfo.tableDes},'%')</if>
