@@ -283,13 +283,18 @@
     }
 
     function removeRecord(ids) {
-        modalConfirm("提示", "你确定要删除记录吗?", function () {
+        var alertStr = "你确定要删除记录吗?";
+        var idArray = ids.split(",");
+        if(idArray.length > 0){
+          for(var i=0;i<idArray.length;i++){
+              if(getCookie('taskId') == idArray[i]){
+                  alertStr = "系统检测到任务被复制,你确定要删除吗?这会导致任务无法复制";
+              }
+          }
+        }
+        modalConfirm("提示", alertStr, function () {
             deleteTask(ids)
         }, cancle);
-    }
-
-    function cancle() {
-        return false;
     }
 
     function deleteTask(ids) {
@@ -307,6 +312,10 @@
                 }
             }
         });
+    }
+
+    function cancle() {
+        return false;
     }
 </script>
 </body>

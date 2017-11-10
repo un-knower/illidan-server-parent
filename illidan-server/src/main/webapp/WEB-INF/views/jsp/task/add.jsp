@@ -109,13 +109,13 @@
                         <input type="radio" id="noExport2Mysql" name="export2Mysql" checked value="no" onclick="isExport2Mysql(this)"> 否
                     </label>
                     <label>
-                        <input type="radio" name="export2Mysql" value="yes" onclick="isExport2Mysql(this)"> 是
+                        <input type="radio" id="export2Mysql" name="export2Mysql" value="yes" onclick="isExport2Mysql(this)"> 是
                     </label>
                 </div>
             </div>
             <div class="col-sm-6" id="mysqlDataBaseDiv" style="display: none">
                 <div class="form-group">
-                    <label class="col-md-1 control-label">mysql目标数据库</label>
+                    <label class="col-md-1 control-label"><b class="text-danger">*</b>mysql目标数据库</label>
                     <div class="col-md-6">
                         <select id="mysqlDataBase" name="mysqlDataBase" class="selectpicker show-tick form-control" title="请选择mysql目标数据库" data-live-search="true">
                             <c:forEach begin="0" end="${mysqlDbInfoList.size()-1}"  var="index">
@@ -127,7 +127,7 @@
             </div>
             <div class="col-sm-6" id="mysqlTableDiv" style="display: none">
                 <div class="form-group">
-                    <label class="col-md-1 control-label">mysql目标表</label>
+                    <label class="col-md-1 control-label"><b class="text-danger">*</b>mysql目标表</label>
                     <div class="col-md-6">
                         <input class="form-control" id="mysqlTable" placeholder="mysql目标表">
                     </div>
@@ -214,13 +214,18 @@
             $("#mysqlTable").val("");
             $("#mysqlDataBase").val("");
         }
-
-        //mysql table
-        if($("#mysqlTable").val().toString()!=null && $("#mysqlTable").val().toString()!="" && $("#mysqlDataBase").val().toString()!=null && $("#mysqlDataBase").val().toString()!=""){
+        if($('input:radio[id="export2Mysql"]:checked').val()!=null){
             table2.tableCode = $("#mysqlTable").val().toString();
             table2.dbId = $("#mysqlDataBase").val().toString();
             tableList.push(table2);
         }
+
+        //mysql table
+//        if($("#mysqlTable").val().toString()!=null && $("#mysqlTable").val().toString()!="" && $("#mysqlDataBase").val().toString()!=null && $("#mysqlDataBase").val().toString()!=""){
+//            table2.tableCode = $("#mysqlTable").val().toString();
+//            table2.dbId = $("#mysqlDataBase").val().toString();
+//            tableList.push(table2);
+//        }
         taskFull.tableList = tableList;
         taskFull.taskCode = $("#taskCode").val();
         taskFull.groupId = $("#groupId").val();
