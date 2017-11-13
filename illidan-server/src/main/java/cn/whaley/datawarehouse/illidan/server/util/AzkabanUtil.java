@@ -118,6 +118,7 @@ public class AzkabanUtil {
         params.put("azkaban.browser.session.id",sessionId);
         params.put("cronExpression",cronExpression);
         params.put("ajax","scheduleCronFlow");
+        params.put("failureAction","finishPossible");
         String url = ConfigUtils.get("newillidan.azkaban.scheduleUrl");
         String response = getPostResponse(url,params,"UTF-8");
         JSONObject result = new JSONObject(response);
