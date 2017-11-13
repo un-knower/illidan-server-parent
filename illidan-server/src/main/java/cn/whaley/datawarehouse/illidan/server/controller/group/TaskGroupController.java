@@ -10,6 +10,7 @@ import cn.whaley.datawarehouse.illidan.common.service.owner.OwnerService;
 import cn.whaley.datawarehouse.illidan.common.service.project.ProjectService;
 import cn.whaley.datawarehouse.illidan.server.service.AzkabanService;
 import cn.whaley.datawarehouse.illidan.server.util.Common;
+import org.apache.logging.log4j.core.util.CronExpression;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -96,13 +97,10 @@ public class TaskGroupController extends Common {
             taskGroup.setStatus("1");
             taskGroup.setCreateTime(new Date());
             taskGroup.setUpdateTime(new Date());
-            if(StringUtils.isEmpty(taskGroup)){
-                returnResult(false, "新增任务组失败!!!");
-            } else if(taskGroup.getGroupCode() == null || taskGroup.getGroupCode().equals("")){
-                returnResult(false, "任务组code不能为空!!!");
-            } else if (!codeReg(taskGroup.getGroupCode())){
-                returnResult(false, "任务组code只能由英文字母,数字,-,_组成!!!");
-            }else {
+            String result = validTaskGroup(taskGroup);
+            if(!result.equals("success")) {
+                returnResult(false, result);
+            } else {
                 taskGroupService.insert(taskGroup);
                 logger.info("新增任务组成功!!!");
                 returnResult(true, "新增任务组成功!!!");
@@ -111,6 +109,22 @@ public class TaskGroupController extends Common {
             e.printStackTrace();
             logger.error(e.getMessage());
             returnResult(false, "新增任务组失败: " + e.getMessage());
+        }
+    }
+
+    private String validTaskGroup(TaskGroup taskGroup) {
+        if(taskGroup == null) {
+            return "任务组为空!";
+        } else if(taskGroup.getGroupCode() == null || taskGroup.getGroupCode().equals("")){
+            return "任务组code不能为空!!!";
+        } else if (!codeReg(taskGroup.getGroupCode())){
+            return "任务组code只能由英文字母,数字,-,_组成!!!";
+        } else if(taskGroup.getSchedule() != null && !taskGroup.getSchedule().isEmpty()
+                && !"0".equals(taskGroup.getSchedule())
+                && !CronExpression.isValidExpression(taskGroup.getSchedule())) {
+            return "cron表达式格式不合法";
+        } else {
+            return "success";
         }
     }
 
@@ -149,8 +163,9 @@ public class TaskGroupController extends Common {
     @ResponseBody
     public void edit(@RequestBody TaskGroup taskGroup) {
         try {
-            if(StringUtils.isEmpty(taskGroup)){
-                returnResult(false, "修改任务组失败!!!");
+            String valid = validTaskGroup(taskGroup);
+            if(!valid.equals("success")){
+                returnResult(false, valid);
             } else {
                 //为了操作azkaban数据异常回退
                 TaskGroup oldtaskGroup = taskGroupService.get(taskGroup.getId());
@@ -165,15 +180,19 @@ public class TaskGroupController extends Common {
                     //project为未发布，只需改数据库即可
                     returnResult(true, "修改任务组成功!!!");
                 }else{
-                    if(cronExpression.equals(oldtaskGroup.getSchedule())){
+                    if(cronExpression != null && cronExpression.equals(oldtaskGroup.getSchedule())){
                         //cronExpression未修改，只需改数据库即可
                         returnResult(true, "修改任务组成功!!!");
-                    }else{
+                    }else if(oldtaskGroup.getScheduleId() == null || Integer.parseInt(oldtaskGroup.getScheduleId()) <= 0) {
+                        //未设置调度，只需改数据库即可
+                        returnResult(true, "修改任务组成功!!!");
+                    }
+                    else {
                         //cronExpression修改，只需改数据库即可
                         String scheduleId = oldtaskGroup.getScheduleId();
                         JSONObject result = null;
                         //cronExpression修改
-                        if("".equals(cronExpression)){
+                        if(cronExpression == null || cronExpression.isEmpty() || "0".equals(cronExpression)){
                             //取消调度
                             result = azkabanService.deleteSchedule(project.getId(), oldtaskGroup, scheduleId);
                         }else{

@@ -141,7 +141,7 @@ public class AzkabanService {
             for(TaskGroup taskGroup: taskGroupList){
                 String cronExpression = taskGroup.getSchedule();
                 //过滤需要调度的group
-                if(!"0".equals(cronExpression)){
+                if(cronExpression != null && !cronExpression.isEmpty() && !"0".equals(cronExpression)){
                     JSONObject scheduleResult = setSchedule(projectId, taskGroup, cronExpression);
                     if("error".equals(scheduleResult.getString("status"))){
                         return scheduleResult;
