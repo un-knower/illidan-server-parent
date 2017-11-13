@@ -4,6 +4,7 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Created by wujiulin on 2017/6/27.
@@ -131,6 +132,18 @@ public class FieldInfo implements Serializable {
         if (colName != null ? !colName.equals(fieldInfo.colName) : fieldInfo.colName != null) return false;
         if (colType != null ? !colType.equals(fieldInfo.colType) : fieldInfo.colType != null) return false;
         return isPartitionCol != null ? isPartitionCol.equals(fieldInfo.isPartitionCol) : fieldInfo.isPartitionCol == null;
+    }
+
+    public boolean existIn(List<FieldInfo> fieldInfos) {
+        if(fieldInfos == null || fieldInfos.size() == 0) {
+            return false;
+        }
+        for(FieldInfo fieldInfo: fieldInfos) {
+            if(same(fieldInfo)) {
+                return true;
+            }
+        }
+        return false;
     }
 
 }

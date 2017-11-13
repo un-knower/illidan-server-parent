@@ -25,6 +25,8 @@ public interface TableInfoMapper {
 
     Long updateById(@Param("tableInfo") final TableInfo tableInfo);
 
+    Long updateMysqlTableId(@Param("hiveTableId") final Long hiveTableId, @Param("mysqlTableId") final Long mysqlTableId);
+
     Long removeById(@Param("id") final Long id);
 
     Long countByTableInfo(@Param("tableInfo") final TableInfoQuery tableInfo);

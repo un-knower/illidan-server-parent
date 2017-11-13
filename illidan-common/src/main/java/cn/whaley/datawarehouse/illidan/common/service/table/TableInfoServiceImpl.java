@@ -44,7 +44,15 @@ public class TableInfoServiceImpl implements TableInfoService {
             logger.error("get: id is null.");
             return null;
         }
-        return tableInfoMapper.get(id);
+        TableInfo tableInfo = tableInfoMapper.get(id);
+        if(!"1".equals(tableInfo.getStatus())) {
+            logger.error("getTableWithField: table is invalid. tableId: "+id);
+            return null;
+        }
+        if(tableInfo.getMysqlTableId() != null && tableInfo.getMysqlTableId() <=0) {
+            tableInfo.setMysqlTableId(null);
+        }
+        return tableInfo;
     }
 
     @Override
@@ -72,15 +80,12 @@ public class TableInfoServiceImpl implements TableInfoService {
             return null;
         }
         //目标表实体
-        TableInfo tableInfo = tableInfoMapper.get(id);
+        TableInfo tableInfo = get(id);
         if (tableInfo == null){
             logger.error("getTableWithField: tableInfo is null. tableId: "+id);
             return null;
         }
-        if(!"1".equals(tableInfo.getStatus())) {
-            logger.error("getTableWithField: table is invalid. tableId: "+id);
-            return null;
-        }
+
         //目标数据库实体
         DbInfoWithStorage dbInfo = dbInfoService.getDbWithStorage(tableInfo.getDbId());
         if (dbInfo == null){
@@ -245,7 +250,8 @@ public class TableInfoServiceImpl implements TableInfoService {
         if (hiveTableId == null || hiveTableId <= 0) {
             throw new RuntimeException("tableId不合法");
         }
-        TableWithField oldHiveTable = getTableWithField(hiveTableId);
+        FullHiveTable oldTable = getFullHiveTable(hiveTableId);
+        TableWithField oldHiveTable = oldTable.getHiveTable();
         if (oldHiveTable == null) {
             throw new RuntimeException("table不存在, tableId = " + hiveTableId);
         }
@@ -255,7 +261,7 @@ public class TableInfoServiceImpl implements TableInfoService {
         List<FieldInfo> newFields = new ArrayList<>();
         int containSize = 0;
         for (FieldInfo fieldInfo : hiveTable.getFieldList()) {
-            if (oldHiveTable.getFieldList().contains(fieldInfo)) {
+            if (fieldInfo.existIn(oldHiveTable.getFieldList())) {
                 containSize++;
             } else {
                 fieldInfo.setTableId(hiveTableId);
@@ -266,28 +272,58 @@ public class TableInfoServiceImpl implements TableInfoService {
             throw new RuntimeException("table已有的字段临时不支持修改");
         }
 
-        //处理mysql配置变动的情况,如果变动，新信息中管理的mysqlId需要设为null
-        if(hiveTable.getMysqlTableId() == null && oldHiveTable.getMysqlTableId() != null) {
-            if(table.getMysqlTable() == null) {
-                updateById(hiveTable);
-            } else {
-                removeById(oldHiveTable.getMysqlTableId());
-                TableWithField mysqlTable = new TableWithField();
-                BeanUtils.copyProperties(table.getMysqlTable(), mysqlTable);
-                Long mysqlTableId = insertTableWithField(mysqlTable);
-                hiveTable.setMysqlTableId(mysqlTableId);
-                updateById(hiveTable);
+        try {
+            if(newFields.size() > 0) {
+                fieldInfoService.insertBatch(newFields);
+                tableProcessor.addColumns(hiveTableId, newFields);
             }
+        }catch (Exception e) {
+            throw new RuntimeException("添加hive表字段未成功: " + e.getMessage());
         }
 
-        fieldInfoService.insertBatch(newFields);
+        //处理mysql配置变动的情况
+        if(oldHiveTable.getMysqlTableId() == null) {
+            if(table.getMysqlTable() != null) {
+                //-----新增mysql表-----
+                Long mysqlTableId = insert(table.getMysqlTable());
+                //增加mysql实体表
+                TableWithField mysqlTable = getTableWithField(mysqlTableId);
+                //如果字段有增加，按照新字段建mysql
+                tableProcessor.createMysqlTable(mysqlTable, hiveTable);
+                //修改hive关联的mysql
+                tableInfoMapper.updateMysqlTableId(hiveTableId, mysqlTableId);
+            }
+        } else if(hiveTable.getMysqlTableId() != null && oldHiveTable.getMysqlTableId() != null) {
+            if(!table.getMysqlTable().getTableCode().equals(oldTable.getMysqlTable().getTableCode())) {
+                //------修改mysql表名-------
+                //暂不支持
+            }
 
-        return 0L;
+        } else if(hiveTable.getMysqlTableId() == null && oldHiveTable.getMysqlTableId() != null) {
+            if(table.getMysqlTable() == null) {
+                //------删除导出到mysql表------
+                tableInfoMapper.updateMysqlTableId(hiveTableId, null);
+            } else {
+                //--------修改为新mysql表------
+                Long mysqlTableId = insert(table.getMysqlTable());
+                //增加mysql实体表
+                TableWithField mysqlTable = getTableWithField(mysqlTableId);
+                tableProcessor.createMysqlTable(mysqlTable, hiveTable);
+                tableInfoMapper.updateMysqlTableId(hiveTableId, mysqlTableId);
+            }
+            removeById(oldHiveTable.getMysqlTableId());
+            tableProcessor.dropMysqlTable((TableWithField) oldTable.getMysqlTable());
+        }
+
+        return hiveTableId;
     }
 
 
     public FullHiveTable getFullHiveTable(final Long id) {
         TableWithField hiveTable = getTableWithField(id);
+        if(hiveTable == null) {
+            throw new RuntimeException("提供的hive表id不存在，id = " + id);
+        }
         FullHiveTable fullHiveTable = new FullHiveTable();
         fullHiveTable.setHiveTable(hiveTable);
 

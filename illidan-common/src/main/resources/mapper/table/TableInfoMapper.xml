@@ -105,7 +105,7 @@
 
     <select id="isExistTableInfo"  resultType="long">
         select count(1) from table_info tableInfo
-        where tableCode = #{tableCode} and dbId = #{dbId}
+        where tableCode = #{tableCode} and dbId = #{dbId} and status != 0
     </select>
 
     <!--<delete id="removeByIds">-->
@@ -118,6 +118,10 @@
 
     <update id="removeById">
         update table_info tableInfo set status = '0' WHERE tableInfo.id = #{id}
+    </update>
+
+    <update id="updateMysqlTableId">
+        update table_info tableInfo set mysqlTableId = #{mysqlTableId} WHERE tableInfo.id = #{hiveTableId}
     </update>
 
     <select id="getByCodeLike"  resultMap="returnTableInfo">
