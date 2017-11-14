@@ -115,20 +115,20 @@ public class TaskServiceImpl implements TaskService {
         return taskMapper.remove(params);
     }
 
-    public List<Task> find(final TaskQuery task) {
+    public List<Task> find(final Task task, final Integer limitStart, final Integer limitEnd) {
         if (task == null){
             logger.error("find: task is null.");
             return null;
         }
-        return taskMapper.find(task);
+        return taskMapper.find(task, limitStart, limitEnd);
     }
 
-    public Long count(final Map<String, String> params) {
-        if (params == null){
+    public Long count(final Task task) {
+        if (task == null){
             logger.error("count: params is null.");
             return null;
         }
-        return taskMapper.count(params);
+        return taskMapper.count(task);
     }
 
     public Long countByTask(final TaskQuery task) {
@@ -171,14 +171,12 @@ public class TaskServiceImpl implements TaskService {
         return taskMapper.findByTask(task);
     }
 
-    public Task findOne(final TaskQuery task) {
+    public Task findOne(final Task task) {
         if (task == null){
             logger.error("findOne: task is null.");
             return null;
         }
-        task.setLimitStart(0);
-        task.setLimitEnd(1);
-        List<Task> datas = taskMapper.find(task);
+        List<Task> datas = taskMapper.find(task, 0 , 1);
         if (datas != null && datas.size() > 0) {
             return datas.get(0);
         }
@@ -223,7 +221,7 @@ public class TaskServiceImpl implements TaskService {
 
     public TaskFull getFullTaskBy(String taskCode, Long id){
         TaskFull taskFull = null;
-        TaskQuery taskQuery = new TaskQuery();
+        Task taskQuery = new Task();
 
         try {
             if (taskCode != null){
@@ -393,9 +391,9 @@ public class TaskServiceImpl implements TaskService {
         }
         List<Task> taskList = null;
         try {
-            TaskQuery task = new TaskQuery();
+            Task task = new Task();
             task.setGroupId(groupId);
-            taskList = findByTask(task);
+            taskList = find(task, null, null);
             if (taskList == null || taskList.size()<=0){
                 logger.error("findTaskByGroupId: taskList is null. groupId: "+groupId);
                 return null;

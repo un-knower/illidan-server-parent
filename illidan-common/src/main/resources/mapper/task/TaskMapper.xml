@@ -49,6 +49,8 @@
     </sql>
 
     <sql id="joinTables">
+        LEFT JOIN task_group taskGroup on task.groupId = taskGroup.id
+        LEFT JOIN table_info tableInfo on task.tableId = tableInfo.id
     </sql>
 
     <sql id="colList">
@@ -115,11 +117,20 @@
 
     <sql id="likeWhereCase">
         <where>
-            task.status = '1'
+            task.status = '1' AND taskGroup.status = '1'
             <if test="task != null and task.id != null">and task.id = #{task.id}</if>
             <if test="task != null and task.taskCode != null">and task.taskCode LIKE concat('%',#{task.taskCode},'%')</if>
             <if test="task != null and task.taskDes != null">and task.taskDes LIKE concat('%',#{task.taskDes},'%')</if>
             <if test="task != null and task.groupId != null">and task.groupId = #{task.groupId}</if>
+            <if test="task != null and task.addUser != null">and task.addUser = #{task.addUser}</if>
+            <if test="task != null and task.groupCode != null">and taskGroup.groupCode LIKE concat('%',#{task.groupCode},'%')</if>
+            <if test="task != null and task.projectId != null">and taskGroup.projectId = #{task.projectId}</if>
+            <if test="task != null and task.hiveTableCode != null">and tableInfo.tableCode LIKE concat('%',#{task.hiveTableCode},'%')</if>
+            <if test="task != null and task.hiveTableDesc != null">and tableInfo.tableDes LIKE concat('%',#{task.hiveTableDesc},'%')</if>
+            <if test="task != null and task.sourceTableCode != null">
+                and (task.content LIKE concat('%from ',#{task.sourceTableCode},'%') or
+                task.content LIKE concat('%join ',#{task.sourceTableCode},'%'))
+            </if>
         </where>
     </sql>
 
@@ -184,15 +195,12 @@
 
     <select id="find"  resultMap="returnTask">
         select <include refid="colList" /> from task task
-        <include refid="joinTables"/>
         <include refid="smallWhereCase"/>
-        <if test="task != null and task.orderBy != null">order by #{task.orderBy}</if>
-        <if test="task != null and task.limitStart != null and task.limitEnd != null">limit #{task.limitStart}, #{task.limitEnd}</if>
+        <if test="limitStart != null and limitEnd != null">limit #{limitStart}, #{limitEnd}</if>
     </select>
 
     <select id="count"  resultType="long">
         select count(1) from task task
-        <include refid="joinTables"/>
         <include refid="smallWhereCase"/>
     </select>
 

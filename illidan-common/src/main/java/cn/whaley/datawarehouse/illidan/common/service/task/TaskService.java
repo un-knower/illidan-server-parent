@@ -27,9 +27,9 @@ public interface TaskService {
      * @param task
      * @return
      */
-    List<Task> find(final TaskQuery task);
+    List<Task> find(final Task task, final Integer limitStart, final Integer limitEnd);
 
-    Long count(final Map<String, String> params);
+    Long count(final Task task);
 
     Long countByTask(final TaskQuery task);
 

@@ -30,6 +30,18 @@
             <div class="form-group">
                 <input class="form-control" id="taskDes" name="taskDes" query="query" placeholder="任务描述">
             </div>
+            <div class="form-group">
+                <input class="form-control" id="hiveTableCode" name="hiveTableCode" query="query" placeholder="目标表名">
+            </div>
+            <div class="form-group">
+                <input class="form-control" id="hiveTableDesc" name="hiveTableDesc" query="query" placeholder="目标表描述">
+            </div>
+            <div class="form-group">
+                <input class="form-control" id="addUser" name="addUser" query="query" placeholder="创建人">
+            </div>
+            <div class="form-group">
+                <input class="form-control" id="sourceTableCode" name="sourceTableCode" query="query" placeholder="来源库表名">
+            </div>
             <div class="text-center search-btns">
                 <button class="btn btn-info" onclick="searchList();">组内查询</button>
                 <button class="btn btn-primary" onclick="searchListInProject();">项目内查询</button>

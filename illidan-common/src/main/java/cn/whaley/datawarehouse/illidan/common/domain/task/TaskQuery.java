@@ -3,8 +3,6 @@ package cn.whaley.datawarehouse.illidan.common.domain.task;
 import cn.whaley.datawarehouse.illidan.common.domain.BaseQueryEntity;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
-import java.util.Date;
-
 /**
  * Created by wujiulin on 2017/6/26.
  */
@@ -20,48 +18,35 @@ public class TaskQuery extends BaseQueryEntity {
      */
     private String taskDes;
     /**
-     * 业务分析语句
-     */
-    private String content;
-    /**
      * 任务添加用户
      */
     private String addUser;
+
     /**
-     * 执行方式（自然日：day,自然周：week,自然月：month,季度：quarter,年初到执行日：ytd）
+     * 任务所属group的id
      */
-    private String executeType;
-    /**
-     * task_group表主键
-     */
-    private Long groupId;
+    private String groupId;
+
     /**
      * 任务所属group的code
      */
     private String groupCode;
+
     /**
-     * 目标表主键
+     * 任务所属项目的id
      */
-    private Long tableId;
+    private String projectId;
     /**
-     * 状态（1：有效，0无效）
+     * 目标表名
      */
-    private String status;
+    private String hiveTableCode;
+
     /**
-     * 创建时间
+     * 目标表描述
      */
-    private Date createTime;
-    /**
-     * 修改时间
-     */
-    private Date updateTime;
-    /**
-     * 导入到mysql表
-     */
-    private Long mysqlTableId;
-    private Boolean isExport2Mysql;
-    private String createTimeBegin;
-    private String createTimeEnd;
+    private String hiveTableDesc;
+
+    private String sourceTableCode;
 
     public Long getId() {
         return id;
@@ -87,14 +72,6 @@ public class TaskQuery extends BaseQueryEntity {
         this.taskDes = taskDes;
     }
 
-    public String getContent() {
-        return content;
-    }
-
-    public void setContent(String content) {
-        this.content = content;
-    }
-
     public String getAddUser() {
         return addUser;
     }
@@ -103,68 +80,12 @@ public class TaskQuery extends BaseQueryEntity {
         this.addUser = addUser;
     }
 
-    public String getExecuteType() {
-        return executeType;
-    }
-
-    public void setExecuteType(String executeType) {
-        this.executeType = executeType;
-    }
-
-    public Long getGroupId() {
+    public String getGroupId() {
         return groupId;
     }
 
-    public void setGroupId(Long groupId) {
+    public void setGroupId(String groupId) {
         this.groupId = groupId;
-    }
-
-    public Long getTableId() {
-        return tableId;
-    }
-
-    public void setTableId(Long tableId) {
-        this.tableId = tableId;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
-    public Date getUpdateTime() {
-        return updateTime;
-    }
-
-    public void setUpdateTime(Date updateTime) {
-        this.updateTime = updateTime;
-    }
-
-    public Date getCreateTime() {
-        return createTime;
-    }
-
-    public void setCreateTime(Date createTime) {
-        this.createTime = createTime;
-    }
-
-    public String getCreateTimeBegin() {
-        return createTimeBegin;
-    }
-
-    public void setCreateTimeBegin(String createTimeBegin) {
-        this.createTimeBegin = createTimeBegin;
-    }
-
-    public String getCreateTimeEnd() {
-        return createTimeEnd;
-    }
-
-    public void setCreateTimeEnd(String createTimeEnd) {
-        this.createTimeEnd = createTimeEnd;
     }
 
     public String getGroupCode() {
@@ -175,20 +96,36 @@ public class TaskQuery extends BaseQueryEntity {
         this.groupCode = groupCode;
     }
 
-    public Long getMysqlTableId() {
-        return mysqlTableId;
+    public String getProjectId() {
+        return projectId;
     }
 
-    public void setMysqlTableId(Long mysqlTableId) {
-        this.mysqlTableId = mysqlTableId;
+    public void setProjectId(String projectId) {
+        this.projectId = projectId;
     }
 
-    public Boolean getIsExport2Mysql() {
-        return isExport2Mysql;
+    public String getHiveTableCode() {
+        return hiveTableCode;
     }
 
-    public void setIsExport2Mysql(Boolean isExport2Mysql) {
-        this.isExport2Mysql = isExport2Mysql;
+    public void setHiveTableCode(String hiveTableCode) {
+        this.hiveTableCode = hiveTableCode;
+    }
+
+    public String getHiveTableDesc() {
+        return hiveTableDesc;
+    }
+
+    public void setHiveTableDesc(String hiveTableDesc) {
+        this.hiveTableDesc = hiveTableDesc;
+    }
+
+    public String getSourceTableCode() {
+        return sourceTableCode;
+    }
+
+    public void setSourceTableCode(String sourceTableCode) {
+        this.sourceTableCode = sourceTableCode;
     }
 
     @Override

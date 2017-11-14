@@ -26,9 +26,11 @@ public interface TaskMapper {
 
     Long remove(@Param("params") final Map<String, Object> params);
 
-    List<Task> find(@Param("task") final TaskQuery task);
+    List<Task> find(@Param("task") final Task task,
+                    @Param("limitStart") final Integer limitStart,
+                    @Param("limitEnd") final Integer limitEnd);
 
-    Long count(@Param("task") final Map<String, String> params);
+    Long count(@Param("task") final Task task);
 
     Long countByTask(@Param("task") final TaskQuery task);
 
