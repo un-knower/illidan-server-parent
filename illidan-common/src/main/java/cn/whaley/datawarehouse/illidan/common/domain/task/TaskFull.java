@@ -1,6 +1,7 @@
 package cn.whaley.datawarehouse.illidan.common.domain.task;
 
 import cn.whaley.datawarehouse.illidan.common.domain.storage.StorageInfo;
+import cn.whaley.datawarehouse.illidan.common.domain.table.FullHiveTable;
 import cn.whaley.datawarehouse.illidan.common.domain.table.TableWithField;
 import cn.whaley.datawarehouse.illidan.common.mapper.db.DbInfoMapper;
 import cn.whaley.datawarehouse.illidan.common.service.db.DbInfoService;
@@ -17,6 +18,7 @@ public class TaskFull extends Task{
     /**
      * 目标表
      */
+    private FullHiveTable fullHiveTable;
     private TableWithField table;
     private List<TableWithField> tableList;
 
@@ -34,6 +36,14 @@ public class TaskFull extends Task{
             }
         }
         return table;
+    }
+
+    public FullHiveTable getFullHiveTable() {
+        return fullHiveTable;
+    }
+
+    public void setFullHiveTable(FullHiveTable fullHiveTable) {
+        this.fullHiveTable = fullHiveTable;
     }
 
     public void setTable(TableWithField table) {

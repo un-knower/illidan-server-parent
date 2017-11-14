@@ -2,6 +2,7 @@ package cn.whaley.datawarehouse.illidan.common.mapper.task;
 
 import cn.whaley.datawarehouse.illidan.common.domain.task.Task;
 import cn.whaley.datawarehouse.illidan.common.domain.task.TaskQuery;
+import cn.whaley.datawarehouse.illidan.common.domain.task.TaskQueryResult;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Component;
@@ -22,10 +23,6 @@ public interface TaskMapper {
 
     Long insertBatch(@Param("list") final List<Task> list);
 
-    Long update(@Param("params") final Map<String, Object> params);
-
-    Long remove(@Param("params") final Map<String, Object> params);
-
     List<Task> find(@Param("task") final Task task,
                     @Param("limitStart") final Integer limitStart,
                     @Param("limitEnd") final Integer limitEnd);
@@ -40,7 +37,7 @@ public interface TaskMapper {
 
     Long removeByTask(@Param("task") final TaskQuery task);
 
-    List<Task> findByTask(@Param("task") final TaskQuery task);
+    List<TaskQueryResult> findByTask(@Param("task") final TaskQuery task);
 
     Long isExistTaskInProject(@Param("groupIds") final List<Long> groupIds,@Param("taskCode") String taskCode, @Param("status") String status);
 

@@ -4,6 +4,7 @@ package cn.whaley.datawarehouse.illidan.common.service.task;
 import cn.whaley.datawarehouse.illidan.common.domain.task.Task;
 import cn.whaley.datawarehouse.illidan.common.domain.task.TaskFull;
 import cn.whaley.datawarehouse.illidan.common.domain.task.TaskQuery;
+import cn.whaley.datawarehouse.illidan.common.domain.task.TaskQueryResult;
 
 import java.util.List;
 import java.util.Map;
@@ -18,10 +19,6 @@ public interface TaskService {
 
     Long insertBatch(final List<Task> list);
 
-    Long update(final Map<String, Object> params);
-
-    Long remove(final Map<String, Object> params);
-
     /**
      * 精确查询
      * @param task
@@ -33,7 +30,7 @@ public interface TaskService {
 
     Long countByTask(final TaskQuery task);
 
-    Long updateByTask(final Task task);
+//    Long updateByTask(final Task task);
 
     Long updateById(final Task task);
 
@@ -44,7 +41,7 @@ public interface TaskService {
      * @param task
      * @return
      */
-    List<Task> findByTask(final TaskQuery task);
+    List<TaskQueryResult> findByTask(final TaskQuery task);
 
     Long removeByIds(final List<Long> ids);
 
@@ -64,8 +61,6 @@ public interface TaskService {
     Long updateFullTask(final TaskFull taskFull) throws Exception;
 
     List<Task> findTaskByGroupId(final Long groupId);
-
-    Boolean isExport2Mysql(final Long id);
 
 
 

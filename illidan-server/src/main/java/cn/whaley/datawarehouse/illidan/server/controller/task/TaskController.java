@@ -13,6 +13,7 @@ import cn.whaley.datawarehouse.illidan.common.domain.table.TableWithField;
 import cn.whaley.datawarehouse.illidan.common.domain.task.Task;
 import cn.whaley.datawarehouse.illidan.common.domain.task.TaskFull;
 import cn.whaley.datawarehouse.illidan.common.domain.task.TaskQuery;
+import cn.whaley.datawarehouse.illidan.common.domain.task.TaskQueryResult;
 import cn.whaley.datawarehouse.illidan.common.service.db.DbInfoService;
 import cn.whaley.datawarehouse.illidan.common.service.field.FieldInfoService;
 import cn.whaley.datawarehouse.illidan.common.service.group.TaskGroupService;
@@ -83,11 +84,7 @@ public class TaskController extends Common {
             task.setLimitStart(start);
             task.setPageSize(length);
             Long count = taskService.countByTask(task);
-            List<Task> tasks = taskService.findByTask(task);
-            for (int i=0;i<=tasks.size()-1;++i){
-                tasks.get(i).setGroupCode(taskGroupService.get(tasks.get(i).getGroupId()).getGroupCode());
-                tasks.get(i).setIsExport2Mysql(taskService.isExport2Mysql(tasks.get(i).getId()));
-            }
+            List<TaskQueryResult> tasks = taskService.findByTask(task);
             outputTemplateJson(tasks, count);
         } catch (Exception e) {
             e.printStackTrace();
@@ -120,21 +117,6 @@ public class TaskController extends Common {
                 taskFull.setExecuteTypeList(executeTypeList);
                 //状态默认置成有效
                 taskFull.setStatus("1");
-                taskFull.setCreateTime(new Date());
-                taskFull.setUpdateTime(new Date());
-                //table_info的创建和修改时间
-                for(TableWithField t : taskFull.getTableList()){
-                    t.setCreateTime(new Date());
-                    t.setUpdateTime(new Date());
-                }
-                //field_info的相关字段
-                List<FieldInfo> fieldInfos = new ArrayList<>();
-                for (TableWithField t : taskFull.getTableList()){
-                    if (t.getFieldList()!=null && t.getFieldList().size() >0){
-                        fieldInfos = t.getFieldList();
-                    }
-                }
-                fieldInfoService.setFiledValue(fieldInfos);
                 taskService.insertFullTask(taskFull);
             }
             if (getCookieValue("taskId")!=null && !getCookieValue("taskId").equals("")){
@@ -176,7 +158,7 @@ public class TaskController extends Common {
                 mav.addObject("mysqlTable" , t.getTableCode());
             }
         }
-        Boolean flag = taskService.isExport2Mysql(task.getId());
+        Boolean flag = task.getFullHiveTable().getMysqlTable() != null;
         mav.addObject("flag" , flag);
         mav.addObject("isCopy" , isCopy);
         mav.addObject("dbInfo", dbInfoList);
@@ -185,7 +167,6 @@ public class TaskController extends Common {
         mav.addObject("group", groupList);
         mav.addObject("groupId", groupId);
         mav.addObject("fieldList", fieldList);
-        mav.addObject("mysqlTableId", task.getMysqlTableId());
         return mav;
     }
 
@@ -260,49 +241,27 @@ public class TaskController extends Common {
         return tableInfoService.findOne(tableInfoQuery);
     }
 
-    public String validateTask(TaskFull taskFull){
+    public String validateTask(Task task){
         String result = "ok";
-        if(StringUtils.isEmpty(taskFull)){
+        if(StringUtils.isEmpty(task)){
             return returnResult(false, "失败!!!");
         }
-        if(!validateColumnNull(taskFull.getTaskCode())){
+        if(!validateColumnNull(task.getTaskCode())){
             return validateMessage("任务code");
         }
-        if (!codeReg(taskFull.getTaskCode())){
+        if (!codeReg(task.getTaskCode())){
             return returnResult(false, "任务code只能由英文字母,数字,-,_组成!!!");
         }
-        if (!validateColumnNull(taskFull.getAddUser())){
+        if (!validateColumnNull(task.getAddUser())){
             return validateMessage("任务添加用户");
         }
-        List<TableWithField> tableList = taskFull.getTableList();
-        if (!validateColumnNull(tableList.get(0).getDbId())){
-            return validateMessage("目标数据库");
-        }
-        if (!validateColumnNull(tableList.get(0).getTableCode())){
+        if (!validateColumnNull(task.getTableId())){
             return validateMessage("目标表");
         }
-        if (!codeReg(tableList.get(0).getTableCode())){
-            return returnResult(false, "目标表名只能由英文字母,数字,-,_组成!!!");
-        }
-        if (tableList.get(0).getFieldList()==null || tableList.get(0).getFieldList().size()==0){
-            return validateMessage("分区字段");
-        }
-        if (!validateColumnNull(tableList.get(0).getDataType())){
-            return validateMessage("存储格式");
-        }
-        if (tableList.size()>1&&!validateColumnNull(tableList.get(1).getDbId())){
-            return validateMessage("mysql目标数据库");
-        }
-        if (tableList.size()>1&&!validateColumnNull(tableList.get(1).getTableCode())){
-            return validateMessage("mysql目标表");
-        }
-        if (tableList.size()>1&&!codeReg(tableList.get(1).getTableCode())){
-            return returnResult(false, "mysql目标表名只能由英文字母,数字,-,_组成!!!");
-        }
-        if (!validateColumnNull(taskFull.getExecuteType())){
+        if (!validateColumnNull(task.getExecuteType())){
             return validateMessage("执行方式");
         }
-        if (!validateColumnNull(taskFull.getContent())){
+        if (!validateColumnNull(task.getContent())){
             return validateMessage("业务分析语句");
         }
         return result;

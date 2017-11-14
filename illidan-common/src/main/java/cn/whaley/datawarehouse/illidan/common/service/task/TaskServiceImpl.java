@@ -1,37 +1,37 @@
 package cn.whaley.datawarehouse.illidan.common.service.task;
 
-import cn.whaley.datawarehouse.illidan.common.domain.db.DbInfo;
 import cn.whaley.datawarehouse.illidan.common.domain.db.DbInfoWithStorage;
 import cn.whaley.datawarehouse.illidan.common.domain.field.FieldInfo;
 import cn.whaley.datawarehouse.illidan.common.domain.group.TaskGroup;
 import cn.whaley.datawarehouse.illidan.common.domain.project.Project;
-import cn.whaley.datawarehouse.illidan.common.domain.storage.StorageInfo;
+import cn.whaley.datawarehouse.illidan.common.domain.table.FullHiveTable;
 import cn.whaley.datawarehouse.illidan.common.domain.table.TableInfo;
 import cn.whaley.datawarehouse.illidan.common.domain.table.TableInfoQuery;
 import cn.whaley.datawarehouse.illidan.common.domain.table.TableWithField;
 import cn.whaley.datawarehouse.illidan.common.domain.task.Task;
 import cn.whaley.datawarehouse.illidan.common.domain.task.TaskFull;
 import cn.whaley.datawarehouse.illidan.common.domain.task.TaskQuery;
+import cn.whaley.datawarehouse.illidan.common.domain.task.TaskQueryResult;
 import cn.whaley.datawarehouse.illidan.common.mapper.db.DbInfoMapper;
 import cn.whaley.datawarehouse.illidan.common.mapper.field.FieldInfoMapper;
 import cn.whaley.datawarehouse.illidan.common.mapper.table.TableInfoMapper;
 import cn.whaley.datawarehouse.illidan.common.mapper.task.TaskMapper;
 import cn.whaley.datawarehouse.illidan.common.service.db.DbInfoService;
-import cn.whaley.datawarehouse.illidan.common.service.db.DbInfoServiceImpl;
 import cn.whaley.datawarehouse.illidan.common.service.field.FieldInfoService;
-import cn.whaley.datawarehouse.illidan.common.service.field.FieldInfoServiceImpl;
 import cn.whaley.datawarehouse.illidan.common.service.group.TaskGroupService;
 import cn.whaley.datawarehouse.illidan.common.service.project.ProjectService;
 import cn.whaley.datawarehouse.illidan.common.service.storage.StorageInfoService;
 import cn.whaley.datawarehouse.illidan.common.service.table.TableInfoService;
-import cn.whaley.datawarehouse.illidan.common.service.table.TableInfoServiceImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
 
 /**
  * Created by wujiulin on 2017/6/26.
@@ -74,12 +74,7 @@ public class TaskServiceImpl implements TaskService {
             logger.error("insert: task is null.");
             return null;
         }
-        List<Long> groupIdList = getAllGroupId(task);
-        if (groupIdList == null || groupIdList.size()<=0){
-            logger.error("insert: groupIdList is null. task: "+task.toString());
-            return null;
-        }
-//        Long count = taskMapper.isExistTaskInProject(groupIdList,task.getTaskCode(),task.getStatus());
+
         Long count = taskMapper.isExistTask(task.getTaskCode(),task.getStatus());
         if (count == null){
             logger.error("insert: count is null. task: "+task.toString());
@@ -88,7 +83,8 @@ public class TaskServiceImpl implements TaskService {
         if(count > 0){
             throw new Exception("任务已经存在不能重复新增");
         }
-        return taskMapper.insert(task);
+        taskMapper.insert(task);
+        return task.getId();
     }
 
     public Long insertBatch(final List<Task> list) {
@@ -97,22 +93,6 @@ public class TaskServiceImpl implements TaskService {
             return null;
         }
         return taskMapper.insertBatch(list);
-    }
-
-    public Long update(final Map<String, Object> params) {
-        if (params == null){
-            logger.error("update: params is null.");
-            return null;
-        }
-        return taskMapper.update(params);
-    }
-
-    public Long remove(final Map<String, Object> params) {
-        if (params == null){
-            logger.error("remove: params is null.");
-            return null;
-        }
-        return taskMapper.remove(params);
     }
 
     public List<Task> find(final Task task, final Integer limitStart, final Integer limitEnd) {
@@ -139,18 +119,32 @@ public class TaskServiceImpl implements TaskService {
         return taskMapper.countByTask(task);
     }
 
-    public Long updateByTask(final Task task) {
-        if (task == null){
-            logger.error("updateByTask: task is null.");
-            return null;
-        }
-        return taskMapper.updateByTask(task);
-    }
+//    public Long updateByTask(final Task task) {
+//        if (task == null){
+//            logger.error("updateByTask: task is null.");
+//            return null;
+//        }
+//        return taskMapper.updateByTask(task);
+//    }
 
     public Long updateById(final Task task) {
         if (task == null){
             logger.error("updateById: task is null.");
-            return null;
+            throw new RuntimeException("参数是null");
+        }
+        Task oldTask = get(task.getId());
+        if(oldTask == null) {
+            throw new RuntimeException("更新的任务不存在");
+        }
+        if (!oldTask.getTaskCode().equals(task.getTaskCode())) {
+            Long count = taskMapper.isExistTask(task.getTaskCode(), task.getStatus());
+            if (count == null) {
+                logger.error("insert: count is null. task: " + task.toString());
+                throw new RuntimeException("内部查询异常");
+            }
+            if (count > 0) {
+                throw new RuntimeException("任务已经存在不能重复新增");
+            }
         }
         return taskMapper.updateById(task);
     }
@@ -163,12 +157,20 @@ public class TaskServiceImpl implements TaskService {
         return taskMapper.removeByTask(task);
     }
 
-    public List<Task> findByTask(final TaskQuery task) {
-        if (task == null){
+    public List<TaskQueryResult> findByTask(final TaskQuery task) {
+        if (task == null) {
             logger.error("findByTask: task is null.");
             return null;
         }
-        return taskMapper.findByTask(task);
+        List<TaskQueryResult> results = taskMapper.findByTask(task);
+        for (TaskQueryResult taskQueryResult : results) {
+            if (taskQueryResult.getMysqlTableId() != null && taskQueryResult.getMysqlTableId() > 0) {
+                taskQueryResult.setIsExport2Mysql(true);
+            } else {
+                taskQueryResult.setIsExport2Mysql(false);
+            }
+        }
+        return results;
     }
 
     public Task findOne(final Task task) {
@@ -234,16 +236,18 @@ public class TaskServiceImpl implements TaskService {
             if (task != null){
                 List<String> executeTypeList = java.util.Arrays.asList(task.getExecuteType().split(","));
                 List<TableWithField> tableWithFieldList = new ArrayList<TableWithField>();
-                TableWithField hiveTableWithField = tableInfoService.getTableWithField(task.getTableId());
+                FullHiveTable fullHiveTable = tableInfoService.getFullHiveTable(task.getTableId());
+                TableWithField hiveTableWithField = fullHiveTable.getHiveTable();
                 tableWithFieldList.add(hiveTableWithField);
-                if (task.getMysqlTableId()!=null){
-                    TableWithField mysqlTableWithField = tableInfoService.getTableWithField(task.getMysqlTableId());
+                if (fullHiveTable.getMysqlTable() != null){
+                    TableWithField mysqlTableWithField = (TableWithField)fullHiveTable.getMysqlTable();
                     tableWithFieldList.add(mysqlTableWithField);
                 }
                 taskFull = new TaskFull();
                 BeanUtils.copyProperties(task, taskFull);
                 taskFull.setTableList(tableWithFieldList);
                 taskFull.setExecuteTypeList(executeTypeList);
+                taskFull.setFullHiveTable(fullHiveTable);
             } else {
                 logger.error("getFullTaskBy: task is null. taskCode: "+taskCode+" ,taskId: "+id);
                 return null;
@@ -262,65 +266,11 @@ public class TaskServiceImpl implements TaskService {
             logger.error("insertFullTask: taskFull is null.");
             return null;
         }
-        HashMap<Long,Long> tableIdMap = new HashMap<Long,Long>();
-        List<TableWithField> tableList = taskFull.getTableList();
         //判断task是否存在
         Task task = new Task();
         BeanUtils.copyProperties(taskFull,task);
-        List<Long> groupIdList = getAllGroupId(task);
-        if (groupIdList == null || groupIdList.size()<=0){
-            logger.error("insertFullTask: groupIdList is null. taskFull: "+taskFull.toString());
-            return null;
-        }
-//        Long count = taskMapper.isExistTaskInProject(groupIdList,task.getTaskCode(), task.getStatus());
-        Long count = taskMapper.isExistTask(task.getTaskCode(), task.getStatus());
-        if (count > 0) {
-            throw new Exception("任务已经存在不能重复新增");
-        }
-        tableIdMap = tableInfoService.insertTableWithField(tableList);
-//        for (int i=0; i<=tableList.size()-1; ++i) {
-//            DbInfoWithStorage dbInfo = dbInfoService.getDbWithStorage(tableList.get(i).getDbId());
-//            if (dbInfo == null){
-//                logger.error("insertFullTask: dbInfo is null. taskFull: "+taskFull.toString());
-//                return null;
-//            }
-//            //存储类型,1:hive,2:mysql
-//            Long storageType = dbInfo.getStorageType();
-//            TableWithField tableWithField = tableList.get(i);
-//            tableWithField.setDbInfo(dbInfo);
-//            TableInfo tableInfo = new TableInfo();
-//            //复制tableWithField信息到tableInfo中
-//            BeanUtils.copyProperties(tableWithField, tableInfo);
-//            //插入表信息,并返回其主键id
-//            Long tableId = tableInfoService.insert(tableInfo);
-//            if (tableId == null){
-//                logger.error("insertFullTask: 插入table_info返回的tableId is null. tableInfo: "+tableInfo.toString());
-//                return null;
-//            }
-//            tableIdMap.put(storageType,tableId);
-//
-//            //插入字段到field_info
-//            List<FieldInfo> fieldInfoList = tableWithField.getFieldList();
-//            List<FieldInfo> fieldInfos = new ArrayList<FieldInfo>();
-//            if (fieldInfoList!=null && fieldInfoList.size()>0){
-//                for (FieldInfo f : fieldInfoList) {
-//                    FieldInfo fieldInfo = new FieldInfo();
-//                    BeanUtils.copyProperties(f, fieldInfo);
-//                    fieldInfo.setTableId(tableId);
-//                    fieldInfos.add(fieldInfo);
-//                }
-//                //批量插入fieldInfos
-//                //1.删除历史记录
-//                fieldInfoService.removeByTableId(tableId);
-//                //2.批量插入
-//                fieldInfoService.insertBatch(fieldInfos);
-//            }
-//        }
-        //插入task信息
-        task.setTableId(tableIdMap.get(1L));//hive
-        task.setMysqlTableId(tableIdMap.get(2L));//mysql
-        taskMapper.insert(task);
-        return task.getId();
+
+        return insert(task);
 
     }
 
@@ -333,7 +283,7 @@ public class TaskServiceImpl implements TaskService {
         //task
         Task task = new Task();
         BeanUtils.copyProperties(taskFull,task);
-
+        /*
         //table_info
         List<TableWithField> tableList = taskFull.getTableList();
         if (tableList == null || tableList.size()<=0){
@@ -379,7 +329,8 @@ public class TaskServiceImpl implements TaskService {
                 fieldInfoService.insertBatch(fieldInfoList1);
             }
         }
-        taskMapper.updateById(task);
+        */
+        updateById(task);
         return task.getId();
     }
 
@@ -404,18 +355,8 @@ public class TaskServiceImpl implements TaskService {
         return taskList;
     }
 
-    public Boolean isExport2Mysql(final Long id){
-        if (id == null){
-            logger.error("isExport2Mysql: id is null.");
-            return null;
-        }
-        Boolean flag = false;
-        if (taskMapper.get(id).getMysqlTableId() != null){
-            flag = true;
-        }
-        return flag;
-    }
 
+/*
     public void changeExport(Task task ,TableInfo tableInfo, Long tableId, String tableCode, Boolean isExport) throws Exception{
         //不导出 (是->否)
         if (tableId != null && !isExport) {
@@ -442,7 +383,7 @@ public class TaskServiceImpl implements TaskService {
                 task.setMysqlTableId(tableInfo1.getId());
             }
     }
-
+*/
     public List<Long> getAllGroupId(Task task){
         if (task == null){
             logger.error("getAllGroupId: task is null.");

@@ -38,12 +38,6 @@
             <if test="task.createTime != null">
                 createTime = #{task.createTime},
             </if>
-            <!--<if test="task.updateTime != null">-->
-                <!--updateTime = #{task.updateTime},-->
-            <!--</if>-->
-            <!--d<if test="task.mysqlTableId != null">-->
-                mysqlTableId = #{task.mysqlTableId},
-            <!--d</if>-->
 
         </set>
     </sql>
@@ -66,36 +60,8 @@
             , task.createTime AS createTime
             , task.updateTime AS updateTime
             , task.id AS id
-            , task.mysqlTableId AS mysqlTableId
 
         </trim>
-    </sql>
-
-    <sql id="whereCase">
-        <where>
-            task.status = '1'
-            <if test="task != null and task.id != null">and task.id = #{task.id}</if>
-            <if test="task != null and task.idGT != null">and task.id > #{task.idGT}</if><if test="idLT != null">and #{idLT} > task.id</if>
-            <if test="task != null and task.taskCode != null">and task.taskCode = #{task.taskCode}</if>
-            <if test="task != null and task.taskCodeLK != null">and task.taskCode LIKE #{task.taskCodeLK}</if>
-            <if test="task != null and task.taskDes != null">and task.taskDes = #{task.taskDes}</if>
-            <if test="task != null and task.taskDesLK != null">and task.taskDes LIKE #{task.taskDesLK}</if>
-            <if test="task != null and task.createTime != null">and task.createTime = #{task.createTime}</if>
-            <if test="task != null and task.updateTime != null">and task.updateTime = #{task.updateTime}</if>
-            <if test="task != null and task.content != null">and task.content = #{task.content}</if>
-            <if test="task != null and task.contentLK != null">and task.content LIKE #{task.contentLK}</if>
-            <if test="task != null and task.addUser != null">and task.addUser = #{task.addUser}</if>
-            <if test="task != null and task.addUserLK != null">and task.addUser LIKE #{task.addUserLK}</if>
-            <if test="task != null and task.groupId != null">and task.groupId = #{task.groupId}</if>
-            <if test="task != null and task.groupIdLK != null">and task.groupId LIKE #{task.groupIdLK}</if>
-            <if test="task != null and task.tableId != null">and task.tableId = #{task.tableId}</if>
-            <if test="task != null and task.tableIdLK != null">and task.tableId LIKE #{task.tableIdLK}</if>
-            <if test="task != null and task.mysqlTableId != null">and task.mysqlTableId = #{task.mysqlTableId}</if>
-            <if test="task != null and task.mysqlTableIdLK != null">and task.mysqlTableId LIKE #{task.mysqlTableIdLK}</if>
-            <if test="task != null and task.executeType != null">and task.executeType = #{task.executeType}</if>
-            <if test="task != null and task.executeTypeLK != null">and task.executeType LIKE #{task.executeTypeLK}</if>
-
-        </where>
     </sql>
 
     <sql id="smallWhereCase">
@@ -111,7 +77,6 @@
             <if test="task != null and task.groupId != null">and task.groupId = #{task.groupId}</if>
             <if test="task != null and task.tableId != null">and task.tableId = #{task.tableId}</if>
             <if test="task != null and task.executeType != null">and task.executeType = #{task.executeType}</if>
-            <if test="task != null and task.mysqlTableId != null">and task.mysqlTableId = #{task.mysqlTableId}</if>
         </where>
     </sql>
 
@@ -146,6 +111,22 @@
         <result column="groupId" javaType="Long" jdbcType="BIGINT" property="groupId"/>
         <result column="tableId" javaType="Long" jdbcType="BIGINT" property="tableId"/>
         <result column="executeType" javaType="String" jdbcType="VARCHAR" property="executeType"/>
+
+    </resultMap>
+
+    <resultMap id="taskQueryResult" type="cn.whaley.datawarehouse.illidan.common.domain.task.TaskQueryResult">
+        <id column="id" javaType="Long" jdbcType="BIGINT" property="id"/>
+        <result column="taskCode" javaType="String" jdbcType="VARCHAR" property="taskCode"/>
+        <result column="taskDes" javaType="String" jdbcType="VARCHAR" property="taskDes"/>
+        <result column="createTime" javaType="Date" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="updateTime" javaType="Date" jdbcType="TIMESTAMP" property="updateTime"/>
+        <result column="content" javaType="String" jdbcType="VARCHAR" property="content"/>
+        <result column="status" javaType="String" jdbcType="VARCHAR" property="status"/>
+        <result column="addUser" javaType="String" jdbcType="VARCHAR" property="addUser"/>
+        <result column="groupId" javaType="Long" jdbcType="BIGINT" property="groupId"/>
+        <result column="tableId" javaType="Long" jdbcType="BIGINT" property="tableId"/>
+        <result column="executeType" javaType="String" jdbcType="VARCHAR" property="executeType"/>
+        <result column="groupCode" javaType="String" jdbcType="VARCHAR" property="groupCode"/>
         <result column="mysqlTableId" javaType="Long" jdbcType="BIGINT" property="mysqlTableId"/>
 
     </resultMap>
@@ -154,22 +135,17 @@
         select * from task task where task.status = '1' and task.id = #{id}
     </select>
 
-    <update id="update">
-        <include refid="updateSql"/>
-        <include refid="whereCase"/>
-    </update>
-
     <insert id="insertBatch" >
         insert into task
         (
         <trim prefix="" prefixOverrides=",">
-            ,taskCode,taskDes,createTime,updateTime,content,status,addUser,groupId,tableId,executeType,mysqlTableId
+            ,taskCode,taskDes,createTime,updateTime,content,status,addUser,groupId,tableId,executeType
         </trim>
         ) values
         <foreach collection="list" item="item" index="index" separator=",">
             (
             <trim prefix="" prefixOverrides=",">
-                ,#{taskCode}, #{taskDes}, now(), now(), #{content} ,#{status} ,#{addUser} ,#{groupId},#{tableId} ,#{executeType} ,#{mysqlTableId}
+                ,#{taskCode}, #{taskDes}, now(), now(), #{content} ,#{status} ,#{addUser} ,#{groupId},#{tableId} ,#{executeType}
             </trim>
             )
         </foreach>
@@ -179,19 +155,14 @@
         insert into task
         (
         <trim prefix="" prefixOverrides=",">
-            ,taskCode,taskDes,createTime,updateTime,content,status,addUser,groupId,tableId,executeType,mysqlTableId
+            ,taskCode,taskDes,createTime,updateTime,content,status,addUser,groupId,tableId,executeType
         </trim>
         )values(
         <trim prefix="" prefixOverrides=",">
-            ,#{task.taskCode},#{task.taskDes},now(),now(),#{task.content},#{task.status},#{task.addUser},#{task.groupId},#{task.tableId},#{task.executeType},#{task.mysqlTableId}
+            ,#{task.taskCode},#{task.taskDes},now(),now(),#{task.content},#{task.status},#{task.addUser},#{task.groupId},#{task.tableId},#{task.executeType}
         </trim>
         )
     </insert>
-
-    <delete id="remove" >
-        <!--delete task from task task <include refid="whereCase"/>-->
-        UPDATE task task SET task.status = '0' <include refid="whereCase"/>
-    </delete>
 
     <select id="find"  resultMap="returnTask">
         select <include refid="colList" /> from task task
@@ -219,8 +190,12 @@
         UPDATE task task SET task.status = '0' <include refid="smallWhereCase"/>
     </delete>
 
-    <select id="findByTask" resultMap="returnTask">
-        select <include refid="colList" /> from task task
+    <select id="findByTask" resultMap="taskQueryResult">
+        select
+        <include refid="colList" />
+        , taskGroup.groupCode
+        , tableInfo.mysqlTableId
+        from task task
         <include refid="joinTables"/>
         <include refid="likeWhereCase"/>
         order by task.updateTime desc

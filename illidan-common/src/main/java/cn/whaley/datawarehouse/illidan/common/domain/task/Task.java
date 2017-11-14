@@ -36,10 +36,6 @@ public class Task implements Serializable {
      */
     private Long groupId;
     /**
-     * 任务所属group的code
-     */
-    private String groupCode;
-    /**
      * 目标表主键
      */
     private Long tableId;
@@ -55,11 +51,7 @@ public class Task implements Serializable {
      * 修改时间
      */
     private Date updateTime;
-    /**
-     * 导入到mysql表
-     */
-    private Long mysqlTableId;
-    private Boolean isExport2Mysql;
+
 
     public Long getId() {
         return id;
@@ -147,30 +139,6 @@ public class Task implements Serializable {
 
     public void setGroupId(Long groupId) {
         this.groupId = groupId;
-    }
-
-    public String getGroupCode() {
-        return groupCode;
-    }
-
-    public void setGroupCode(String groupCode) {
-        this.groupCode = groupCode;
-    }
-
-    public Long getMysqlTableId() {
-        return mysqlTableId;
-    }
-
-    public void setMysqlTableId(Long mysqlTableId) {
-        this.mysqlTableId = mysqlTableId;
-    }
-
-    public Boolean getIsExport2Mysql() {
-        return isExport2Mysql;
-    }
-
-    public void setIsExport2Mysql(Boolean isExport2Mysql) {
-        this.isExport2Mysql = isExport2Mysql;
     }
 
     @Override
