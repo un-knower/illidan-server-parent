@@ -51,7 +51,9 @@ public class TableProcessor {
         TableWithField hiveTable = fullHiveTable.getHiveTable();
         addHiveTableColumns(hiveTable, newColumns);
         TableWithField mysqlTable = (TableWithField)fullHiveTable.getMysqlTable();
-        addMysqlTableColumns(mysqlTable, newColumns);
+        if(mysqlTable != null) {
+            addMysqlTableColumns(mysqlTable, newColumns);
+        }
         return true;
     }
 
