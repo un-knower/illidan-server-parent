@@ -23,7 +23,7 @@
                 <div class="form-group">
                     <label for="tableCode" class="col-md-4 control-label" style="padding-left: 0px;padding-right: 0px;"><b class="text-danger">*</b>目标表名</label>
                     <div class="col-md-7">
-                        <input class="form-control" id="tableCode" placeholder="hive目标表名">
+                        <input class="form-control" id="tableCode" placeholder="hive目标表名" value="${hiveTable.tableCode}">
                     </div>
                 </div>
             </td>
@@ -31,7 +31,7 @@
                 <div class="form-group">
                     <label for="tableDes" class="col-md-4 control-label" style="padding-left: 0px;padding-right: 0px;">目标表描述</label>
                     <div class="col-md-7">
-                        <input class="form-control" id="tableDes" placeholder="hive目标表描述">
+                        <input class="form-control" id="tableDes" placeholder="hive目标表描述" value="${hiveTable.tableDes}">
                     </div>
                 </div>
             </td>
@@ -53,172 +53,235 @@
                     <label class="col-md-4 control-label" style="padding-left: 0px;padding-right: 0px;"><b class="text-danger">*</b>存储格式</label>
                     <div class="col-md-7">
                         <select id="dataType" name="dataType" style="height: 34px;" class=" show-tick form-control" title="" data-live-search="true">
-                            <option value="parquet">parquet</option>
+                            <option value="parquet" selected>parquet</option>
                             <option value="textfile">textfile</option>
                         </select>
                     </div>
                 </div>
             </td>
         </tr>
-        <tr>
-            <td style="border:none;">
-                <div class="form-group">
-                    <label for="colName" class="col-md-4 control-label" style="padding-left: 0px;padding-right: 0px;"><b class="text-danger">*</b>字段名称</label>
-                    <div class="col-md-7">
-                        <input class="form-control" id="colName" name="colName" placeholder="字段名称" value="day_p">
-                    </div>
-                </div>
-            </td>
-            <td style="border:none;">
-                <div class="form-group">
-                    <label for="colType" class="col-md-4 control-label" style="padding-left: 0px;padding-right: 0px;"><b class="text-danger">*</b>字段类型</label>
-                    <div class="col-md-7">
-                        <%--<input class="form-control" id="colType" name="colType" placeholder="字段类型" value="string">--%>
-                        <select id="colType" name="colType" style="height: 34px;" class=" show-tick form-control" title="" data-live-search="true">
-                            <option value='-1'>字段类型</option>
-                            <option value="int">int</option>
-                            <option value="bigint">bigint</option>
-                            <option value="float">float</option>
-                            <option value="double">double</option>
-                            <option value="string" selected>string</option>
-                            <option value="timestamp">timestamp</option>
-                        </select>
-                    </div>
-                </div>
-            </td>
-            <td style="border:none;">
-                <div class="form-group">
-                    <label for="colDes" class="col-md-4 control-label" style="padding-left: 0px;padding-right: 0px;">字段描述</label>
-                    <div class="col-md-7">
-                        <input class="form-control" id="colDes" name="colDes" placeholder="字段描述" value="天分区">
-                    </div>
-                </div>
-            </td>
-            <td style="border:none;">
-                <div class="form-group">
-                    <label class="col-md-4 control-label" style="padding-left: 0px;padding-right: 0px;"><b class="text-danger">*</b>分区字段</label>
-                    <div class="col-md-3 partitionCol">
-                        <select id="isPartitionCol" name="isPartitionCol" style="height: 34px;" class=" show-tick form-control" title="" data-live-search="true">
-                            <option value="-1">请选择</option>
-                            <option value="1" selected>是</option>
-                            <option value="0">否</option>
-                        </select>
-                    </div>
-                    <label class="col-md-2 control-label addBtn" style="padding-left: 0px;padding-right: 0px;padding-top: 0px">
-                        <button class="btn btn-info addBtn" onclick="addrow(this);">添加</button>
-                    </label>
-                    <label class="col-md-3 control-label" style="padding-left: 0px;padding-right: 0px;padding-top: 0px">
-                        <button class='btn btn-danger delBtn' onclick='deleteTrRow(this);'>删除</button>
-                    </label>
-                </div>
-            </td>
-        </tr>
-        <tr>
-            <td style="border:none;">
-                <div class="form-group">
-                    <label for="colName" class="col-md-4 control-label" style="padding-left: 0px;padding-right: 0px;"><b class="text-danger">*</b>字段名称</label>
-                    <div class="col-md-7">
-                        <input class="form-control" name="colName" placeholder="字段名称" value="month_p">
-                    </div>
-                </div>
-            </td>
-            <td style="border:none;">
-                <div class="form-group">
-                    <label for="colType" class="col-md-4 control-label" style="padding-left: 0px;padding-right: 0px;"><b class="text-danger">*</b>字段类型</label>
-                    <div class="col-md-7">
-                        <%--<input class="form-control" name="colType" placeholder="字段类型" value="string">--%>
-                            <select id="colType" name="colType" style="height: 34px;" class=" show-tick form-control" title="" data-live-search="true">
-                                <option value='-1'>字段类型</option>
-                                <option value="int">int</option>
-                                <option value="bigint">bigint</option>
-                                <option value="float">float</option>
-                                <option value="double">double</option>
-                                <option value="string" selected>string</option>
-                                <option value="timestamp">timestamp</option>
-                            </select>
-                    </div>
-                </div>
-            </td>
-            <td style="border:none;">
-                <div class="form-group">
-                    <label for="colDes" class="col-md-4 control-label" style="padding-left: 0px;padding-right: 0px;">字段描述</label>
-                    <div class="col-md-7">
-                        <input class="form-control" name="colDes" placeholder="字段描述" value="月分区">
-                    </div>
-                </div>
-            </td>
-            <td style="border:none;">
-                <div class="form-group">
-                    <label class="col-md-4 control-label" style="padding-left: 0px;padding-right: 0px;"><b class="text-danger">*</b>分区字段</label>
-                    <div class="col-md-3 partitionCol">
-                        <select name="isPartitionCol" style="height: 34px;" class=" show-tick form-control" title="" data-live-search="true">
-                            <option value="-1">请选择</option>
-                            <option value="1" selected>是</option>
-                            <option value="0">否</option>
-                        </select>
-                    </div>
-                    <label class="col-md-2 control-label addBtn" style="padding-left: 0px;padding-right: 0px;padding-top: 0px">
-                        <button class="btn btn-info addBtn" onclick="addrow(this);">添加</button>
-                    </label>
-                    <label class="col-md-3 control-label" style="padding-left: 0px;padding-right: 0px;padding-top: 0px">
-                        <button class='btn btn-danger delBtn' onclick='deleteTrRow(this);'>删除</button>
-                    </label>
-                </div>
-            </td>
-        </tr>
-        <tr>
-            <td style="border:none;">
-                <div class="form-group">
-                    <label for="colName" class="col-md-4 control-label" style="padding-left: 0px;padding-right: 0px;"><b class="text-danger">*</b>字段名称</label>
-                    <div class="col-md-7">
-                        <input class="form-control" name="colName" placeholder="字段名称" value="date_type">
-                    </div>
-                </div>
-            </td>
-            <td style="border:none;">
-                <div class="form-group">
-                    <label for="colType" class="col-md-4 control-label" style="padding-left: 0px;padding-right: 0px;"><b class="text-danger">*</b>字段类型</label>
-                    <div class="col-md-7">
-                        <%--<input class="form-control" name="colType" placeholder="字段类型" value="string">--%>
-                        <select id="colType" name="colType" style="height: 34px;" class=" show-tick form-control" title="" data-live-search="true">
-                            <option value='-1'>字段类型</option>
-                            <option value="int">int</option>
-                            <option value="bigint">bigint</option>
-                            <option value="float">float</option>
-                            <option value="double">double</option>
-                            <option value="string" selected>string</option>
-                            <option value="timestamp">timestamp</option>
-                        </select>
-                    </div>
-                </div>
-            </td>
-            <td style="border:none;">
-                <div class="form-group">
-                    <label for="colDes" class="col-md-4 control-label" style="padding-left: 0px;padding-right: 0px;">字段描述</label>
-                    <div class="col-md-7">
-                        <input class="form-control" name="colDes" placeholder="字段描述" value="日志类型">
-                    </div>
-                </div>
-            </td>
-            <td style="border:none;">
-                <div class="form-group">
-                    <label class="col-md-4 control-label" style="padding-left: 0px;padding-right: 0px;"><b class="text-danger">*</b>分区字段</label>
-                    <div class="col-md-3 partitionCol">
-                        <select name="isPartitionCol" style="height: 34px;" class=" show-tick form-control" title="" data-live-search="true">
-                            <option value="-1">请选择</option>
-                            <option value="1" selected>是</option>
-                            <option value="0">否</option>
-                        </select>
-                    </div>
-                    <label class="col-md-2 control-label addBtn" style="padding-left: 0px;padding-right: 0px;padding-top: 0px">
-                        <button class="btn btn-info addBtn" onclick="addrow(this);">添加</button>
-                    </label>
-                    <label class="col-md-3 control-label" style="padding-left: 0px;padding-right: 0px;padding-top: 0px">
-                        <button id="delBtn" class='btn btn-danger delBtn' onclick='deleteTrRow(this);'>删除</button>
-                    </label>
-                </div>
-            </td>
-        </tr>
+        <c:choose>
+            <c:when test="${isCopy==-1}">
+                <tr>
+                    <td style="border:none;">
+                        <div class="form-group">
+                            <label for="colName" class="col-md-4 control-label" style="padding-left: 0px;padding-right: 0px;"><b class="text-danger">*</b>字段名称</label>
+                            <div class="col-md-7">
+                                <input class="form-control" id="colName" name="colName" placeholder="字段名称" value="day_p">
+                            </div>
+                        </div>
+                    </td>
+                    <td style="border:none;">
+                        <div class="form-group">
+                            <label for="colType" class="col-md-4 control-label" style="padding-left: 0px;padding-right: 0px;"><b class="text-danger">*</b>字段类型</label>
+                            <div class="col-md-7">
+                                    <%--<input class="form-control" id="colType" name="colType" placeholder="字段类型" value="string">--%>
+                                <select id="colType" name="colType" style="height: 34px;" class=" show-tick form-control" title="" data-live-search="true">
+                                    <option value='-1'>字段类型</option>
+                                    <option value="int">int</option>
+                                    <option value="bigint">bigint</option>
+                                    <option value="float">float</option>
+                                    <option value="double">double</option>
+                                    <option value="string" selected>string</option>
+                                    <option value="timestamp">timestamp</option>
+                                </select>
+                            </div>
+                        </div>
+                    </td>
+                    <td style="border:none;">
+                        <div class="form-group">
+                            <label for="colDes" class="col-md-4 control-label" style="padding-left: 0px;padding-right: 0px;">字段描述</label>
+                            <div class="col-md-7">
+                                <input class="form-control" id="colDes" name="colDes" placeholder="字段描述" value="天分区">
+                            </div>
+                        </div>
+                    </td>
+                    <td style="border:none;">
+                        <div class="form-group">
+                            <label class="col-md-4 control-label" style="padding-left: 0px;padding-right: 0px;"><b class="text-danger">*</b>分区字段</label>
+                            <div class="col-md-3 partitionCol">
+                                <select id="isPartitionCol" name="isPartitionCol" style="height: 34px;" class=" show-tick form-control" title="" data-live-search="true">
+                                    <option value="-1">请选择</option>
+                                    <option value="1" selected>是</option>
+                                    <option value="0">否</option>
+                                </select>
+                            </div>
+                            <label class="col-md-2 control-label addBtn" style="padding-left: 0px;padding-right: 0px;padding-top: 0px">
+                                <button class="btn btn-info addBtn" onclick="addrow(this);">添加</button>
+                            </label>
+                            <label class="col-md-3 control-label" style="padding-left: 0px;padding-right: 0px;padding-top: 0px">
+                                <button class='btn btn-danger delBtn' onclick='deleteTrRow(this);'>删除</button>
+                            </label>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="border:none;">
+                        <div class="form-group">
+                            <label for="colName" class="col-md-4 control-label" style="padding-left: 0px;padding-right: 0px;"><b class="text-danger">*</b>字段名称</label>
+                            <div class="col-md-7">
+                                <input class="form-control" name="colName" placeholder="字段名称" value="month_p">
+                            </div>
+                        </div>
+                    </td>
+                    <td style="border:none;">
+                        <div class="form-group">
+                            <label for="colType" class="col-md-4 control-label" style="padding-left: 0px;padding-right: 0px;"><b class="text-danger">*</b>字段类型</label>
+                            <div class="col-md-7">
+                                    <%--<input class="form-control" name="colType" placeholder="字段类型" value="string">--%>
+                                <select id="colType" name="colType" style="height: 34px;" class=" show-tick form-control" title="" data-live-search="true">
+                                    <option value='-1'>字段类型</option>
+                                    <option value="int">int</option>
+                                    <option value="bigint">bigint</option>
+                                    <option value="float">float</option>
+                                    <option value="double">double</option>
+                                    <option value="string" selected>string</option>
+                                    <option value="timestamp">timestamp</option>
+                                </select>
+                            </div>
+                        </div>
+                    </td>
+                    <td style="border:none;">
+                        <div class="form-group">
+                            <label for="colDes" class="col-md-4 control-label" style="padding-left: 0px;padding-right: 0px;">字段描述</label>
+                            <div class="col-md-7">
+                                <input class="form-control" name="colDes" placeholder="字段描述" value="月分区">
+                            </div>
+                        </div>
+                    </td>
+                    <td style="border:none;">
+                        <div class="form-group">
+                            <label class="col-md-4 control-label" style="padding-left: 0px;padding-right: 0px;"><b class="text-danger">*</b>分区字段</label>
+                            <div class="col-md-3 partitionCol">
+                                <select name="isPartitionCol" style="height: 34px;" class=" show-tick form-control" title="" data-live-search="true">
+                                    <option value="-1">请选择</option>
+                                    <option value="1" selected>是</option>
+                                    <option value="0">否</option>
+                                </select>
+                            </div>
+                            <label class="col-md-2 control-label addBtn" style="padding-left: 0px;padding-right: 0px;padding-top: 0px">
+                                <button class="btn btn-info addBtn" onclick="addrow(this);">添加</button>
+                            </label>
+                            <label class="col-md-3 control-label" style="padding-left: 0px;padding-right: 0px;padding-top: 0px">
+                                <button class='btn btn-danger delBtn' onclick='deleteTrRow(this);'>删除</button>
+                            </label>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="border:none;">
+                        <div class="form-group">
+                            <label for="colName" class="col-md-4 control-label" style="padding-left: 0px;padding-right: 0px;"><b class="text-danger">*</b>字段名称</label>
+                            <div class="col-md-7">
+                                <input class="form-control" name="colName" placeholder="字段名称" value="date_type">
+                            </div>
+                        </div>
+                    </td>
+                    <td style="border:none;">
+                        <div class="form-group">
+                            <label for="colType" class="col-md-4 control-label" style="padding-left: 0px;padding-right: 0px;"><b class="text-danger">*</b>字段类型</label>
+                            <div class="col-md-7">
+                                    <%--<input class="form-control" name="colType" placeholder="字段类型" value="string">--%>
+                                <select id="colType" name="colType" style="height: 34px;" class=" show-tick form-control" title="" data-live-search="true">
+                                    <option value='-1'>字段类型</option>
+                                    <option value="int">int</option>
+                                    <option value="bigint">bigint</option>
+                                    <option value="float">float</option>
+                                    <option value="double">double</option>
+                                    <option value="string" selected>string</option>
+                                    <option value="timestamp">timestamp</option>
+                                </select>
+                            </div>
+                        </div>
+                    </td>
+                    <td style="border:none;">
+                        <div class="form-group">
+                            <label for="colDes" class="col-md-4 control-label" style="padding-left: 0px;padding-right: 0px;">字段描述</label>
+                            <div class="col-md-7">
+                                <input class="form-control" name="colDes" placeholder="字段描述" value="日志类型">
+                            </div>
+                        </div>
+                    </td>
+                    <td style="border:none;">
+                        <div class="form-group">
+                            <label class="col-md-4 control-label" style="padding-left: 0px;padding-right: 0px;"><b class="text-danger">*</b>分区字段</label>
+                            <div class="col-md-3 partitionCol">
+                                <select name="isPartitionCol" style="height: 34px;" class=" show-tick form-control" title="" data-live-search="true">
+                                    <option value="-1">请选择</option>
+                                    <option value="1" selected>是</option>
+                                    <option value="0">否</option>
+                                </select>
+                            </div>
+                            <label class="col-md-2 control-label addBtn" style="padding-left: 0px;padding-right: 0px;padding-top: 0px">
+                                <button class="btn btn-info addBtn" onclick="addrow(this);">添加</button>
+                            </label>
+                            <label class="col-md-3 control-label" style="padding-left: 0px;padding-right: 0px;padding-top: 0px">
+                                <button id="delBtn" class='btn btn-danger delBtn' onclick='deleteTrRow(this);'>删除</button>
+                            </label>
+                        </div>
+                    </td>
+                </tr>
+            </c:when>
+            <c:otherwise>
+                <c:forEach begin="0" end="${hiveTable.fieldList.size()-1}"  var="index">
+                    <tr>
+                        <input class="form-control" type="hidden" id="colIndex" name="colIndex" value="${hiveTable.fieldList.get(index).colIndex}"/>
+                        <td style="border:none;">
+                            <div class="form-group">
+                                <label for="colName" class="col-md-4 control-label" style="padding-left: 0px;padding-right: 0px;"><b class="text-danger">*</b>字段名称</label>
+                                <div class="col-md-7">
+                                    <input class="form-control" id="colNameCopy" name="colName" placeholder="字段名称" value="${hiveTable.fieldList.get(index).colName}">
+                                </div>
+                            </div>
+                        </td>
+                        <td style="border:none;">
+                            <div class="form-group">
+                                <label for="colType" class="col-md-4 control-label" style="padding-left: 0px;padding-right: 0px;"><b class="text-danger">*</b>字段类型</label>
+                                <div class="col-md-7">
+                                    <select id="colTypeCopy" name="colType" style="height: 34px;" class=" show-tick form-control" title="" data-live-search="true">
+                                        <option value='-1'>字段类型</option>
+                                        <option value="int" <c:if test ="${hiveTable.fieldList.get(index).colType eq 'int'}">selected</c:if>>int</option>
+                                        <option value="bigint" <c:if test ="${hiveTable.fieldList.get(index).colType eq 'bigint'}">selected</c:if>>bigint</option>
+                                        <option value="float" <c:if test ="${hiveTable.fieldList.get(index).colType eq 'float'}">selected</c:if>>float</option>
+                                        <option value="double" <c:if test ="${hiveTable.fieldList.get(index).colType eq 'double'}">selected</c:if>>double</option>
+                                        <option value="string" <c:if test ="${hiveTable.fieldList.get(index).colType eq 'string'}">selected</c:if>>string</option>
+                                        <option value="timestamp" <c:if test ="${hiveTable.fieldList.get(index).colType eq 'timestamp'}">selected</c:if>>timestamp</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </td>
+                        <td style="border:none;">
+                            <div class="form-group">
+                                <label for="colDes" class="col-md-4 control-label" style="padding-left: 0px;padding-right: 0px;">字段描述</label>
+                                <div class="col-md-7">
+                                    <input class="form-control" id="colDesCopy" name="colDes" placeholder="字段描述" value="${hiveTable.fieldList.get(index).colDes}">
+                                </div>
+                            </div>
+                        </td>
+                        <td style="border:none;">
+                            <div class="form-group">
+                                <label class="col-md-4 control-label" style="padding-left: 0px;padding-right: 0px;"><b class="text-danger">*</b>分区字段</label>
+                                <div class="col-md-3 partitionCol">
+                                    <select id="isPartitionColCopy" name="isPartitionCol" style="height: 34px;" class=" show-tick form-control" title="" data-live-search="true">
+                                        <%--<option value="${hiveTable.fieldList.get(index).isPartitionCol}">${hiveTable.fieldList.get(index).isPartitionCol==1?'是':'否'}</option>--%>
+                                        <option value="-1" >请选择</option>
+                                        <option value="1" <c:if test ="${hiveTable.fieldList.get(index).isPartitionCol eq '1'}">selected</c:if>>是</option>
+                                        <option value="0" <c:if test ="${hiveTable.fieldList.get(index).isPartitionCol eq '0'}">selected</c:if>>否</option>
+                                    </select>
+                                </div>
+                                <label class="col-md-2 control-label addBtn" style="padding-left: 0px;padding-right: 0px;padding-top: 0px">
+                                    <button class="btn btn-info addBtn" onclick="addrow(this);">添加</button>
+                                </label>
+                                <label class="col-md-3 control-label" style="padding-left: 0px;padding-right: 0px;padding-top: 0px">
+                                    <button class='btn btn-danger delBtn' onclick='deleteTrRow(this);'>删除</button>
+                                </label>
+                            </div>
+                        </td>
+                    </tr>
+                </c:forEach>
+            </c:otherwise>
+        </c:choose>
+
         <tr id="exportTr">
             <td style="border:none;">
                 <div class="form-group">
@@ -243,7 +306,7 @@
                 <div class="form-group">
                     <label for="mysqlTableCode" class="col-md-5 control-label" style="padding-left: 0px;padding-right: 0px;"><b class="text-danger">*</b>目标表名</label>
                     <div class="col-md-7">
-                        <input class="form-control" id="mysqlTableCode" placeholder="mysql目标表名">
+                        <input class="form-control" id="mysqlTableCode" placeholder="mysql目标表名" value="${mysqlTable.tableCode}">
                     </div>
                 </div>
             </td>
@@ -251,7 +314,7 @@
                 <div class="form-group">
                     <label for="mysqlTableDes" class="col-md-5 control-label" style="padding-left: 0px;padding-right: 0px;">目标表描述</label>
                     <div class="col-md-7">
-                        <input class="form-control" id="mysqlTableDes" placeholder="目标表描述">
+                        <input class="form-control" id="mysqlTableDes" placeholder="目标表描述" value="${mysqlTable.tableDes}">
                     </div>
                 </div>
             </td>
@@ -277,6 +340,21 @@
 </div>
 
 <script>
+    jQuery(function($) {
+        var dDiv = document.getElementById("mysql-table");
+        if ('${flag}' == "true") {
+            dDiv.style.display = "block";
+            $("#export2Mysql").attr("checked",true);
+        }else{
+            $("#noExport2Mysql").attr("checked",true);
+        }
+
+        $("#dbId").val(${hiveTable.dbInfo.id});
+        if('${isCopy}'!=-1){
+            $("#dataType").val('${hiveTable.dataType}');
+        }
+        $("#mysqlDbId").val(${mysqlTable.dbId});
+    });
 
     function addrow(tr){
         var hiveTable = $('#hive-table');

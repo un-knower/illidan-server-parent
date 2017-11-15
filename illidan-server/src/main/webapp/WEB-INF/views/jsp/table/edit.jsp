@@ -16,6 +16,8 @@
 </head>
 <body>
 <div class="container theme-showcase form-horizontal col-md-12" >
+    <input class="form-control" type="hidden" id="tableId" name="tableId" value="${hiveTable.id}"/>
+    <input class="form-control" type="hidden" id="mysqlTableId" name="mysqlTableId" value="${hiveTable.mysqlTableId}"/>
     <table id="hive-table" class="table table-condensed" style="margin-bottom: 0px;">
         <tr><td style="border:none;"><h4>hive输出表</h4></td></tr>
         <tr>
@@ -62,6 +64,7 @@
 
         <c:forEach begin="0" end="${hiveTable.fieldList.size()-1}"  var="index">
             <tr>
+                <input class="form-control" type="hidden" id="colIndex" name="colIndex" value="${hiveTable.fieldList.get(index).colIndex}"/>
                 <td style="border:none;">
                     <div class="form-group">
                         <label for="colName" class="col-md-4 control-label" style="padding-left: 0px;padding-right: 0px;"><b class="text-danger">*</b>字段名称</label>
@@ -143,7 +146,11 @@
                     <label for="mysqlDbId" class="col-md-5 control-label" style="padding-left: 0px;padding-right: 0px;"><b class="text-danger">*</b>数据库</label>
                     <div class="col-md-7">
                         <select class=" show-tick form-control" style="height: 34px;width: 120px;" id="mysqlDbId" name="dbId" data-live-search="true" disabled="disabled">
-                            <option value ="${mysqlTable.dbId}" >${mysqlTableDbCode}</option>
+                            <option value="-1">mysql数据库</option>
+                            <c:forEach begin="0" end="${mysqlDbInfoList.size()-1}"  var="index">
+                                <option value ="${mysqlDbInfoList.get(index).id}" >${mysqlDbInfoList.get(index).dbCode}</option>
+                            </c:forEach>
+                            <%--<option value ="${mysqlTable.dbId}" >${mysqlTableDbCode}</option>--%>
                         </select>
                     </div>
                 </div>
@@ -165,6 +172,8 @@
         }else{
             $("#noExport2Mysql").attr("checked",true);
         }
+
+        $("#mysqlDbId").val(${mysqlTable.dbId});
     });
 
     function addrow(){
@@ -179,7 +188,7 @@
             "<td style='border:none;'><div class='form-group'><label for='colName' class='col-md-4 control-label' style='padding-left: 0px;padding-right: 0px;'><b class='text-danger'>*</b>字段名称</label><div class='col-md-7'><input class='form-control' id='colName' name='colName'' placeholder='字段名称'></div></div></td>"+
             "<td style='border:none;'><div class='form-group'><label for='colType' class='col-md-4 control-label' style='padding-left: 0px;padding-right: 0px;'><b class='text-danger'>*</b>字段类型</label><div class='col-md-7'><select id='colType' name='colType' style='height: 34px;' class=' show-tick form-control' title='' data-live-search='true'><option value='-1'>字段类型</option><option value='int'>int</option><option value='bigint'>bigint</option><option value='float'>float</option><option value='double'>double</option><option value='string'>string</option><option value='timestamp'>timestamp</option></select></div></div></td>"+
             "<td style='border:none;'><div class='form-group'><label for='colDes' class='col-md-4 control-label' style='padding-left: 0px;padding-right: 0px;'>字段描述</label><div class='col-md-7'><input class='form-control' id='colDes' name='colDes' placeholder='字段描述'></div></div></td>"+
-            "<td style='border:none;'><div class='form-group'><label class='col-md-4 control-label' style='padding-left: 0px;padding-right: 0px;'><b class='text-danger'>*</b>分区字段</label><div class='col-md-5 partitionCol'><select id='isPartitionCol' name='isPartitionCol' style='height: 34px;' class=' show-tick form-control' title='' data-live-search='true'><option value='-1'>请选择</option><option value='1'>是</option><option value='0'>否</option></select></div><label class='col-md-3 control-label' style='padding-left: 0px;padding-right: 0px;padding-top: 0px'><button class='btn btn-danger delBtn' onclick='deleteTrRow(this);'>删除</button></label></div> </td>"+
+            "<td style='border:none;'><div class='form-group'><label class='col-md-4 control-label' style='padding-left: 0px;padding-right: 0px;'><b class='text-danger'>*</b>分区字段</label><div class='col-md-5 partitionCol'><select id='isPartitionCol' name='isPartitionCol' style='height: 34px;' class=' show-tick form-control' title='' data-live-search='true' disabled><option value='-1'>请选择</option><option value='1'>是</option><option value='0' selected>否</option></select></div><label class='col-md-3 control-label' style='padding-left: 0px;padding-right: 0px;padding-top: 0px'><button class='btn btn-danger delBtn' onclick='deleteTrRow(this);'>删除</button></label></div> </td>"+
             "</tr>");
 //        addtr.appendTo(hiveTable);
         $('#hive-table tr:eq(-1)').before(addtr);
@@ -199,7 +208,74 @@
     }
 
     function edit() {
-        alert("功能待完善");
+        var fullHiveTable = {};
+        var hiveTableWithField = {};
+        var hiveFieldList = [];
+        $("#hive-table tr:gt(1)").each(function(){
+            var fieldInfo = {};
+            $("input,select",this).each(function(){ //遍历行内的input select的值
+                if($(this).prop("name")=="colName"){
+                    fieldInfo.colName = $(this).val().toString();
+                }
+                if($(this).prop("name")=="colType"){
+                    fieldInfo.colType = $(this).val().toString();
+                }
+                if($(this).prop("name")=="colDes"){
+                    fieldInfo.colDes = $(this).val().toString();
+                }
+                if($(this).prop("name")=="isPartitionCol"){
+                    fieldInfo.isPartitionCol = $(this).val().toString();
+                }
+                if($(this).prop("name")=="colIndex"){
+                    fieldInfo.colIndex = $(this).val().toString();
+                }
+            });
+            if(JSON.stringify(fieldInfo) != "{}"){
+                hiveFieldList.push(fieldInfo);
+            }
+        });
+        //mysql table
+        if($('input:radio[id="export2Mysql"]:checked').val()!=null){
+            var mysqlTable = {};
+            mysqlTable.id = $("#mysqlTableId").val().toString();
+            mysqlTable.tableCode = $("#mysqlTableCode").val().toString();
+            mysqlTable.dbId = $("#mysqlDbId").val().toString();
+            mysqlTable.tableDes = $("#mysqlTableDes").val().toString();
+            hiveTableWithField.mysqlTableId = $("#mysqlTableId").val().toString();
+            fullHiveTable.mysqlTable = mysqlTable;
+        }
+        if($('input:radio[id="noExport2Mysql"]:checked').val()!=null){
+//            var mysqlTable = {};
+            fullHiveTable.mysqlTable = null;
+            hiveTableWithField.mysqlTableId = null;
+        }
+        //hive table
+        hiveTableWithField.id = $("#tableId").val().toString();
+        hiveTableWithField.tableCode = $("#tableCode").val().toString();
+        hiveTableWithField.dbId = $("#dbId").val().toString();
+        hiveTableWithField.dataType = $("#dataType").val().toString();
+        hiveTableWithField.tableDes = $("#tableDes").val().toString();
+        hiveTableWithField.fieldList = hiveFieldList;
+        fullHiveTable.hiveTable = hiveTableWithField;
+
+        $.ajax({
+            type: 'POST',
+            url: '<%=path%>/table/edit',
+            data: JSON.stringify(fullHiveTable),
+            contentType: 'application/json', //设置请求头信息
+            dataType: 'json',
+            async: false,
+            success: function (data) {
+                if (data.result == true) {
+                    modalAlert("提示", data.msg, closeTip, "ok");
+                } else {
+                    modalAlert("提示", data.msg, closeWindow, "error");
+                }
+            },
+            error: function() {
+                modalAlert("提示", "修改输出表失败,请重新添加", closeWindow, "error");
+            }
+        });
     }
 
     function closeTip(){
@@ -214,6 +290,9 @@
     function isExport2Mysql(obj) {
         var dDiv = document.getElementById("mysql-table");
         if(obj.value=="yes"){
+            $("#mysqlTableCode").removeAttr("disabled");
+            $("#mysqlTableDes").removeAttr("disabled");
+            $("#mysqlDbId").removeAttr("disabled");
             dDiv.style.display = "block";
         }else{
             dDiv.style.display = "none";

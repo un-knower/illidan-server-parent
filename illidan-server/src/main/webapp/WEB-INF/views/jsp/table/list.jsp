@@ -35,7 +35,7 @@
         </div>
     </div>
     <button type="button" class="btn btn-success" onclick="add()">新增</button>
-    <button type="button" class="btn btn-danger" onclick="remove();">删除</button>
+    <%--<button type="button" class="btn btn-danger" onclick="remove();">删除</button>--%>
     <%--<button type="button" class="btn btn-primary" onclick="publish();">发布</button>--%>
     <table id="dynamic-table" name="dynamic-table" class="table table-striped table-hover table-bordered">
         <thead>
@@ -206,17 +206,21 @@
     }
 
     function add() {
-        modalWindow("<%=path%>/table/toAdd", "新增输出表", 400, 1200);
+        <%--modalWindow("<%=path%>/table/toAdd", "新增输出表", 580, 1200);--%>
+        if(getCookie('tableId')!='' && getCookie('tableId')!=null){
+            modalWindow("<%=path%>/table/toAdd?id=" + getCookie('tableId'), "新增输出表", 580, 1200);
+        }else{
+            modalWindow("<%=path%>/table/toAdd?id=-1", "新增输出表", 580, 1200);
+        }
     }
 
     function edit(id) {
-        modalWindow("<%=path%>/table/toEdit?id=" + id, "编辑输出表", 400, 1200);
+        modalWindow("<%=path%>/table/toEdit?id=" + id, "编辑输出表", 580, 1200);
     }
 
     function copyTable(id){
-        alert("功能待开发");
-//        setCookie('taskId', id, 30);
-//        modalAlert("提示", "任务复制成功", searchList, "ok");
+        setCookie('tableId', id, 30);
+        modalAlert("提示", "输出表复制成功", searchList, "ok");
 
     }
 

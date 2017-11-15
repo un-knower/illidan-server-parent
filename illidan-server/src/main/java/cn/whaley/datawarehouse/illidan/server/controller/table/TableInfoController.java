@@ -64,11 +64,27 @@ public class TableInfoController extends Common {
     }
 
     @RequestMapping("toAdd")
-    public ModelAndView toAdd(ModelAndView mav) {
+    public ModelAndView toAdd(ModelAndView mav,Long id) {
+        FullHiveTable fullHiveTable;
+        if(!id.equals(-1L)){
+            fullHiveTable = tableInfoService.getFullHiveTable(id);
+            TableWithField mysqlTable = (TableWithField) fullHiveTable.getMysqlTable();
+            Boolean flag = fullHiveTable.getHiveTable().getMysqlTableId() != null;
+            mav.addObject("flag" , flag);
+            mav.addObject("hiveTable",fullHiveTable.getHiveTable());
+            mav.addObject("mysqlTable",fullHiveTable.getMysqlTable());
+            mav.addObject("mysqlDbInfoList",dbInfoService.getDbInfo(2L));
+            String mysqlTableDbCode = "";
+            if(mysqlTable!=null){
+                mysqlTableDbCode = mysqlTable.getDbInfo().getDbCode();
+            }
+            mav.addObject("mysqlTableDbCode",mysqlTableDbCode);
+        }
         List<DbInfo> hiveDbInfoList = dbInfoService.getDbInfo(1L);//hive
         List<DbInfo> mysqlDbInfoList = dbInfoService.getDbInfo(2L);//mysql
         mav.addObject("hiveDbInfoList",hiveDbInfoList);
         mav.addObject("mysqlDbInfoList",mysqlDbInfoList);
+        mav.addObject("isCopy",id);
         mav.setViewName("table/add");
         return mav;
     }
@@ -90,6 +106,10 @@ public class TableInfoController extends Common {
                 }
                 fieldInfoService.setFiledValue(fieldInfos);
                 tableInfoService.insertFullHiveTable(fullHiveTable);
+                if (getCookieValue("tableId")!=null && !getCookieValue("tableId").equals("")){
+                    clearCookie("tableId");
+                    logger.info("清除cookie");
+                }
                 logger.info("新增输出表成功!!!");
                 return returnResult(true, "新增输出表成功!!!");
             }else {
@@ -111,6 +131,7 @@ public class TableInfoController extends Common {
         mav.addObject("flag" , flag);
         mav.addObject("hiveTable",fullHiveTable.getHiveTable());
         mav.addObject("mysqlTable",fullHiveTable.getMysqlTable());
+        mav.addObject("mysqlDbInfoList",dbInfoService.getDbInfo(2L));
         String mysqlTableDbCode = "";
         if(mysqlTable!=null){
             mysqlTableDbCode = mysqlTable.getDbInfo().getDbCode();
@@ -119,7 +140,31 @@ public class TableInfoController extends Common {
         return mav;
     }
 
+    @RequestMapping("edit")
+    @ResponseBody
+    public String edit(@RequestBody FullHiveTable fullHiveTable) {
+        try {
+            if(validateTable(fullHiveTable).equals("ok")) {
+                tableInfoService.updateFullHiveTable(fullHiveTable);
+                logger.info("修改任务成功!!!");
+                return returnResult(true, "修改输出表成功!!!");
+            }else {
+                logger.info("修改输出表失败!!!");
+                return returnResult(true, "修改输出表成功!!!");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.error(e.getMessage());
+            return returnResult(false, "修改输出表失败," + e.getMessage());
+        }
+    }
+
     public String validateTable(FullHiveTable fullHiveTable){
+        List<String> partitionColumns = new ArrayList<String>();
+        partitionColumns.add("day_p");
+        partitionColumns.add("month_p");
+        partitionColumns.add("date_type");
+        partitionColumns.add("product_line");
         String result = "ok";
         if(StringUtils.isEmpty(fullHiveTable)){
             return returnResult(false, "失败!!!");
@@ -127,8 +172,8 @@ public class TableInfoController extends Common {
         if(!validateColumnNull(fullHiveTable.getHiveTable().getTableCode())){
             return validateMessage("hive表名");
         }
-        if (!codeReg(fullHiveTable.getHiveTable().getTableCode())){
-            return returnResult(false, "hive表名只能由英文字母,数字,-,_组成!!!");
+        if (!tableReg(fullHiveTable.getHiveTable().getTableCode())){
+            return returnResult(false, "hive表名只能由英文字母,数字,_组成!!!");
         }
         if (fullHiveTable.getHiveTable().getDbId() == -1){
             return validateMessage("hive数据库");
@@ -141,8 +186,8 @@ public class TableInfoController extends Common {
             if (!validateColumnNull(fieldInfo.getColName())){
                 return validateMessage("字段名称");
             }
-            if (!codeReg(fieldInfo.getColName())){
-                return returnResult(false, "字段名称只能由英文字母,数字,-,_组成!!!");
+            if (!tableReg(fieldInfo.getColName())){
+                return returnResult(false, "字段名称只能由英文字母,数字,_组成!!!");
             }
             if (fieldInfo.getColType().equals("-1")){
                 return validateMessage("字段类型");
@@ -150,13 +195,19 @@ public class TableInfoController extends Common {
             if (fieldInfo.getIsPartitionCol().equals("-1")){
                 return validateMessage("分区字段");
             }
+            //分区字段只能为day_p,month_p,date_type,product_line四个值
+            if (fieldInfo.getIsPartitionCol().equals("1")){
+                if(!partitionColumns.contains(fieldInfo.getColName())){
+                    return returnResult(false, "分区字段目前只能为day_p,month_p,date_type,product_line四个值");
+                }
+            }
         }
         if (fullHiveTable.getMysqlTable()!=null){
             if(!validateColumnNull(fullHiveTable.getMysqlTable().getTableCode())){
                 return validateMessage("mysql表名");
             }
-            if (!codeReg(fullHiveTable.getMysqlTable().getTableCode())){
-                return returnResult(false, "mysql表名只能由英文字母,数字,-,_组成!!!");
+            if (!tableReg(fullHiveTable.getMysqlTable().getTableCode())){
+                return returnResult(false, "mysql表名只能由英文字母,数字,_组成!!!");
             }
             if (fullHiveTable.getMysqlTable().getDbId() == -1){
                 return validateMessage("mysql数据库");

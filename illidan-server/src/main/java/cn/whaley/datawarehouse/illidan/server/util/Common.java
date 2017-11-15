@@ -288,6 +288,11 @@ public class Common {
         return str.matches(regex);
     }
 
+    public boolean tableReg(String str) {
+        String regex = "^[a-z0-9A-Z_]+$";
+        return str.matches(regex);
+    }
+
     public Boolean validateColumnNull(Object columnName){
         return !(columnName == null || columnName.equals(""));
     }
