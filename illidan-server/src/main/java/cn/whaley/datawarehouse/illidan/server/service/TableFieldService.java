@@ -91,13 +91,13 @@ public class TableFieldService {
         tableWithField.setTableDes(table.comment);
 
         DbInfoWithStorage dbInfo = dbInfoService.getDbWithStorageByCode(dbName);
-        if(dbInfo == null) {
+        if (dbInfo == null) {
             throw new RuntimeException("hive数据库不存在");
         }
         tableWithField.setDbInfo(dbInfo);
         tableWithField.setDbId(dbInfo.getId());
 
-        if(table.fileFormat != null) {
+        if (table.fileFormat != null) {
             tableWithField.setDataType(table.fileFormat);
         } else {
             tableWithField.setDataType("parquet");
@@ -142,7 +142,7 @@ public class TableFieldService {
                     sb.append("\n");
                 }
                 return sb.toString();
-            }finally {
+            } finally {
                 rs.close();
             }
 
@@ -162,18 +162,18 @@ public class TableFieldService {
         logger.info("开始补充已有表配置的字段");
         int failCount = 0;
         List<TableInfo> failList = new ArrayList<>();
-        for(TableInfo tableInfo: tableInfos) {
+        for (TableInfo tableInfo : tableInfos) {
             try {
                 completeTableInfo(tableInfo.getId());
-            }catch (Exception e) {
-                failCount ++;
+            } catch (Exception e) {
+                failCount++;
                 failList.add(tableInfo);
                 logger.warn(tableInfo.getTableCode() + "表字段更新失败");
             }
         }
         logger.warn(failCount + "个表字段更新失败");
         logger.warn("失败表id：\n"
-                + failList.stream().map(f-> f.getId().toString()).collect(Collectors.joining(",\n")));
+                + failList.stream().map(f -> f.getId().toString()).collect(Collectors.joining(",\n")));
     }
 
     public void completeTableInfo(Long hiveTableId) {

@@ -19,15 +19,15 @@ public class SqlParseUtil {
 
     public static Table parseCreateSql(String sql, String dbName) {
 
-        if(sql == null || sql.isEmpty()) {
+        if (sql == null || sql.isEmpty()) {
             throw new RuntimeException("sql语句为空");
         }
 
-        if(sql.contains(";")) {
+        if (sql.contains(";")) {
             throw new RuntimeException("只能解析单条语句，不能包含分号");
         }
 
-        sql = sql.replace("`","");
+        sql = sql.replace("`", "");
 
         try {
             ParseDriver pd = new ParseDriver();
@@ -83,21 +83,21 @@ public class SqlParseUtil {
 
                 if (treeNode.getText().equals("TOK_TABLEFILEFORMAT")) {
                     if (treeNode.getChildCount() > 0 && table.fileFormat == null) {
-                        for(Node formatNode : treeNode.getChildren()) {
+                        for (Node formatNode : treeNode.getChildren()) {
                             ASTNode format = (ASTNode) formatNode;
-                            if(format.getText().contains("TextInputFormat")) {
+                            if (format.getText().contains("TextInputFormat")) {
                                 table.fileFormat = "textfile";
                                 break;
                             }
-                            if(format.getText().contains("SequenceFileInputFormat")) {
+                            if (format.getText().contains("SequenceFileInputFormat")) {
                                 table.fileFormat = "sequencefile";
                                 break;
                             }
-                            if(format.getText().contains("RCFileInputFormat")) {
+                            if (format.getText().contains("RCFileInputFormat")) {
                                 table.fileFormat = "rcfile";
                                 break;
                             }
-                            if(format.getText().contains("MapredParquetInputFormat")) {
+                            if (format.getText().contains("MapredParquetInputFormat")) {
                                 table.fileFormat = "parquet";
                                 break;
                             }
@@ -107,9 +107,9 @@ public class SqlParseUtil {
 
                 if (treeNode.getText().equals("TOK_FILEFORMAT_GENERIC")) {
                     if (treeNode.getChildCount() > 0 && table.fileFormat == null) {
-                        for(Node formatNode : treeNode.getChildren()) {
+                        for (Node formatNode : treeNode.getChildren()) {
                             ASTNode format = (ASTNode) formatNode;
-                            if(format.getText().equalsIgnoreCase("textfile")
+                            if (format.getText().equalsIgnoreCase("textfile")
                                     || format.getText().equalsIgnoreCase("sequencefile")
                                     || format.getText().equalsIgnoreCase("rcfile")
                                     || format.getText().equalsIgnoreCase("parquet")) {
@@ -150,7 +150,7 @@ public class SqlParseUtil {
                 if (childCount == 2) {
                     field.comment = "";
                 } else {
-                    field.comment = tableColNode.getChild(2).getText().replace("'","");
+                    field.comment = tableColNode.getChild(2).getText().replace("'", "");
                 }
                 field.partitionColumn = partitionColumn;
                 table.fields.add(field);
