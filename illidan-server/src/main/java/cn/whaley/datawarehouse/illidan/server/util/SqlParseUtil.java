@@ -81,6 +81,46 @@ public class SqlParseUtil {
                     }
                 }
 
+                if (treeNode.getText().equals("TOK_TABLEFILEFORMAT")) {
+                    if (treeNode.getChildCount() > 0 && table.fileFormat == null) {
+                        for(Node formatNode : treeNode.getChildren()) {
+                            ASTNode format = (ASTNode) formatNode;
+                            if(format.getText().contains("TextInputFormat")) {
+                                table.fileFormat = "textfile";
+                                break;
+                            }
+                            if(format.getText().contains("SequenceFileInputFormat")) {
+                                table.fileFormat = "sequencefile";
+                                break;
+                            }
+                            if(format.getText().contains("RCFileInputFormat")) {
+                                table.fileFormat = "rcfile";
+                                break;
+                            }
+                            if(format.getText().contains("MapredParquetInputFormat")) {
+                                table.fileFormat = "parquet";
+                                break;
+                            }
+                        }
+                    }
+                }
+
+                if (treeNode.getText().equals("TOK_FILEFORMAT_GENERIC")) {
+                    if (treeNode.getChildCount() > 0 && table.fileFormat == null) {
+                        for(Node formatNode : treeNode.getChildren()) {
+                            ASTNode format = (ASTNode) formatNode;
+                            if(format.getText().equalsIgnoreCase("textfile")
+                                    || format.getText().equalsIgnoreCase("sequencefile")
+                                    || format.getText().equalsIgnoreCase("rcfile")
+                                    || format.getText().equalsIgnoreCase("parquet")) {
+                                table.fileFormat = format.getText().toLowerCase();
+                                break;
+                            }
+                        }
+                    }
+                }
+
+
             }
 
             return table;
@@ -110,7 +150,7 @@ public class SqlParseUtil {
                 if (childCount == 2) {
                     field.comment = "";
                 } else {
-                    field.comment = tableColNode.getChild(2).getText();
+                    field.comment = tableColNode.getChild(2).getText().replace("'","");
                 }
                 field.partitionColumn = partitionColumn;
                 table.fields.add(field);
@@ -122,6 +162,7 @@ public class SqlParseUtil {
         public String tableCode;
         public String dbCode;
         public String comment;
+        public String fileFormat;
         public List<Field> fields = new ArrayList<>();
     }
 

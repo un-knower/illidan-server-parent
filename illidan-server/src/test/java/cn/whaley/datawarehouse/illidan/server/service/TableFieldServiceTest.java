@@ -30,4 +30,9 @@ public class TableFieldServiceTest {
         TableWithField tableWithField = tableFieldService.getTableInfoFromHive(342L);
         Assert.assertTrue(tableWithField != null);
     }
+
+    @Test
+    public void completeTableInfoAllTest() {
+        tableFieldService.completeTableInfoAll();
+    }
 }

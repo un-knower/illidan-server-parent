@@ -128,7 +128,6 @@ public class FieldInfo implements Serializable {
 
         FieldInfo fieldInfo = (FieldInfo) o;
 
-        if (colIndex != fieldInfo.colIndex) return false;
         if (colName != null ? !colName.equals(fieldInfo.colName) : fieldInfo.colName != null) return false;
         if (colType != null ? !colType.equals(fieldInfo.colType) : fieldInfo.colType != null) return false;
         return isPartitionCol != null ? isPartitionCol.equals(fieldInfo.isPartitionCol) : fieldInfo.isPartitionCol == null;
