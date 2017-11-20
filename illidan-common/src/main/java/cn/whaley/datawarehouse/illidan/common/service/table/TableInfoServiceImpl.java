@@ -114,6 +114,15 @@ public class TableInfoServiceImpl implements TableInfoService {
         return tableInfoMapper.findByTableInfo(tableInfo);
     }
 
+    @Override
+    public List<TableInfo> findTableInfo(TableInfoQuery tableInfo) {
+        if (tableInfo == null){
+            logger.error("findByTableInfo: tableInfo is null.");
+            return null;
+        }
+        return tableInfoMapper.findTableInfo(tableInfo);
+    }
+
     public TableInfo findOne(final TableInfoQuery tableInfo) {
         if (tableInfo == null){
             logger.error("findOne: tableInfo is null.");

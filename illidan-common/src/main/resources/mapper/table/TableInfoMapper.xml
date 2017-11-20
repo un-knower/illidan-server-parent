@@ -61,6 +61,19 @@
         </trim>
     </sql>
 
+    <sql id="whereCase">
+        <where>
+            tableInfo.status = '1'
+            <if test="tableInfo != null and tableInfo.id != null">and tableInfo.id = #{tableInfo.id}</if>
+            <if test="tableInfo != null and tableInfo.tableCode != null">and tableInfo.tableCode = #{tableInfo.tableCode}</if>
+            <if test="tableInfo != null and tableInfo.dataType != null">and tableInfo.dataType = #{tableInfo.dataType}</if>
+            <if test="tableInfo != null and tableInfo.dbId != null">and tableInfo.dbId = #{tableInfo.dbId}</if>
+            <if test="tableInfo != null and tableInfo.createTime != null">and tableInfo.createTime = #{tableInfo.createTime}</if>
+            <if test="tableInfo != null and tableInfo.updateTime != null">and tableInfo.updateTime = #{tableInfo.updateTime}</if>
+            <if test="tableInfo != null and tableInfo.mysqlTableId != null">and tableInfo.mysqlTableId = #{tableInfo.mysqlTableId}</if>
+        </where>
+    </sql>
+
     <sql id="likeWhereCase">
         <where>
             tableInfo.status = '1' AND storageInfo.storageType = 1
@@ -99,6 +112,14 @@
         select <include refid="colList" /> from table_info tableInfo
         <include refid="joinTables"/>
         <include refid="likeWhereCase"/>
+        order by tableInfo.updateTime desc
+        <if test="tableInfo != null and tableInfo.limitStart != null and tableInfo.limitEnd != null">limit #{tableInfo.limitStart}, #{tableInfo.limitEnd}</if>
+    </select>
+
+    <select id="findTableInfo" resultMap="returnTableInfo">
+        select <include refid="colList" /> from table_info tableInfo
+        <include refid="joinTables"/>
+        <include refid="whereCase"/>
         order by tableInfo.updateTime desc
         <if test="tableInfo != null and tableInfo.limitStart != null and tableInfo.limitEnd != null">limit #{tableInfo.limitStart}, #{tableInfo.limitEnd}</if>
     </select>

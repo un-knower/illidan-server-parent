@@ -98,10 +98,10 @@ public class TaskController extends Common {
         mav.setViewName("task/add");
         List<TaskGroup> groupList = getTaskGroup();
         List<DbInfo> hiveDbInfoList = dbInfoService.getDbInfo(1L);//hive
-        List<DbInfo> mysqlDbInfoList = dbInfoService.getDbInfo(2L);//mysql
+//        List<DbInfo> mysqlDbInfoList = dbInfoService.getDbInfo(2L);//mysql
         mav.addObject("group",groupList);
         mav.addObject("hiveDbInfoList",hiveDbInfoList);
-        mav.addObject("mysqlDbInfoList",mysqlDbInfoList);
+//        mav.addObject("mysqlDbInfoList",mysqlDbInfoList);
         mav.addObject("groupId",groupId);
         return mav;
     }
@@ -117,14 +117,18 @@ public class TaskController extends Common {
                 taskFull.setExecuteTypeList(executeTypeList);
                 //状态默认置成有效
                 taskFull.setStatus("1");
+                taskFull.setTableId(taskFull.getFullHiveTable().getHiveTable().getId());
                 taskService.insertFullTask(taskFull);
+                if (getCookieValue("taskId")!=null && !getCookieValue("taskId").equals("")){
+                    clearCookie("taskId");
+                    logger.info("清除cookie");
+                }
+                logger.info("新增任务成功!!!");
+                return returnResult(true, "新增任务成功!!!");
+            }else {
+                return returnResult(false, validateTask(taskFull));
             }
-            if (getCookieValue("taskId")!=null && !getCookieValue("taskId").equals("")){
-                clearCookie("taskId");
-                logger.info("清除cookie");
-            }
-            logger.info("新增任务成功!!!");
-            return returnResult(true, "新增任务成功!!!");
+
         } catch (Exception e) {
             e.printStackTrace();
             logger.error(e.getMessage());
@@ -216,6 +220,21 @@ public class TaskController extends Common {
         }
     }
 
+    @RequestMapping("getTables")
+    @ResponseBody
+    public List<TableInfo> getTables(Long dbId){
+        List<TableInfo> tableInfoList = new ArrayList<>();
+        try {
+            TableInfoQuery tableInfo = new TableInfoQuery();
+            tableInfo.setDbId(dbId);
+            tableInfoList = tableInfoService.findTableInfo(tableInfo);
+        } catch (Exception e){
+            e.printStackTrace();
+            logger.error(e.getMessage());
+        }
+        return tableInfoList;
+    }
+
     public List<TaskGroup> getTaskGroup(){
         return taskGroupService.findByTaskGroup(new TaskGroupQuery());
     }
@@ -241,7 +260,7 @@ public class TaskController extends Common {
         return tableInfoService.findOne(tableInfoQuery);
     }
 
-    public String validateTask(Task task){
+    public String validateTask(TaskFull task){
         String result = "ok";
         if(StringUtils.isEmpty(task)){
             return returnResult(false, "失败!!!");
@@ -255,7 +274,10 @@ public class TaskController extends Common {
         if (!validateColumnNull(task.getAddUser())){
             return validateMessage("任务添加用户");
         }
-        if (!validateColumnNull(task.getTableId())){
+        if (!validateColumnNull(task.getFullHiveTable().getHiveTable().getDbId())){
+            return validateMessage("目标数据库");
+        }
+        if (!validateColumnNull(task.getFullHiveTable().getHiveTable().getId())){
             return validateMessage("目标表");
         }
         if (!validateColumnNull(task.getExecuteType())){
