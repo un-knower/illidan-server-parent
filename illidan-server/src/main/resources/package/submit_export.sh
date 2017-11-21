@@ -97,9 +97,9 @@ if [ "$dateType" = "hour" ]; then
 
     while [[ $compareStartTimeParam -le $compareEndTimeParam ]]
     do
-        echo startTimeParam
-        day_p=startDate=`date -d "$startTimeParam" +%Y%m%d`
-        hour_p=startDate=`date -d "$startTimeParam" +%H`
+        echo $startTimeParam
+        day_p=`date -d "$startTimeParam" +%Y%m%d`
+        hour_p=`date -d "$startTimeParam" +%H`
         filterCondition=" where day_p = '$day_p' and hour_p = '$hour_p'"
         java -cp ./*:/data/apps/azkaban/illidan_export/lib/*  cn.whaley.datawarehouse.illidan.export.Start --hiveDb $hiveDb --hiveTable $hiveTable --mysqlDb $mysqlDb --mysqlTable $mysqlTable --phoenixDb $phoenixDb --phoenixTable $phoenixTable --filterCondition "${filterCondition}"
         if [ $? -ne 0 ];then

@@ -342,7 +342,7 @@ public class DateUtils {
     public static Date firstSecondOfHour(Date date) {
         Calendar c = Calendar.getInstance();
         c.setTime(date);
-        c.set(c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DATE), c.get(Calendar.HOUR), 0, 0);
+        c.set(c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DATE), c.get(Calendar.HOUR_OF_DAY), 0, 0);
         c.set(Calendar.MILLISECOND, 0);
         return c.getTime();
     }
@@ -350,7 +350,7 @@ public class DateUtils {
     public static Date lastSecondOfHour(Date date) {
         Calendar c = Calendar.getInstance();
         c.setTime(date);
-        c.set(c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DATE), c.get(Calendar.HOUR), 59, 59);
+        c.set(c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DATE), c.get(Calendar.HOUR_OF_DAY), 59, 59);
         c.set(Calendar.MILLISECOND, 0);
         return c.getTime();
     }
