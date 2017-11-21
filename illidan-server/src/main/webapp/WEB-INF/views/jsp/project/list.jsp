@@ -15,6 +15,7 @@
 </head>
 <body>
 <div class="container">
+    <h4>项目列表</h4>
     <div class="page-header objhid">
         <div class="form-inline ">
             <div class="form-group">
@@ -32,6 +33,7 @@
     <button type="button" class="btn btn-success" onclick="add()">新增</button>
     <button type="button" class="btn btn-danger" onclick="remove();">删除</button>
     <%--<button type="button" class="btn btn-primary" onclick="publish();">发布</button>--%>
+    <button type="button" class="btn btn-primary" onclick="tableList();">输出表列表</button>
     <table id="dynamic-table" name="dynamic-table" class="table table-striped table-hover table-bordered">
         <thead>
         <tr>
@@ -306,6 +308,10 @@
                 }
             }
         });
+    }
+
+    function tableList() {
+        window.location.href = "<%=path%>/table/list"
     }
 
 </script>

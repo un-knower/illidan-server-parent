@@ -89,6 +89,9 @@ public class TableFieldService {
         TableWithField tableWithField = new TableWithField();
         tableWithField.setTableCode(table.tableCode);
         tableWithField.setTableDes(table.comment);
+        if(table.dbCode!=null){
+            dbName = table.dbCode;
+        }
 
         DbInfoWithStorage dbInfo = dbInfoService.getDbWithStorageByCode(dbName);
         if (dbInfo == null) {

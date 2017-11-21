@@ -72,7 +72,7 @@ public class SqlParseUtil {
                 }
 
                 if (treeNode.getText().equals("TOK_TABLECOMMENT")) {
-                    table.comment = treeNode.getChild(0).getText();
+                    table.comment = treeNode.getChild(0).getText().replace("'", "");
                 }
 
                 if (treeNode.getText().equals("TOK_TABLEPARTCOLS")) {
