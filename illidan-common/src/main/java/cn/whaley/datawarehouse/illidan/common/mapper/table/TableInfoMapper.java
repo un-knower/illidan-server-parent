@@ -23,6 +23,8 @@ public interface TableInfoMapper {
 
     List<TableInfo> findByTableInfo(@Param("tableInfo") final TableInfoQuery tableInfo);
 
+    List<TableInfo> findTableInfo(@Param("tableInfo") final TableInfoQuery tableInfo);
+
     Long updateById(@Param("tableInfo") final TableInfo tableInfo);
 
     Long updateMysqlTableId(@Param("hiveTableId") final Long hiveTableId, @Param("mysqlTableId") final Long mysqlTableId);
