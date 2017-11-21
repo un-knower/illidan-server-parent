@@ -339,6 +339,22 @@ public class DateUtils {
         return dateFormat(date, 0, 0, 0);
     }
 
+    public static Date firstSecondOfHour(Date date) {
+        Calendar c = Calendar.getInstance();
+        c.setTime(date);
+        c.set(c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DATE), c.get(Calendar.HOUR), 0, 0);
+        c.set(Calendar.MILLISECOND, 0);
+        return c.getTime();
+    }
+
+    public static Date lastSecondOfHour(Date date) {
+        Calendar c = Calendar.getInstance();
+        c.setTime(date);
+        c.set(c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DATE), c.get(Calendar.HOUR), 59, 59);
+        c.set(Calendar.MILLISECOND, 0);
+        return c.getTime();
+    }
+
     public static Date lastSecondOfDate(Date date) {
         return dateFormat(date, 23, 59, 59);
     }

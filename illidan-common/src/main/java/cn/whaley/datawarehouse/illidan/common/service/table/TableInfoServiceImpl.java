@@ -115,7 +115,7 @@ public class TableInfoServiceImpl implements TableInfoService {
     }
 
     @Override
-    public List<TableInfo> findTableInfo(TableInfoQuery tableInfo) {
+    public List<TableInfo> findTableInfo(TableInfo tableInfo) {
         if (tableInfo == null){
             logger.error("findByTableInfo: tableInfo is null.");
             return null;

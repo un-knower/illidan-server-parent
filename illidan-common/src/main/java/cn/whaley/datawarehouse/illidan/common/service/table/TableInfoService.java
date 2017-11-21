@@ -21,7 +21,7 @@ public interface TableInfoService {
 
     List<TableInfo> findByTableInfo(final TableInfoQuery tableInfo);
 
-    List<TableInfo> findTableInfo(final TableInfoQuery tableInfo);
+    List<TableInfo> findTableInfo(final TableInfo tableInfo);
 
     TableInfo findOne(final TableInfoQuery tableInfo);
 

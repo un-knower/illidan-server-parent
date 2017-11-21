@@ -46,11 +46,13 @@ public class SubmitService {
      * @return 成功返回true
      */
     public boolean submit(String taskCode, String dataDueTimeStr, Map<String, String> paramMap) {
-
+        System.out.println("时间参数：" + dataDueTimeStr);
         Date dataDueTime = parseDataDueTime(dataDueTimeStr);
         if (dataDueTime == null) {
             throw new RuntimeException("参与分析的数据截止时间参数不合法：" + dataDueTimeStr);
         }
+
+        System.out.println("参与分析的数据截止时间为：" + DateFormat.format(dataDueTime, "datetime"));
 
         //读取任务信息
         TaskFull task = taskService.getFullTaskByCode(taskCode);
@@ -212,22 +214,26 @@ public class SubmitService {
         //验证已经替换所有参数
         Pattern invalidPattern = Pattern.compile(ALL_PARAM_REGEX);
         if (invalidPattern.matcher(result).find()) {
-            throw new RuntimeException("发现不能识别的参数：" + matcher.group());
+            throw new RuntimeException("发现不能识别的参数\n" + result);
         }
 
         return result;
     }
 
     private Date parseDataDueTime(String str) {
-        Date result = DateFormat.SHORT_DATE.parse(str);
+        Date result = DateFormat.SHORT_DATE_WITH_HOUR.parse(str);
+        if (result != null) {
+            return DateUtils.lastSecondOfHour(result);   //按小时
+        }
+        result = DateFormat.DATETIME.parse(str);
+        if (result != null) {
+            return DateUtils.lastSecondOfHour(result);   //按小时
+        }
+        result = DateFormat.SHORT_DATE.parse(str);
         if (result != null) {
             return DateUtils.lastSecondOfDate(result);
         }
         result = DateFormat.DATE.parse(str);
-        if (result != null) {
-            return DateUtils.lastSecondOfDate(result);
-        }
-        result = DateFormat.DATETIME.parse(str);
         if (result != null) {
             return DateUtils.lastSecondOfDate(result);
         }

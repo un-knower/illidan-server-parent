@@ -23,7 +23,7 @@ public interface TableInfoMapper {
 
     List<TableInfo> findByTableInfo(@Param("tableInfo") final TableInfoQuery tableInfo);
 
-    List<TableInfo> findTableInfo(@Param("tableInfo") final TableInfoQuery tableInfo);
+    List<TableInfo> findTableInfo(@Param("tableInfo") final TableInfo tableInfo);
 
     Long updateById(@Param("tableInfo") final TableInfo tableInfo);
 

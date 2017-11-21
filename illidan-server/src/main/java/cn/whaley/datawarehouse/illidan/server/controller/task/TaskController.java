@@ -202,7 +202,7 @@ public class TaskController extends Common {
     public List<TableInfo> getTables(Long dbId){
         List<TableInfo> tableInfoList = new ArrayList<>();
         try {
-            TableInfoQuery tableInfo = new TableInfoQuery();
+            TableInfo tableInfo = new TableInfo();
             tableInfo.setDbId(dbId);
             tableInfoList = tableInfoService.findTableInfo(tableInfo);
         } catch (Exception e){

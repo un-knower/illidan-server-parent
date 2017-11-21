@@ -59,5 +59,13 @@ public class DateParamMethod {
         return DateUtils.getFirstDayOfYear(dataDueTime);
     }
 
+    public static Date getFirstSecondThisHour(Date dataDueTime) {
+        return DateUtils.firstSecondOfHour(dataDueTime);
+    }
+
+    public static Date getLastSecondThisHour(Date dataDueTime) {
+        return DateUtils.lastSecondOfHour(dataDueTime);
+    }
+
 
 }
