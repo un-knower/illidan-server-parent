@@ -67,7 +67,7 @@
                         <div class="form-group">
                             <label for="colName" class="col-md-4 control-label" style="padding-left: 0px;padding-right: 0px;"><b class="text-danger">*</b>字段名称</label>
                             <div class="col-md-7">
-                                <input class="form-control" id="colName" name="colName" placeholder="字段名称" value="day_p">
+                                <input class="form-control" name="colName" placeholder="字段名称" value="date_type">
                             </div>
                         </div>
                     </td>
@@ -75,7 +75,7 @@
                         <div class="form-group">
                             <label for="colType" class="col-md-4 control-label" style="padding-left: 0px;padding-right: 0px;"><b class="text-danger">*</b>字段类型</label>
                             <div class="col-md-7">
-                                    <%--<input class="form-control" id="colType" name="colType" placeholder="字段类型" value="string">--%>
+                                    <%--<input class="form-control" name="colType" placeholder="字段类型" value="string">--%>
                                 <select id="colType" name="colType" style="height: 34px;" class=" show-tick form-control" title="" data-live-search="true">
                                     <option value='-1'>字段类型</option>
                                     <option value="int">int</option>
@@ -92,7 +92,7 @@
                         <div class="form-group">
                             <label for="colDes" class="col-md-4 control-label" style="padding-left: 0px;padding-right: 0px;">字段描述</label>
                             <div class="col-md-7">
-                                <input class="form-control" id="colDes" name="colDes" placeholder="字段描述" value="天分区">
+                                <input class="form-control" name="colDes" placeholder="字段描述" value="统计粒度类型">
                             </div>
                         </div>
                     </td>
@@ -100,7 +100,7 @@
                         <div class="form-group">
                             <label class="col-md-4 control-label" style="padding-left: 0px;padding-right: 0px;"><b class="text-danger">*</b>分区字段</label>
                             <div class="col-md-3 partitionCol">
-                                <select id="isPartitionCol" name="isPartitionCol" style="height: 34px;" class=" show-tick form-control" title="" data-live-search="true">
+                                <select name="isPartitionCol" style="height: 34px;" class=" show-tick form-control" title="" data-live-search="true">
                                     <option value="-1">请选择</option>
                                     <option value="1" selected>是</option>
                                     <option value="0">否</option>
@@ -110,11 +110,12 @@
                                 <button class="btn btn-info addBtn" onclick="addrow(this);">添加</button>
                             </label>
                             <label class="col-md-3 control-label" style="padding-left: 0px;padding-right: 0px;padding-top: 0px">
-                                <button class='btn btn-danger delBtn' onclick='deleteTrRow(this);'>删除</button>
+                                <button id="delBtn" class='btn btn-danger delBtn' onclick='deleteTrRow(this);'>删除</button>
                             </label>
                         </div>
                     </td>
                 </tr>
+
                 <tr>
                     <td style="border:none;">
                         <div class="form-group">
@@ -168,12 +169,13 @@
                         </div>
                     </td>
                 </tr>
+
                 <tr>
                     <td style="border:none;">
                         <div class="form-group">
                             <label for="colName" class="col-md-4 control-label" style="padding-left: 0px;padding-right: 0px;"><b class="text-danger">*</b>字段名称</label>
                             <div class="col-md-7">
-                                <input class="form-control" name="colName" placeholder="字段名称" value="date_type">
+                                <input class="form-control" id="colName" name="colName" placeholder="字段名称" value="day_p">
                             </div>
                         </div>
                     </td>
@@ -181,7 +183,7 @@
                         <div class="form-group">
                             <label for="colType" class="col-md-4 control-label" style="padding-left: 0px;padding-right: 0px;"><b class="text-danger">*</b>字段类型</label>
                             <div class="col-md-7">
-                                    <%--<input class="form-control" name="colType" placeholder="字段类型" value="string">--%>
+                                    <%--<input class="form-control" id="colType" name="colType" placeholder="字段类型" value="string">--%>
                                 <select id="colType" name="colType" style="height: 34px;" class=" show-tick form-control" title="" data-live-search="true">
                                     <option value='-1'>字段类型</option>
                                     <option value="int">int</option>
@@ -198,7 +200,7 @@
                         <div class="form-group">
                             <label for="colDes" class="col-md-4 control-label" style="padding-left: 0px;padding-right: 0px;">字段描述</label>
                             <div class="col-md-7">
-                                <input class="form-control" name="colDes" placeholder="字段描述" value="日志类型">
+                                <input class="form-control" id="colDes" name="colDes" placeholder="字段描述" value="天分区">
                             </div>
                         </div>
                     </td>
@@ -206,7 +208,7 @@
                         <div class="form-group">
                             <label class="col-md-4 control-label" style="padding-left: 0px;padding-right: 0px;"><b class="text-danger">*</b>分区字段</label>
                             <div class="col-md-3 partitionCol">
-                                <select name="isPartitionCol" style="height: 34px;" class=" show-tick form-control" title="" data-live-search="true">
+                                <select id="isPartitionCol" name="isPartitionCol" style="height: 34px;" class=" show-tick form-control" title="" data-live-search="true">
                                     <option value="-1">请选择</option>
                                     <option value="1" selected>是</option>
                                     <option value="0">否</option>
@@ -216,7 +218,7 @@
                                 <button class="btn btn-info addBtn" onclick="addrow(this);">添加</button>
                             </label>
                             <label class="col-md-3 control-label" style="padding-left: 0px;padding-right: 0px;padding-top: 0px">
-                                <button id="delBtn" class='btn btn-danger delBtn' onclick='deleteTrRow(this);'>删除</button>
+                                <button class='btn btn-danger delBtn' onclick='deleteTrRow(this);'>删除</button>
                             </label>
                         </div>
                     </td>

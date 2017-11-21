@@ -140,37 +140,15 @@ public class TaskController extends Common {
     public ModelAndView toEdit(Long id, ModelAndView mav, Long groupId, int isCopy) {
         mav.setViewName("/task/edit");
         TaskFull task = taskService.getFullTask(id);
-        List<FieldInfo> fieldInfoList = task.getTable().getFieldList();
-        String fieldList = "";
-        for (int i=0;i<=fieldInfoList.size()-1;++i){
-            String field = fieldInfoList.get(i).getColName();
-            fieldList = fieldList + "," + field;
-        }
-        fieldList = fieldList.substring(1,fieldList.length());
         List<TaskGroup> groupList = getTaskGroup();
         List<DbInfo> dbInfoList = dbInfoService.getDbInfo(1L);
-        List<DbInfo> mysqlDbInfoList = dbInfoService.getDbInfo(2L);
-        List<TableWithField> tableList = task.getTableList();
-        for (TableWithField t : tableList){
-            if (t.getDbInfo().getStorageType() == 1L){
-                mav.addObject("hiveDbId" , t.getDbId());
-                mav.addObject("hiveTable" , t.getTableCode());
-                mav.addObject("tableId", t.getId());
-            }
-            if (t.getDbInfo().getStorageType() == 2L){
-                mav.addObject("mysqlDbId" , t.getDbId());
-                mav.addObject("mysqlTable" , t.getTableCode());
-            }
-        }
-        Boolean flag = task.getFullHiveTable().getMysqlTable() != null;
-        mav.addObject("flag" , flag);
-        mav.addObject("isCopy" , isCopy);
+        List<TableInfo> tableList = getTables(task.getFullHiveTable().getHiveTable().getDbId());
         mav.addObject("dbInfo", dbInfoList);
-        mav.addObject("mysqlDbInfoList", mysqlDbInfoList);
+        mav.addObject("tableInfo", tableList);
         mav.addObject("task", task);
         mav.addObject("group", groupList);
         mav.addObject("groupId", groupId);
-        mav.addObject("fieldList", fieldList);
+        mav.addObject("isCopy", isCopy);
         return mav;
     }
 
@@ -179,15 +157,14 @@ public class TaskController extends Common {
     public String edit(@RequestBody TaskFull taskFull) {
         try {
             if(validateTask(taskFull).equals("ok")) {
-                taskFull.setUpdateTime(new Date());
-                for (TableWithField t : taskFull.getTableList()){
-                    t.setUpdateTime(new Date());
-                }
-//                taskFull.getTable().setUpdateTime(new Date());
+                taskFull.setTableId(taskFull.getFullHiveTable().getHiveTable().getId());
                 taskService.updateFullTask(taskFull);
+                logger.info("修改任务成功!!!");
+                return returnResult(true, "修改任务成功!!!");
+            }else {
+                logger.info("修改任务失败!!!");
+                return returnResult(false, "修改任务失败!!!");
             }
-            logger.info("修改任务成功!!!");
-            return returnResult(true, "修改任务成功!!!");
         } catch (Exception e) {
             e.printStackTrace();
             logger.error(e.getMessage());
@@ -239,21 +216,6 @@ public class TaskController extends Common {
         return taskGroupService.findByTaskGroup(new TaskGroupQuery());
     }
 
-//    public List<DbInfo> getDbInfo(Long storageType){
-//        StorageInfoQuery storageInfo = new StorageInfoQuery();
-//        storageInfo.setStorageType(storageType);
-//        List<StorageInfo> storageInfos = storageInfoService.findByStorageInfo(storageInfo);
-//
-//        List<DbInfo> dbInfoList = new ArrayList<>();
-//        DbInfoQuery dbInfo = new DbInfoQuery();
-//        for (StorageInfo s : storageInfos){
-//            dbInfo.setStorageId(s.getId());
-//            List<DbInfo> dbInfos = dbInfoService.findByDbInfo(dbInfo);
-//            dbInfoList.addAll(dbInfos);
-//        }
-//        return dbInfoList;
-//    }
-
     public TableInfo getOneTableInfo(String tableCode){
         TableInfoQuery tableInfoQuery = new TableInfoQuery();
         tableInfoQuery.setTableCode(tableCode);
@@ -282,6 +244,17 @@ public class TaskController extends Common {
         }
         if (!validateColumnNull(task.getExecuteType())){
             return validateMessage("执行方式");
+        }
+        //执行方式有hour时要校验所选择的输出表是否有hour_p分区字段
+        if(task.getExecuteType().contains("hour")){
+            List<String> colNames = new ArrayList<>();
+            List<FieldInfo> fieldInfos = fieldInfoService.getByTableId(task.getFullHiveTable().getHiveTable().getId());
+            for (FieldInfo fieldInfo:fieldInfos){
+                colNames.add(fieldInfo.getColName());
+            }
+            if(!colNames.contains("hour_p")){
+                return returnResult(false, "执行方式包含hour时输出表必须包含hour_p分区字段,请重新选择输出表");
+            }
         }
         if (!validateColumnNull(task.getContent())){
             return validateMessage("业务分析语句");

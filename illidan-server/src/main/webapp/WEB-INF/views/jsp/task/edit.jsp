@@ -19,8 +19,8 @@
     <div class="panel panel-default">
         <div class="panel-body">
             <input class="form-control" type="hidden" id="groupId" name="groupId" value="${groupId}"/>
-            <input class="form-control" type="hidden" id="tableId" name="tableId" value="${tableId}"/>
-            <input class="form-control" type="hidden" id="mysqlTableId" name="mysqlTableId" value="${mysqlTableId}"/>
+            <%--<input class="form-control" type="hidden" id="tableId" name="tableId" value="${tableId}"/>--%>
+            <%--<input class="form-control" type="hidden" id="mysqlTableId" name="mysqlTableId" value="${mysqlTableId}"/>--%>
             <input type="hidden" id="id" value="${task.id}"/>
             <div class="col-sm-6">
                 <div class="form-group">
@@ -54,38 +54,10 @@
                 <div class="form-group">
                     <label for="tableCode" class="col-md-2 control-label"><b class="text-danger">*</b>目标表</label>
                     <div class="col-md-6">
-                        <input class="form-control" id="tableCode" placeholder="请输入目标表" value="${task.table.tableCode}">
-                    </div>
-                </div>
-            </div>
-            <div class="col-sm-6">
-                <div class="form-group">
-                    <label for="tableDes" class="col-md-2 control-label">目标表描述</label>
-                    <div class="col-md-6">
-                        <input class="form-control" id="tableDes" placeholder="请输入目标表描述" value="${task.table.tableDes}">
-                    </div>
-                </div>
-            </div>
-            <div class="col-sm-6">
-                <div class="form-group">
-                    <label class="col-md-2 control-label"><b class="text-danger">*</b>分区字段</label>
-                    <div class="col-md-6">
-                        <select id="partitionCol" name="partitionCol" class="selectpicker show-tick form-control" multiple data-live-search="true">
-                            <option value="date_type">date_type</option>
-                            <option value="product_line">product_line</option>
-                            <option value="month_p">month_p</option>
-                            <option value="day_p">day_p</option>
-                        </select>
-                    </div>
-                </div>
-            </div>
-            <div class="col-sm-6">
-                <div class="form-group">
-                    <label class="col-md-2 control-label"><b class="text-danger">*</b>存储格式</label>
-                    <div class="col-md-6">
-                        <select id="dataType" name="dataType" class="selectpicker show-tick form-control">
-                            <option value="parquet">parquet</option>
-                            <option value="textfile">textfile</option>
+                        <select id="tableCode" name="tableCode" class="selectpicker show-tick form-control" title="请选择目标表" data-live-search="true">
+                            <c:forEach begin="0" end="${tableInfo.size()-1}"  var="index">
+                                <option value ="${tableInfo.get(index).id}" >${tableInfo.get(index).tableCode}</option>
+                            </c:forEach>
                         </select>
                     </div>
                 </div>
@@ -95,43 +67,13 @@
                     <label class="col-md-2 control-label"><b class="text-danger">*</b>执行方式</label>
                     <div class="col-md-6">
                         <select id="executeType" name="executeType" class="selectpicker show-tick form-control" multiple data-live-search="true">
+                            <option value="hour">hour</option>
                             <option value="day">day</option>
                             <option value="week">week</option>
                             <option value="month">month</option>
                             <option value="quarter">quarter</option>
                             <option value="ytd">ytd</option>
                         </select>
-                    </div>
-                </div>
-            </div>
-            <div class="col-sm-12">
-                <div class="form-group">
-                    <label class="col-md-1 control-label">导出到mysql</label>
-                    <label>
-                        <input type="radio" id="noExport2Mysql" name="export2Mysql" value="no" onclick="isExport2Mysql(this)"> 否
-                    </label>
-                    <label>
-                        <input type="radio" id="export2Mysql" name="export2Mysql" value="yes" onclick="isExport2Mysql(this)"> 是
-                    </label>
-                </div>
-            </div>
-            <div class="col-sm-6" id="mysqlDataBaseDiv" style="display: none">
-                <div class="form-group">
-                    <label class="col-md-1 control-label">mysql目标数据库</label>
-                    <div class="col-md-6">
-                        <select id="mysqlDataBase" name="mysqlDataBase" class="selectpicker show-tick form-control" title="请选择mysql目标数据库" data-live-search="true">
-                            <c:forEach begin="0" end="${mysqlDbInfoList.size()-1}"  var="index">
-                                <option value ="${mysqlDbInfoList.get(index).id}" >${mysqlDbInfoList.get(index).dbCode}</option>
-                            </c:forEach>
-                        </select>
-                    </div>
-                </div>
-            </div>
-            <div class="col-sm-6" id="mysqlTableDiv" style="display: none">
-                <div class="form-group">
-                    <label class="col-md-1 control-label">mysql目标表</label>
-                    <div class="col-md-6">
-                        <input class="form-control" id="mysqlTable" value="${mysqlTable}">
                     </div>
                 </div>
             </div>
@@ -166,82 +108,39 @@
             'selectedText': 'cat'
         });
         var executeTypeArray = '${task.executeType}'.split(",");
-        var dbId = '${task.table.dbId}';
-        var dataType = '${task.table.dataType}';
-        var partitionColList = '${fieldList}'.toString().split(",");
-        $('#partitionCol').selectpicker('val', partitionColList);
-        $('#dataType').selectpicker('val', dataType);
+        var dbId = '${task.fullHiveTable.hiveTable.dbId}';
+        var tableId = '${task.tableId}';
         $('#dbId').selectpicker('val', dbId);
-        $('#mysqlDataBase').selectpicker('val', ${mysqlDbId});
+        $('#tableCode').selectpicker('val', tableId);
+        $("#dbId").change(function () {
+            var dbId = $("#dbId").val();
+            $("#tableCode option").remove();
+            $.ajax({
+                type:"POST",
+                url: "<%=path%>/task/getTables",
+                data: "dbId=" + dbId,
+                success: function(data) {
+                    if (data != null && data.length > 0) {
+                        var html = "";
+                        for (var i = 0; i < data.length; i++) {
+                            html += "<option value='" + data[i].id + "'>" + data[i].tableCode + "</option>";
+                        }
+                    }
+                    $("#tableCode").html(html).selectpicker('refresh');
+                }
+            })
+        });
         $('#executeType').selectpicker('val', executeTypeArray);
-        var dDiv = document.getElementById("mysqlDataBaseDiv");
-        var tDiv = document.getElementById("mysqlTableDiv");
-        var noExport2Mysql = document.getElementById("noExport2Mysql");
-        var export2Mysql = document.getElementById("export2Mysql");
-        if ('${flag}' == "true") {
-            dDiv.style.display = "block";
-            tDiv.style.display = "block";
-            export2Mysql.checked = true;
-        }else{
-            noExport2Mysql.checked = true;
-        }
-
-        if (($('#mysqlDataBase').val()!=null && $('#mysqlDataBase').val()!="") && ($('#mysqlTable').val()!=null && $('#mysqlTable').val()!="") && '${isCopy}'=='0'){
-//            console.log("is not null");
-            $("#mysqlDataBase").attr("disabled", true);
-            $("#mysqlTable").attr("disabled", true);
-        }else {
-//            console.log("is null");
-            $("#mysqlDataBase").attr("disabled", false);
-            $("#mysqlTable").attr("disabled", false);
-        }
-
     });
 
     function add() {
         var taskFull = {};
-        var table1 = {};
-        var table2 = {};
-        var fieldList = [];
-
-        if ($("#partitionCol").val()!=null && $("#partitionCol").val()!="") {
-            var fieldArray = $("#partitionCol").val().toString().split(",");
-            for (var i = 0; i <= fieldArray.length - 1; ++i) {
-                var fieldInfo = {};
-                fieldInfo.colName = fieldArray[i];
-                fieldList.push(fieldInfo);
-            }
-        }
-        var tableList = [];
-        //hive table
-        table1.id = $("#tableId").val();
-        table1.tableCode = $("#tableCode").val().toString();
-        table1.dbId = $("#dbId").val().toString();
-        table1.dataType = $("#dataType").val().toString();
-        table1.tableDes = $("#tableDes").val().toString();
-        table1.fieldList = fieldList;
-        tableList.push(table1);
-
-        if($('input:radio[id="noExport2Mysql"]:checked').val()!=null){
-            taskFull.isExport2Mysql = false;
-            if('${isCopy}'=='1'){
-                $("#mysqlTable").val("");
-                $("#mysqlDataBase").val("");
-            }
-        }
-        if($('input:radio[id="export2Mysql"]:checked').val()!=null){
-            taskFull.isExport2Mysql = true;
-        }
-
-        //mysql table
-        if($("#mysqlTable").val().toString()!=null && $("#mysqlTable").val().toString()!="" && $("#mysqlDataBase").val().toString()!=null && $("#mysqlDataBase").val().toString()!=""){
-            table2.id = $("#mysqlTableId").val();
-            table2.tableCode = $("#mysqlTable").val().toString();
-            table2.dbId = $("#mysqlDataBase").val().toString();
-            tableList.push(table2);
-        }
-
-        taskFull.tableList = tableList;
+        var fullHiveTable = {};
+        var hiveTable = {};
+        hiveTable.dbId = $("#dbId").val().toString();
+        hiveTable.id = $("#tableCode").val().toString();
+        fullHiveTable.hiveTable = hiveTable;
+        taskFull.fullHiveTable = fullHiveTable;
         taskFull.taskCode = $("#taskCode").val();
         taskFull.groupId = $("#groupId").val();
         taskFull.id = $("#id").val();
@@ -251,7 +150,6 @@
         }
         taskFull.content = $("#content").val();
         taskFull.taskDes = $("#taskDes").val();
-
 
         var method = "edit";
         if('${isCopy}'=='0'){
@@ -287,24 +185,6 @@
 
     function closeParentWindow(){
         window.parent.closeWindow();
-    }
-
-    function isExport2Mysql(obj) {
-        var dDiv = document.getElementById("mysqlDataBaseDiv");
-        var tDiv = document.getElementById("mysqlTableDiv");
-        var noExport2Mysql = document.getElementById("noExport2Mysql");
-        var export2Mysql = document.getElementById("export2Mysql");
-
-        if(obj.value=="yes"){
-            noExport2Mysql.checked = false;
-            dDiv.style.display = "block";
-            tDiv.style.display = "block";
-        }else{
-            export2Mysql.checked = false;
-            dDiv.style.display = "none";
-            tDiv.style.display = "none";
-//            $("#schedule").val("0");
-        }
     }
 </script>
 </body>

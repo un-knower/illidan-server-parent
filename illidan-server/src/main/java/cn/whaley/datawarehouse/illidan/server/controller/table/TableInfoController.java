@@ -164,7 +164,7 @@ public class TableInfoController extends Common {
         partitionColumns.add("day_p");
         partitionColumns.add("month_p");
         partitionColumns.add("date_type");
-        partitionColumns.add("product_line");
+        partitionColumns.add("hour_p");
         String result = "ok";
         if(StringUtils.isEmpty(fullHiveTable)){
             return returnResult(false, "失败!!!");
@@ -182,6 +182,7 @@ public class TableInfoController extends Common {
         if(StringUtils.isEmpty(fieldInfos)){
             return returnResult(false, "字段不能为空");
         }
+        List<String> partitionColNames = new ArrayList<>();
         for(FieldInfo fieldInfo:fieldInfos){
             if (!validateColumnNull(fieldInfo.getColName())){
                 return validateMessage("字段名称");
@@ -198,9 +199,14 @@ public class TableInfoController extends Common {
             //分区字段只能为day_p,month_p,date_type,product_line四个值
             if (fieldInfo.getIsPartitionCol().equals("1")){
                 if(!partitionColumns.contains(fieldInfo.getColName())){
-                    return returnResult(false, "分区字段目前只能为day_p,month_p,date_type,product_line四个值");
+                    return returnResult(false, "分区字段目前只能为date_type,month_p,day_p,hour_p四个值");
                 }
+                partitionColNames.add(fieldInfo.getColName());
             }
+        }
+        //输出表的分区字段必须包含date_type和day_p
+        if(!partitionColNames.contains("date_type") || !partitionColNames.contains("day_p")){
+            return returnResult(false, "输出表的分区字段必须包含date_type和day_p");
         }
         if (fullHiveTable.getMysqlTable()!=null){
             if(!validateColumnNull(fullHiveTable.getMysqlTable().getTableCode())){

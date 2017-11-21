@@ -58,43 +58,12 @@
                     </div>
                 </div>
             </div>
-            <%--<div class="col-sm-6">--%>
-                <%--<div class="form-group">--%>
-                    <%--<label for="tableDes" class="col-md-2 control-label">目标表描述</label>--%>
-                    <%--<div class="col-md-6">--%>
-                        <%--<input class="form-control" id="tableDes" placeholder="请输入目标表描述">--%>
-                    <%--</div>--%>
-                <%--</div>--%>
-            <%--</div>--%>
-            <%--<div class="col-sm-6">--%>
-                <%--<div class="form-group">--%>
-                    <%--<label class="col-md-2 control-label"><b class="text-danger">*</b>分区字段</label>--%>
-                    <%--<div class="col-md-6">--%>
-                        <%--<select id="partitionCol" name="partitionCol" class="selectpicker show-tick form-control" multiple data-live-search="true">--%>
-                            <%--<option value="date_type" selected>date_type</option>--%>
-                            <%--<option value="product_line">product_line</option>--%>
-                            <%--<option value="month_p" selected>month_p</option>--%>
-                            <%--<option value="day_p" selected>day_p</option>--%>
-                        <%--</select>--%>
-                    <%--</div>--%>
-                <%--</div>--%>
-            <%--</div>--%>
-            <%--<div class="col-sm-6">--%>
-                <%--<div class="form-group">--%>
-                    <%--<label class="col-md-2 control-label"><b class="text-danger">*</b>存储格式</label>--%>
-                    <%--<div class="col-md-6">--%>
-                        <%--<select id="dataType" name="dataType" class="selectpicker show-tick form-control" title="请选择存储格式" data-live-search="true">--%>
-                            <%--<option value="parquet">parquet</option>--%>
-                            <%--<option value="textfile">textfile</option>--%>
-                        <%--</select>--%>
-                    <%--</div>--%>
-                <%--</div>--%>
-            <%--</div>--%>
             <div class="col-sm-6">
                 <div class="form-group">
                     <label class="col-md-2 control-label"><b class="text-danger">*</b>执行方式</label>
                     <div class="col-md-6">
                         <select id="executeType" name="executeType" title="请选择执行方式" class="selectpicker show-tick form-control" multiple data-live-search="true">
+                            <option value="hour">hour</option>
                             <option value="day" selected>day</option>
                             <option value="week">week</option>
                             <option value="month">month</option>
@@ -104,37 +73,6 @@
                     </div>
                 </div>
             </div>
-            <%--<div class="col-sm-12">--%>
-                <%--<div class="form-group">--%>
-                    <%--<label class="col-md-1 control-label">导出到mysql</label>--%>
-                    <%--<label>--%>
-                        <%--<input type="radio" id="noExport2Mysql" name="export2Mysql" checked value="no" onclick="isExport2Mysql(this)"> 否--%>
-                    <%--</label>--%>
-                    <%--<label>--%>
-                        <%--<input type="radio" id="export2Mysql" name="export2Mysql" value="yes" onclick="isExport2Mysql(this)"> 是--%>
-                    <%--</label>--%>
-                <%--</div>--%>
-            <%--</div>--%>
-            <%--<div class="col-sm-6" id="mysqlDataBaseDiv" style="display: none">--%>
-                <%--<div class="form-group">--%>
-                    <%--<label class="col-md-1 control-label"><b class="text-danger">*</b>mysql目标数据库</label>--%>
-                    <%--<div class="col-md-6">--%>
-                        <%--<select id="mysqlDataBase" name="mysqlDataBase" class="selectpicker show-tick form-control" title="请选择mysql目标数据库" data-live-search="true">--%>
-                            <%--<c:forEach begin="0" end="${mysqlDbInfoList.size()-1}"  var="index">--%>
-                                <%--<option value ="${mysqlDbInfoList.get(index).id}" >${mysqlDbInfoList.get(index).dbCode}</option>--%>
-                            <%--</c:forEach>--%>
-                        <%--</select>--%>
-                    <%--</div>--%>
-                <%--</div>--%>
-            <%--</div>--%>
-            <%--<div class="col-sm-6" id="mysqlTableDiv" style="display: none">--%>
-                <%--<div class="form-group">--%>
-                    <%--<label class="col-md-1 control-label"><b class="text-danger">*</b>mysql目标表</label>--%>
-                    <%--<div class="col-md-6">--%>
-                        <%--<input class="form-control" id="mysqlTable" placeholder="mysql目标表">--%>
-                    <%--</div>--%>
-                <%--</div>--%>
-            <%--</div>--%>
             <div class="col-sm-12">
                 <div class="form-group">
                     <label class="col-md-2 control-label"><b class="text-danger">*</b>业务分析语句</label>
@@ -197,7 +135,6 @@
                 if (data != null && data.length > 0) {
                     var html = "";
                     for (var i = 0; i < data.length; i++) {
-//                        console.log(data[i]);
                         html += "<option value='" + data[i].id + "'>" + data[i].tableCode + "</option>";
                     }
                 }
@@ -250,19 +187,6 @@
 
     function closeParentWindow(){
         window.parent.closeWindow();
-    }
-
-    function isExport2Mysql(obj) {
-        var dDiv = document.getElementById("mysqlDataBaseDiv");
-        var tDiv = document.getElementById("mysqlTableDiv");
-        if(obj.value=="yes"){
-            dDiv.style.display = "block";
-            tDiv.style.display = "block";
-        }else{
-            dDiv.style.display = "none";
-            tDiv.style.display = "none";
-//            $("#schedule").val("0");
-        }
     }
 
 </script>
