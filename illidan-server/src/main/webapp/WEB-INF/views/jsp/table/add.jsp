@@ -98,8 +98,8 @@
                     </td>
                     <td style="border:none;">
                         <div class="form-group">
-                            <label class="col-md-4 control-label" style="padding-left: 0px;padding-right: 0px;"><b class="text-danger">*</b>分区字段</label>
-                            <div class="col-md-3 partitionCol">
+                            <label class="col-md-3 control-label" style="padding-left: 0px;padding-right: 0px;"><b class="text-danger">*</b>分区字段</label>
+                            <div class="col-md-4 partitionCol">
                                 <select name="isPartitionCol" style="height: 34px;" class=" show-tick form-control" title="" data-live-search="true">
                                     <option value="-1">请选择</option>
                                     <option value="1" selected>是</option>
@@ -152,8 +152,8 @@
                     </td>
                     <td style="border:none;">
                         <div class="form-group">
-                            <label class="col-md-4 control-label" style="padding-left: 0px;padding-right: 0px;"><b class="text-danger">*</b>分区字段</label>
-                            <div class="col-md-3 partitionCol">
+                            <label class="col-md-3 control-label" style="padding-left: 0px;padding-right: 0px;"><b class="text-danger">*</b>分区字段</label>
+                            <div class="col-md-4 partitionCol">
                                 <select name="isPartitionCol" style="height: 34px;" class=" show-tick form-control" title="" data-live-search="true">
                                     <option value="-1">请选择</option>
                                     <option value="1" selected>是</option>
@@ -206,8 +206,8 @@
                     </td>
                     <td style="border:none;">
                         <div class="form-group">
-                            <label class="col-md-4 control-label" style="padding-left: 0px;padding-right: 0px;"><b class="text-danger">*</b>分区字段</label>
-                            <div class="col-md-3 partitionCol">
+                            <label class="col-md-3 control-label" style="padding-left: 0px;padding-right: 0px;"><b class="text-danger">*</b>分区字段</label>
+                            <div class="col-md-4 partitionCol">
                                 <select id="isPartitionCol" name="isPartitionCol" style="height: 34px;" class=" show-tick form-control" title="" data-live-search="true">
                                     <option value="-1">请选择</option>
                                     <option value="1" selected>是</option>
@@ -262,8 +262,8 @@
                         </td>
                         <td style="border:none;">
                             <div class="form-group">
-                                <label class="col-md-4 control-label" style="padding-left: 0px;padding-right: 0px;"><b class="text-danger">*</b>分区字段</label>
-                                <div class="col-md-3 partitionCol">
+                                <label class="col-md-3 control-label" style="padding-left: 0px;padding-right: 0px;"><b class="text-danger">*</b>分区字段</label>
+                                <div class="col-md-4 partitionCol">
                                     <select id="isPartitionColCopy" name="isPartitionCol" style="height: 34px;" class=" show-tick form-control" title="" data-live-search="true">
                                         <%--<option value="${hiveTable.fieldList.get(index).isPartitionCol}">${hiveTable.fieldList.get(index).isPartitionCol==1?'是':'否'}</option>--%>
                                         <option value="-1" >请选择</option>
@@ -369,7 +369,7 @@
             "<td style='border:none;'><div class='form-group'><label for='colName' class='col-md-4 control-label' style='padding-left: 0px;padding-right: 0px;'><b class='text-danger'>*</b>字段名称</label><div class='col-md-7'><input class='form-control' id='colName' name='colName'' placeholder='字段名称'></div></div></td>"+
             "<td style='border:none;'><div class='form-group'><label for='colType' class='col-md-4 control-label' style='padding-left: 0px;padding-right: 0px;'><b class='text-danger'>*</b>字段类型</label><div class='col-md-7'><select id='colType' name='colType' style='height: 34px;' class=' show-tick form-control' title='' data-live-search='true'><option value='-1'>字段类型</option><option value='int'>int</option><option value='bigint'>bigint</option><option value='float'>float</option><option value='double'>double</option><option value='string'>string</option><option value='timestamp'>timestamp</option></select></div></div></td>"+
             "<td style='border:none;'><div class='form-group'><label for='colDes' class='col-md-4 control-label' style='padding-left: 0px;padding-right: 0px;'>字段描述</label><div class='col-md-7'><input class='form-control' id='colDes' name='colDes' placeholder='字段描述'></div></div></td>"+
-            "<td style='border:none;'><div class='form-group'><label class='col-md-4 control-label' style='padding-left: 0px;padding-right: 0px;'><b class='text-danger'>*</b>分区字段</label><div class='col-md-3 partitionCol'><select id='isPartitionCol' name='isPartitionCol' style='height: 34px;' class=' show-tick form-control' title='' data-live-search='true'><option value='-1'>请选择</option><option value='1'>是</option><option value='0'>否</option></select></div><label class='col-md-2 control-label addBtn' style='padding-left: 0px;padding-right: 0px;padding-top: 0px'><button class='btn btn-info addBtn' onclick='addrow(this);'>添加</button></label><label class='col-md-3 control-label' style='padding-left: 0px;padding-right: 0px;padding-top: 0px'><button class='btn btn-danger delBtn' onclick='deleteTrRow(this);'>删除</button></label></div> </td>"+
+            "<td style='border:none;'><div class='form-group'><label class='col-md-3 control-label' style='padding-left: 0px;padding-right: 0px;'><b class='text-danger'>*</b>分区字段</label><div class='col-md-4 partitionCol'><select id='isPartitionCol' name='isPartitionCol' style='height: 34px;' class=' show-tick form-control' title='' data-live-search='true'><option value='-1'>请选择</option><option value='1'>是</option><option value='0'>否</option></select></div><label class='col-md-2 control-label addBtn' style='padding-left: 0px;padding-right: 0px;padding-top: 0px'><button class='btn btn-info addBtn' onclick='addrow(this);'>添加</button></label><label class='col-md-3 control-label' style='padding-left: 0px;padding-right: 0px;padding-top: 0px'><button class='btn btn-danger delBtn' onclick='deleteTrRow(this);'>删除</button></label></div> </td>"+
             "</tr>");
 //        addtr.appendTo(hiveTable);
 //        $('#hive-table tr:eq(-1)').before(addtr);
