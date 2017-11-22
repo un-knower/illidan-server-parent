@@ -191,7 +191,8 @@ public class TableInfoController extends Common {
             TableWithField tableWithField = tableFieldService.parseHiveFromCreateSql(createSql,null);
             FullHiveTable fullHiveTable = new FullHiveTable();
             fullHiveTable.setHiveTable(tableWithField);
-            if(validateTable(fullHiveTable).equals("ok")) {
+            String validResult = validateTable(fullHiveTable);
+            if(validResult.equals("ok")) {
                 List<FieldInfo> fieldInfos = new ArrayList<>();
                 TableWithField hiveTable = fullHiveTable.getHiveTable();
                 TableInfo mysqlTable = fullHiveTable.getMysqlTable();
@@ -207,7 +208,7 @@ public class TableInfoController extends Common {
                 logger.info("解析建表语句成功,新增输出表"+fullHiveTable.getHiveTable().getTableCode());
                 return returnResult(true, "解析建表语句成功,新增输出表"+fullHiveTable.getHiveTable().getTableCode());
             }else {
-                return returnResult(false, "解析建表语句失败");
+                return returnResult(false, "解析建表语句失败:" + validResult);
             }
         }catch (Exception e){
             e.printStackTrace();
