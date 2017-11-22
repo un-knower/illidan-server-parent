@@ -306,7 +306,7 @@
         <tr>
             <td style="border:none;">
                 <div class="form-group">
-                    <label for="mysqlTableCode" class="col-md-5 control-label" style="padding-left: 0px;padding-right: 0px;"><b class="text-danger">*</b>目标表名</label>
+                    <label for="mysqlTableCode" class="col-md-3 control-label" style="padding-left: 0px;padding-right: 0px;"><b class="text-danger">*</b>目标表名</label>
                     <div class="col-md-7">
                         <input class="form-control" id="mysqlTableCode" placeholder="mysql目标表名" value="${mysqlTable.tableCode}">
                     </div>
@@ -314,7 +314,7 @@
             </td>
             <td style="border:none;">
                 <div class="form-group">
-                    <label for="mysqlTableDes" class="col-md-5 control-label" style="padding-left: 0px;padding-right: 0px;">目标表描述</label>
+                    <label for="mysqlTableDes" class="col-md-4 control-label" style="padding-left: 0px;padding-right: 0px;">目标表描述</label>
                     <div class="col-md-7">
                         <input class="form-control" id="mysqlTableDes" placeholder="目标表描述" value="${mysqlTable.tableDes}">
                     </div>
@@ -322,7 +322,7 @@
             </td>
             <td style="border:none;">
                 <div class="form-group">
-                    <label for="mysqlDbId" class="col-md-5 control-label" style="padding-left: 0px;padding-right: 0px;"><b class="text-danger">*</b>数据库</label>
+                    <label for="mysqlDbId" class="col-md-3 control-label" style="padding-left: 0px;padding-right: 0px;"><b class="text-danger">*</b>数据库</label>
                     <div class="col-md-7">
                         <select class=" show-tick form-control" style="height: 34px;width: 120px;" id="mysqlDbId" name="dbId" data-live-search="true">
                             <option value="-1">mysql数据库</option>
@@ -345,7 +345,7 @@
     jQuery(function($) {
         var dDiv = document.getElementById("mysql-table");
         if ('${flag}' == "true") {
-            dDiv.style.display = "block";
+            dDiv.style.display = "";
             $("#export2Mysql").attr("checked",true);
         }else{
             $("#noExport2Mysql").attr("checked",true);
@@ -458,7 +458,7 @@
     function isExport2Mysql(obj) {
         var dDiv = document.getElementById("mysql-table");
         if(obj.value=="yes"){
-            dDiv.style.display = "block";
+            dDiv.style.display = "";
         }else{
             dDiv.style.display = "none";
         }

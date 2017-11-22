@@ -113,7 +113,7 @@
                     },
                     {
                         data: function (row) {
-                            return "<a href='javascript:void(0);' onclick='edit(" + row.id + ");'>编辑</a> <a href='javascript:void(0);' onclick='publish(" + row.projectId + ");'>发布</a>";
+                            return "<a href='javascript:void(0);' onclick='edit(" + row.id + ");'>编辑</a> <a href='javascript:void(0);' onclick='publish(" + row.projectId + ");'>发布项目</a>";
                         }
                     },
                     {data: "groupCode"},
