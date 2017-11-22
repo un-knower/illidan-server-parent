@@ -10,7 +10,8 @@ public enum DateFormat {
 
     SHORT_DATE(1, "shortdate", "yyyyMMdd"),
     DATE(2, "date", "yyyy-MM-dd"),
-    DATETIME(3, "datetime", "yyyy-MM-dd HH:mm:ss");
+    DATETIME(3, "datetime", "yyyy-MM-dd HH:mm:ss"),
+    SHORT_DATE_WITH_HOUR(4, "shortdatewithhour", "yyyyMMddHH");
 
     private int code;
     private String name;
@@ -72,6 +73,7 @@ public enum DateFormat {
 
     public Date parse(String str) {
         SimpleDateFormat sdf = new SimpleDateFormat(this.getDateFormat());
+        sdf.setLenient(false);
         try {
             return sdf.parse(str);
         } catch (Exception e) {

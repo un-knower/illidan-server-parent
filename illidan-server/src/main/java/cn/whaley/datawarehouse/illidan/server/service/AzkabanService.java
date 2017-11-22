@@ -44,6 +44,7 @@ public class AzkabanService {
             String projectCode = project.getProjectCode();
             //删除原来project的文件
             String path = ConfigUtils.get("newillidan.package.zipdir");
+            path = "/Users/Tony/package";
             String projectPath = path+ File.separator+projectCode;
             File file = new File(projectPath);
             FileUtil.deleteDFile(file);
@@ -81,6 +82,7 @@ public class AzkabanService {
                     String taskCode = task.getTaskCode();
                     jobMap.put("taskCode",taskCode);
                     jobMap.put("jobType","engine");
+                    jobMap.put("executeType", task.getExecuteType());
                     //写入 执行任务.job
 //                    FileUtil.writeJob(path,projectCode,groupCode,taskCode,email);
                     FileUtil.writeJob(jobMap);

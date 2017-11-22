@@ -118,10 +118,8 @@
 
     <select id="findTableInfo" resultMap="returnTableInfo">
         select <include refid="colList" /> from table_info tableInfo
-        <include refid="joinTables"/>
         <include refid="whereCase"/>
         order by tableInfo.updateTime desc
-        <if test="tableInfo != null and tableInfo.limitStart != null and tableInfo.limitEnd != null">limit #{tableInfo.limitStart}, #{tableInfo.limitEnd}</if>
     </select>
 
     <select id="isExistTableInfo"  resultType="long">

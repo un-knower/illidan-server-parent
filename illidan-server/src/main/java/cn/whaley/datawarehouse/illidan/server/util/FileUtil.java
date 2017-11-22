@@ -115,7 +115,10 @@ public class FileUtil {
         StringBuffer buffer = new StringBuffer();
         buffer.append("type=command");
         buffer.append(System.getProperty("line.separator"));
-        buffer.append("command=sh  ../submit_engine.sh --taskCode " +taskName +" --startDate ${startDate} --endDate ${endDate}");
+        String command = "command=sh  ../submit_engine.sh --taskCode " +taskName
+                +" --startDate ${startDate} --endDate ${endDate} --startHour ${startHour} --endHour ${endHour} " +
+                "--dateType " + (map.get("executeType").contains("hour") ? "hour": "day");
+        buffer.append(command);
         return buffer.toString();
     }
 
@@ -136,7 +139,9 @@ public class FileUtil {
         buffer.append(System.getProperty("line.separator"));
         buffer.append("dependencies="+taskName);
         buffer.append(System.getProperty("line.separator"));
-        buffer.append("command=sh  ../submit_export.sh --hiveDb " +hiveDb +" --hiveTable "+hiveTable+" --mysqlDb "+mysqlDb+" --mysqlTable "+mysqlTable+" --platForm 'illidan' --startDate ${startDate} --endDate ${endDate}");
+        buffer.append("command=sh  ../submit_export.sh --hiveDb " + hiveDb + " --hiveTable " + hiveTable + " --mysqlDb " + mysqlDb + " --mysqlTable " + mysqlTable + " --platForm 'illidan' "
+                + "--startDate ${startDate} --endDate ${endDate} --startHour ${startHour} --endHour ${endHour} "
+                + "--dateType " + (map.get("executeType").contains("hour") ? "hour" : "day"));
         return buffer.toString();
     }
 
@@ -280,6 +285,10 @@ public class FileUtil {
         buffer.append("startDate=${yyyy}${MM}${dd}");
         buffer.append(System.getProperty("line.separator"));
         buffer.append("endDate=${yyyy}${MM}${dd}");
+        buffer.append(System.getProperty("line.separator"));
+        buffer.append("startHour=${hh}");
+        buffer.append(System.getProperty("line.separator"));
+        buffer.append("endHour=${hh}");
         buffer.append(System.getProperty("line.separator"));
         buffer.append("user.to.proxy=spark");
         buffer.append(System.getProperty("line.separator"));

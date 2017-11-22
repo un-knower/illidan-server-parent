@@ -10,6 +10,7 @@ import static cn.whaley.datawarehouse.illidan.engine.param.DateParam.*;
  * Created by lituo on 2017/6/29.
  */
 public enum ExecuteIntervalType {
+    HOUR("hour", FIRST_SECOND_THIS_HOUR, LAST_SECOND_THIS_HOUR),
     DAY("day", FIRST_SECOND_TODAY, LAST_SECOND_TODAY),
     WEEK("week", FIRST_SECOND_THIS_WEEK, LAST_SECOND_TODAY),
     MONTH("month", FIRST_SECOND_THIS_MONTH, LAST_SECOND_TODAY),
@@ -38,6 +39,8 @@ public enum ExecuteIntervalType {
 
     public boolean shouldExecute(Date dataDate) {
         switch (this) {
+            case HOUR:
+                return dataDate.equals(DateUtils.lastSecondOfHour(dataDate));
             case DAY:
                 return dataDate.equals(DateUtils.lastSecondOfDate(dataDate));
             case WEEK:
