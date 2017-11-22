@@ -16,7 +16,8 @@
 <body>
 <div class="container">
     <ul class="pager" style="margin-top: 10px;margin-bottom: 0px;">
-        <li class="previous"><a href="<%=path%>/group/list?projectId=${projectId}"><span aria-hidden="true">&larr;</span> 返回组列表</a></li>
+        <li class="previous"><a style="margin-top: 5px;" href="<%=path%>/group/list?projectId=${projectId}"><span aria-hidden="true">&larr;</span> 返回组列表</a></li>
+        <li class="previous" style="float: left;margin-left: 10px;"><h4>任务列表</h4></li>
     </ul>
     <div class="page-header objhid">
 
@@ -52,6 +53,8 @@
     </div>
     <button type="button" class="btn btn-success" onclick="add()">新增</button>
     <button type="button" class="btn btn-danger" onclick="remove();">删除</button>
+    <button type="button" class="btn btn-primary" onclick="tableList();">输出表列表</button>
+
     <table id="dynamic-table" name="dynamic-table" class="table table-striped table-hover table-bordered">
         <thead>
         <tr>
@@ -328,6 +331,9 @@
 
     function cancle() {
         return false;
+    }
+    function tableList() {
+        window.location.href = "<%=path%>/table/list"
     }
 </script>
 </body>

@@ -9,6 +9,7 @@ import cn.whaley.datawarehouse.illidan.common.domain.table.TableWithField;
 import cn.whaley.datawarehouse.illidan.common.service.db.DbInfoService;
 import cn.whaley.datawarehouse.illidan.common.service.field.FieldInfoService;
 import cn.whaley.datawarehouse.illidan.common.service.table.TableInfoService;
+import cn.whaley.datawarehouse.illidan.server.service.TableFieldService;
 import cn.whaley.datawarehouse.illidan.server.util.Common;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,6 +40,8 @@ public class TableInfoController extends Common {
     private FieldInfoService fieldInfoService;
     @Autowired
     private DbInfoService dbInfoService;
+    @Autowired
+    private TableFieldService tableFieldService;
 
     @RequestMapping("list")
     public String list(){
@@ -157,6 +160,49 @@ public class TableInfoController extends Common {
             logger.error(e.getMessage());
             return returnResult(false, "修改输出表失败," + e.getMessage());
         }
+    }
+
+    @RequestMapping("toParseSql")
+    public ModelAndView toParseSql(ModelAndView mav) {
+        mav.setViewName("table/parseSql");
+        return mav;
+    }
+
+    @RequestMapping("parseSql")
+    @ResponseBody
+    public String parseSql(String createSql) {
+        try {
+            if (StringUtils.isEmpty(createSql)){
+                return returnResult(false, "建表语句不能为空");
+            }
+            logger.info("createSql:\n "+createSql);
+            TableWithField tableWithField = tableFieldService.parseHiveFromCreateSql(createSql,null);
+            FullHiveTable fullHiveTable = new FullHiveTable();
+            fullHiveTable.setHiveTable(tableWithField);
+            if(validateTable(fullHiveTable).equals("ok")) {
+                List<FieldInfo> fieldInfos = new ArrayList<>();
+                TableWithField hiveTable = fullHiveTable.getHiveTable();
+                TableInfo mysqlTable = fullHiveTable.getMysqlTable();
+                hiveTable.setStatus("1");
+                if(mysqlTable!=null){
+                    mysqlTable.setStatus("1");
+                }
+                if (hiveTable.getFieldList() != null && hiveTable.getFieldList().size() > 0) {
+                    fieldInfos = hiveTable.getFieldList();
+                }
+                fieldInfoService.setFiledValue(fieldInfos);
+                tableInfoService.insertFullHiveTable(fullHiveTable);
+                logger.info("解析建表语句成功,新增输出表"+fullHiveTable.getHiveTable().getTableCode());
+                return returnResult(true, "解析建表语句成功,新增输出表"+fullHiveTable.getHiveTable().getTableCode());
+            }else {
+                return returnResult(false, "解析建表语句失败");
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+            logger.error(e.getMessage());
+            return returnResult(false, "解析建表语句失败," + e.getMessage());
+        }
+
     }
 
     public String validateTable(FullHiveTable fullHiveTable){

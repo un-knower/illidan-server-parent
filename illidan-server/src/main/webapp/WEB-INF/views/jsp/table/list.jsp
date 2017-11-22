@@ -16,7 +16,7 @@
 <body>
 <div class="container">
     <ul class="pager" style="margin-top: 10px;margin-bottom: 0px;">
-        <li class="previous" ><a href="history.go(-1);"style="margin-top: 5px;"><span aria-hidden="true">&larr;</span> 返回</a></li>
+        <li class="previous" ><a href="javascript:history.go(-1)" style="margin-top: 5px;"><span aria-hidden="true">&larr;</span> 返回</a></li>
         <li class="previous" style="float: left;margin-left: 10px;"><h4>输出表列表</h4></li>
 
     </ul>
@@ -36,7 +36,7 @@
     </div>
     <button type="button" class="btn btn-success" onclick="add()">新增</button>
     <%--<button type="button" class="btn btn-danger" onclick="remove();">删除</button>--%>
-    <%--<button type="button" class="btn btn-primary" onclick="publish();">发布</button>--%>
+    <button type="button" class="btn btn-primary" onclick="parseSql();">解析建表语句</button>
     <table id="dynamic-table" name="dynamic-table" class="table table-striped table-hover table-bordered">
         <thead>
         <tr>
@@ -222,6 +222,10 @@
         setCookie('tableId', id, 30);
         modalAlert("提示", "输出表复制成功", searchList, "ok");
 
+    }
+
+    function parseSql() {
+        modalWindow("<%=path%>/table/toParseSql", "解析建表语句", 500, 800);
     }
 
 </script>
