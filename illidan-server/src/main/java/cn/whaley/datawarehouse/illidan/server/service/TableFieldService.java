@@ -171,7 +171,7 @@ public class TableFieldService {
             } catch (Exception e) {
                 failCount++;
                 failList.add(tableInfo);
-                logger.warn(tableInfo.getTableCode() + "表字段更新失败");
+                logger.warn(tableInfo.getTableCode() + "表字段更新失败:" + e.getMessage());
             }
         }
         logger.warn(failCount + "个表字段更新失败");

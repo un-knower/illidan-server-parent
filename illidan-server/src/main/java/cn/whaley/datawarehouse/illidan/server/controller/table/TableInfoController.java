@@ -162,6 +162,18 @@ public class TableInfoController extends Common {
         }
     }
 
+    @RequestMapping("checkTable")
+    @ResponseBody
+    public String checkTable() {
+        try {
+            tableFieldService.completeTableInfoAll();
+            return returnResult(true, "检查字段完成，结果见日志");
+        } catch (Exception e) {
+            logger.error("补充字段异常", e);
+            return returnResult(false, "检查字段失败," + e.getMessage());
+        }
+    }
+
     @RequestMapping("toParseSql")
     public ModelAndView toParseSql(ModelAndView mav) {
         mav.setViewName("table/parseSql");
