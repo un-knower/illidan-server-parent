@@ -302,8 +302,13 @@ public class TableInfoServiceImpl implements TableInfoService {
                 Long mysqlTableId = insert(table.getMysqlTable());
                 //增加mysql实体表
                 TableWithField mysqlTable = getTableWithField(mysqlTableId);
-                //如果字段有增加，按照新字段建mysql
-                tableProcessor.createMysqlTable(mysqlTable, hiveTable);
+                try {
+                    //如果字段有增加，按照新字段建mysql
+                    tableProcessor.createMysqlTable(mysqlTable, hiveTable);
+                } catch (Exception e) {
+                    removeById(mysqlTableId);
+                    throw e;
+                }
                 //修改hive关联的mysql
                 tableInfoMapper.updateMysqlTableId(hiveTableId, mysqlTableId);
             }
@@ -322,7 +327,12 @@ public class TableInfoServiceImpl implements TableInfoService {
                 Long mysqlTableId = insert(table.getMysqlTable());
                 //增加mysql实体表
                 TableWithField mysqlTable = getTableWithField(mysqlTableId);
-                tableProcessor.createMysqlTable(mysqlTable, hiveTable);
+                try {
+                    tableProcessor.createMysqlTable(mysqlTable, hiveTable);
+                } catch (Exception e) {
+                    removeById(mysqlTableId);
+                    throw e;
+                }
                 tableInfoMapper.updateMysqlTableId(hiveTableId, mysqlTableId);
             }
             removeById(oldHiveTable.getMysqlTableId());
