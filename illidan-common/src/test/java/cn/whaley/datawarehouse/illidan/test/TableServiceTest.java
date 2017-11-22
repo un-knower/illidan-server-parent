@@ -40,4 +40,9 @@ public class TableServiceTest {
         Assert.assertTrue(result >= 0);
     }
 
+    @Test
+    public void dropTableTest()  throws Exception {
+        tableInfoService.dropFullHiveTable(342L);
+    }
+
 }

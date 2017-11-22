@@ -44,7 +44,6 @@ public class AzkabanService {
             String projectCode = project.getProjectCode();
             //删除原来project的文件
             String path = ConfigUtils.get("newillidan.package.zipdir");
-            path = "/Users/Tony/package";
             String projectPath = path+ File.separator+projectCode;
             File file = new File(projectPath);
             FileUtil.deleteDFile(file);

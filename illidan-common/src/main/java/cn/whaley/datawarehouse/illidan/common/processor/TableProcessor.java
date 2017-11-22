@@ -71,7 +71,7 @@ public class TableProcessor {
         return true;
     }
 
-    private boolean dropHiveTable(TableWithField hiveTable) {
+    public boolean dropHiveTable(TableWithField hiveTable) {
         JdbcTemplate jdbcTemplate = jdbcFactory.create(hiveTable.getDbInfo().getDbCode());
         String sql = assemblyHiveDropSql(hiveTable);
         jdbcTemplate.update(sql);

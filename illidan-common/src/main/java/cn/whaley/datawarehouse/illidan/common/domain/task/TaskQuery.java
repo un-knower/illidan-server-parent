@@ -36,6 +36,8 @@ public class TaskQuery extends BaseQueryEntity {
      * 任务所属项目的id
      */
     private String projectId;
+
+    private Long hiveTableId;
     /**
      * 目标表名
      */
@@ -102,6 +104,14 @@ public class TaskQuery extends BaseQueryEntity {
 
     public void setProjectId(String projectId) {
         this.projectId = projectId;
+    }
+
+    public Long getHiveTableId() {
+        return hiveTableId;
+    }
+
+    public void setHiveTableId(Long hiveTableId) {
+        this.hiveTableId = hiveTableId;
     }
 
     public String getHiveTableCode() {

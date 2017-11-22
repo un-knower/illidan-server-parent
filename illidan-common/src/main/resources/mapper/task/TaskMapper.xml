@@ -90,6 +90,7 @@
             <if test="task != null and task.addUser != null">and task.addUser = #{task.addUser}</if>
             <if test="task != null and task.groupCode != null">and taskGroup.groupCode LIKE concat('%',#{task.groupCode},'%')</if>
             <if test="task != null and task.projectId != null">and taskGroup.projectId = #{task.projectId}</if>
+            <if test="task != null and task.hiveTableId != null">and task.tableId = #{task.hiveTableId}</if>
             <if test="task != null and task.hiveTableCode != null">and tableInfo.tableCode LIKE concat('%',#{task.hiveTableCode},'%')</if>
             <if test="task != null and task.hiveTableDesc != null">and tableInfo.tableDes LIKE concat('%',#{task.hiveTableDesc},'%')</if>
             <if test="task != null and task.sourceTableCode != null">

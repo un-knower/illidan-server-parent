@@ -6,10 +6,12 @@ import cn.whaley.datawarehouse.illidan.common.domain.table.FullHiveTable;
 import cn.whaley.datawarehouse.illidan.common.domain.table.TableInfo;
 import cn.whaley.datawarehouse.illidan.common.domain.table.TableInfoQuery;
 import cn.whaley.datawarehouse.illidan.common.domain.table.TableWithField;
+import cn.whaley.datawarehouse.illidan.common.domain.task.TaskQuery;
 import cn.whaley.datawarehouse.illidan.common.mapper.table.TableInfoMapper;
 import cn.whaley.datawarehouse.illidan.common.processor.TableProcessor;
 import cn.whaley.datawarehouse.illidan.common.service.db.DbInfoService;
 import cn.whaley.datawarehouse.illidan.common.service.field.FieldInfoService;
+import cn.whaley.datawarehouse.illidan.common.service.task.TaskService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -38,6 +40,9 @@ public class TableInfoServiceImpl implements TableInfoService {
 
     @Autowired
     private TableProcessor tableProcessor;
+
+    @Autowired
+    private TaskService taskService;
 
     public TableInfo get(final Long id) {
         if (id == null){
@@ -333,6 +338,9 @@ public class TableInfoServiceImpl implements TableInfoService {
         if(hiveTable == null) {
             throw new RuntimeException("提供的hive表id不存在，id = " + id);
         }
+        if(hiveTable.getDbInfo().getStorageType() != 1L) {
+            throw new RuntimeException("提供的表id不是hive表，id = " + id);
+        }
         FullHiveTable fullHiveTable = new FullHiveTable();
         fullHiveTable.setHiveTable(hiveTable);
 
@@ -343,6 +351,24 @@ public class TableInfoServiceImpl implements TableInfoService {
         }
 
         return fullHiveTable;
+    }
+
+    @Override
+    public Boolean dropFullHiveTable(final Long id){
+        FullHiveTable fullHiveTable = getFullHiveTable(id);
+        TaskQuery taskQuery = new TaskQuery();
+        taskQuery.setHiveTableId(id);
+        Long count = taskService.countByTask(taskQuery);
+        if(count > 0) {
+            throw new RuntimeException("目标表正在被使用");
+        }
+        removeById(fullHiveTable.getHiveTable().getId());
+        if(fullHiveTable.getMysqlTable() != null) {
+            removeById(fullHiveTable.getMysqlTable().getId());
+            tableProcessor.dropMysqlTable((TableWithField) fullHiveTable.getMysqlTable());
+        }
+        tableProcessor.dropHiveTable(fullHiveTable.getHiveTable());
+        return true;
     }
 
     @Override
