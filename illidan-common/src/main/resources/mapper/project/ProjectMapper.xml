@@ -138,11 +138,11 @@
         insert into project
         (
         <trim prefix="" prefixOverrides=",">
-            ,projectCode,projectDes,now(),now(),ownerId,status,isPublish,publishTime
+            ,projectCode,projectDes,createTime,updateTime,ownerId,status,isPublish,publishTime
         </trim>
         )values(
         <trim prefix="" prefixOverrides=",">
-            ,#{project.projectCode},#{project.projectDes},#{project.createTime},#{project.updateTime},#{project.ownerId},#{project.status},#{project.isPublish},#{project.publishTime}
+            ,#{project.projectCode},#{project.projectDes},now(),now(),#{project.ownerId},#{project.status},#{project.isPublish},#{project.publishTime}
         </trim>
         )
     </insert>
