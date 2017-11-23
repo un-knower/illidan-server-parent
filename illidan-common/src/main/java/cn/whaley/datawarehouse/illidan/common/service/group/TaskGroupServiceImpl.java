@@ -146,6 +146,7 @@ public class TaskGroupServiceImpl implements TaskGroupService {
             logger.error("removeByIds: id list is null.");
             return null;
         }
+        //TODO 同时删除分组下的任务
         return taskGroupMapper.removeByIds(ids);
     }
 

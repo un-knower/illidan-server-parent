@@ -102,10 +102,10 @@ public class TableProcessor {
 
     private boolean addMysqlTableColumns(TableWithField mysqlTable, List<FieldInfo> newColumns) {
         String sql = "ALTER TABLE `" + mysqlTable.getDbInfo().getDbCode() + "`.`" + mysqlTable.getTableCode()
-                + "` ADD \n";
+                + "`\n";
         sql += newColumns.stream().sorted(Comparator.comparingInt(FieldInfo::getColIndex))
                 .filter(f -> !"1".equals(f.getIsPartitionCol()))
-                .map(f -> f.getColName() + " " + mapColTypeToMysql(f.getColType()) + " COMMENT '" + f.getColDes() + "'")
+                .map(f -> " ADD COLUMN " + f.getColName() + " " + mapColTypeToMysql(f.getColType()) + " COMMENT '" + f.getColDes() + "'")
                 .collect(Collectors.joining(",\n"));
         JdbcTemplate jdbcTemplate = jdbcFactory.create(mysqlTable.getDbInfo().getDbCode());
         jdbcTemplate.update(sql);
