@@ -35,7 +35,7 @@
         </div>
     </div>
     <button type="button" class="btn btn-success" onclick="add()">新增</button>
-    <%--<button type="button" class="btn btn-danger" onclick="remove();">删除</button>--%>
+    <button type="button" class="btn btn-danger" onclick="remove();">删除</button>
     <button type="button" class="btn btn-primary" onclick="parseSql();">解析建表语句</button>
     <table id="dynamic-table" name="dynamic-table" class="table table-striped table-hover table-bordered">
         <thead>
@@ -226,6 +226,52 @@
 
     function parseSql() {
         modalWindow("<%=path%>/table/toParseSql", "解析建表语句", 500, 800);
+    }
+
+    function remove() {
+        var rows = myTable.rows('.selected').data();
+        if (rows.length > 0) {
+            var ids = "";
+            for (var i = 0; i < rows.length; i++) {
+                var column = rows[i];
+                if (i == rows.length - 1) {
+                    ids += column.id;
+                } else {
+                    ids += column.id + ",";
+                }
+            }
+            removeRecord(ids);
+        } else {
+            modalAlert("提示", "请选择要删除的记录", "", "error");
+            return false;
+        }
+    }
+
+    function removeRecord(ids) {
+        modalConfirm("提示", "目标表里的数据将会丢失,你确定要删除吗?", function () {
+            deleteTables(ids)
+        }, cancle);
+    }
+
+    function cancle() {
+        return false;
+    }
+
+    function deleteTables(ids) {
+        $.ajax({
+            type: 'POST',
+            url: '<%=path%>/table/delete',
+            data: "ids=" + ids,
+            dataType: 'json',
+            async: false,
+            success: function (data) {
+                if (data.result == true) {
+                    modalAlert("提示", data.msg, searchList, "ok");
+                } else {
+                    modalAlert("提示", data.msg, searchList, "error");
+                }
+            }
+        });
     }
 
 </script>
