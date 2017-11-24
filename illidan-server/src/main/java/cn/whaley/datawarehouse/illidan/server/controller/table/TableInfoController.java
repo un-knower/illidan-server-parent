@@ -23,8 +23,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Created by wujiulin on 2017/11/7.
@@ -216,6 +218,27 @@ public class TableInfoController extends Common {
             return returnResult(false, "解析建表语句失败," + e.getMessage());
         }
 
+    }
+
+    @RequestMapping("delete")
+    @ResponseBody
+    public String delete(String ids) {
+        try {
+            if(StringUtils.isEmpty(ids)){
+                return returnResult(false, "请选择要删除的记录");
+            }
+            String[] idArray = ids.split(",");
+            List<Long> idList = Arrays.asList(idArray).stream().map(x->Long.parseLong(x)).collect(Collectors.toList());
+            for (Long id:idList){
+                tableInfoService.dropFullHiveTable(id);
+            }
+            logger.info("删除了目标表：" + ids);
+            return returnResult(true, "删除目标表成功");
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.error(e.getMessage());
+            return returnResult(false, "删除目标表失败:" + e.getMessage());
+        }
     }
 
     public String validateTable(FullHiveTable fullHiveTable){
