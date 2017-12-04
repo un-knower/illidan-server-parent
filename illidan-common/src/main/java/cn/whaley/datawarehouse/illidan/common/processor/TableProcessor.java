@@ -63,22 +63,7 @@ public class TableProcessor {
     private boolean createHiveTable(TableWithField hiveTable) {
         JdbcTemplate jdbcTemplate = jdbcFactory.create(hiveTable.getDbInfo().getDbCode());
         String createSql = assemblyHiveCreateSql(hiveTable);
-        int retry = 3;
-        while (retry > 0) {
-            retry --;
-            try {
-                jdbcTemplate.update(createSql);
-                break;
-            } catch (BadSqlGrammarException e) {
-                logger.warn("语法错误", e);
-                throw e;
-            } catch (Exception e) {
-                logger.warn("创建hive表失败，还有" + retry + "次机会");
-                if(retry == 0) {
-                    throw e;
-                }
-            }
-        }
+        executeSqlWithRetry(jdbcTemplate, createSql, 2);
         return true;
     }
 
@@ -86,94 +71,83 @@ public class TableProcessor {
     public boolean createMysqlTable(TableWithField mysqlTable, TableWithField hiveTable) {
         JdbcTemplate jdbcTemplate = jdbcFactory.create(mysqlTable.getDbInfo().getDbCode());
         String createSql = assemblyMysqlCreateSql(mysqlTable, hiveTable);
-        int retry = 3;
-        while (retry > 0) {
-            retry --;
-            try {
-                jdbcTemplate.update(createSql);
-                break;
-            } catch (BadSqlGrammarException e) {
-                logger.warn("语法错误", e);
-                throw e;
-            } catch (Exception e) {
-                logger.warn("创建mysql表失败，还有" + retry + "次机会");
-                if(retry == 0) {
-                    throw e;
-                }
-            }
-        }
+        executeSqlWithRetry(jdbcTemplate, createSql, 2);
         return true;
     }
 
     public boolean dropHiveTable(TableWithField hiveTable) {
         JdbcTemplate jdbcTemplate = jdbcFactory.create(hiveTable.getDbInfo().getDbCode());
         String sql = assemblyHiveDropSql(hiveTable);
-        int retry = 3;
-        while (retry > 0) {
-            retry --;
-            try {
-                jdbcTemplate.update(sql);
-                break;
-            } catch (BadSqlGrammarException e) {
-                logger.warn("语法错误", e);
-                throw e;
-            } catch (Exception e) {
-                logger.warn("删除hive表失败，还有" + retry + "次机会\n", e);
-                if(retry == 0) {
-                    throw e;
-                }
-            }
-        }
+        executeSqlWithRetry(jdbcTemplate, sql, 2);
         return true;
     }
 
     public boolean dropMysqlTable(TableWithField mysqlTable) {
         JdbcTemplate jdbcTemplate = jdbcFactory.create(mysqlTable.getDbInfo().getDbCode());
         String sql = assemblyMySqlDropSql(mysqlTable);
-        int retry = 3;
-        while (retry > 0) {
-            retry --;
-            try {
-                jdbcTemplate.update(sql);
-                break;
-            } catch (BadSqlGrammarException e) {
-                logger.warn("语法错误", e);
-                throw e;
-            } catch (Exception e) {
-                logger.warn("删除mysql表失败，还有" + retry + "次机会");
-                if(retry == 0) {
-                    throw e;
-                }
-            }
-        }
+        executeSqlWithRetry(jdbcTemplate, sql, 2);
         return true;
     }
 
     private boolean addHiveTableColumns(TableWithField hiveTable, List<FieldInfo> newColumns) {
-        String sql = "ALTER TABLE `" + hiveTable.getDbInfo().getDbCode() + "`.`" + hiveTable.getTableCode()
-                + "` ADD COLUMNS  ( \n";
-        sql += newColumns.stream().sorted(Comparator.comparingInt(FieldInfo::getColIndex))
-                .filter(f -> !"1".equals(f.getIsPartitionCol()))
-                .map(f -> f.getColName() + " " + f.getColType() + " COMMENT '" + f.getColDes() + "'")
-                .collect(Collectors.joining(",\n"));
-        sql += ")";
-
+        String sql = assemblyHiveAddColumnSql(hiveTable, newColumns);
         JdbcTemplate jdbcTemplate = jdbcFactory.create(hiveTable.getDbInfo().getDbCode());
-        jdbcTemplate.update(sql);
+        executeSqlWithRetry(jdbcTemplate, sql, 2);
 
         return true;
     }
 
     private boolean addMysqlTableColumns(TableWithField mysqlTable, List<FieldInfo> newColumns) {
+        String sql = assemblyMysqlAddColumnSql(mysqlTable, newColumns);
+        JdbcTemplate jdbcTemplate = jdbcFactory.create(mysqlTable.getDbInfo().getDbCode());
+        jdbcTemplate.update(sql);
+        executeSqlWithRetry(jdbcTemplate, sql, 2);
+        return true;
+    }
+
+    /**
+     * 重试方式执行语句
+     * @param jdbcTemplate
+     * @param sql
+     * @param retry 重试次数，实际执行次数是retry + 1
+     */
+    private void executeSqlWithRetry(JdbcTemplate jdbcTemplate, String sql, int retry) {
+        while (retry >= 0) {
+            try {
+                jdbcTemplate.update(sql);
+                break;
+            } catch (BadSqlGrammarException e) {
+                logger.warn("语法错误\n", e);
+                throw e;
+            } catch (Exception e) {
+                logger.warn("sql执行失败，还有" + retry + "次机会\n", e);
+                if(retry == 0) {
+                    throw e;
+                }
+            }
+            retry--;
+        }
+    }
+
+    private String assemblyHiveAddColumnSql(TableWithField hiveTable, List<FieldInfo> newColumns) {
+        String sql = "ALTER TABLE `" + hiveTable.getDbInfo().getDbCode() + "`.`" + hiveTable.getTableCode()
+                + "` ADD COLUMNS  (\n";
+        sql += newColumns.stream().sorted(Comparator.comparingInt(FieldInfo::getColIndex))
+                .filter(f -> !"1".equals(f.getIsPartitionCol()))
+                .map(f -> f.getColName() + " " + f.getColType() + " COMMENT '" + f.getColDes() + "'")
+                .collect(Collectors.joining(",\n"));
+        sql += ")";
+        return sql;
+    }
+
+    private String assemblyMysqlAddColumnSql(TableWithField mysqlTable, List<FieldInfo> newColumns) {
         String sql = "ALTER TABLE `" + mysqlTable.getDbInfo().getDbCode() + "`.`" + mysqlTable.getTableCode()
                 + "`\n";
         sql += newColumns.stream().sorted(Comparator.comparingInt(FieldInfo::getColIndex))
                 .filter(f -> !"1".equals(f.getIsPartitionCol()))
                 .map(f -> " ADD COLUMN " + f.getColName() + " " + mapColTypeToMysql(f.getColType()) + " COMMENT '" + f.getColDes() + "'")
                 .collect(Collectors.joining(",\n"));
-        JdbcTemplate jdbcTemplate = jdbcFactory.create(mysqlTable.getDbInfo().getDbCode());
-        jdbcTemplate.update(sql);
-        return true;
+        return sql;
     }
 
     private String assemblyHiveCreateSql(TableWithField hiveTable) {
