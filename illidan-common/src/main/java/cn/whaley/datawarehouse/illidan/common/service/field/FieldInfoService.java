@@ -17,7 +17,13 @@ public interface FieldInfoService {
 
     void insertBatch(final List<FieldInfo> list);
 
+    List<Long> insertMulti(final List<FieldInfo> list);
+
+    Long insert(final FieldInfo fieldInfo);
+
     void removeByTableId(final Long tableId);
+
+    void removeById(final Long id);
 
     List<String> findPartitionFields(final Long tableId);
 

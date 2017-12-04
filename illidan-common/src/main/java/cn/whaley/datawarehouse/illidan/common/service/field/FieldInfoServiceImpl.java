@@ -47,12 +47,45 @@ public class FieldInfoServiceImpl implements FieldInfoService {
     }
 
     @Override
+    public Long insert(final FieldInfo fieldInfo) {
+        if (fieldInfo == null) {
+            logger.error("insertBatch: FieldInfo is null.");
+            return -1L;
+        }
+        fieldInfoMapper.insert(fieldInfo);
+        return fieldInfo.getId();
+    }
+
+    @Override
+    public List<Long> insertMulti(final List<FieldInfo> list) {
+        if (list == null || list.size() <= 0){
+            logger.error("insertBatch: FieldInfo list is null.");
+            return null;
+        }
+        List<Long> results = new ArrayList<>();
+        for(FieldInfo fieldInfo : list) {
+            Long result = insert(fieldInfo);
+            results.add(result);
+        }
+        return results;
+    }
+
+    @Override
     public void removeByTableId(Long tableId) {
         if (tableId == null){
             logger.error("removeByTableId: tableId is null.");
             return;
         }
         fieldInfoMapper.removeByTableId(tableId);
+    }
+
+    @Override
+    public void removeById(Long id) {
+        if (id == null){
+            logger.error("removeById: Id is null.");
+            return;
+        }
+        fieldInfoMapper.removeById(id);
     }
 
     public List<String> findPartitionFields(final Long tableId){

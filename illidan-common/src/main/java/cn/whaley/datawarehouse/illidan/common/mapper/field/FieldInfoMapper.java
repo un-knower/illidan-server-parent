@@ -20,6 +20,10 @@ public interface FieldInfoMapper {
 
     void insertBatch(@Param("list") final List<FieldInfo> fieldInfo);
 
+    Long insert(@Param("fieldInfo") final FieldInfo fieldInfo);
+
+    void removeById(@Param("Id") final Long Id);
+
     void removeByTableId(@Param("tableId") final Long tableId);
 
     Long updateById(@Param("fieldInfo") final FieldInfo fieldInfo);

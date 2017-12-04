@@ -132,11 +132,7 @@
         </foreach>
     </insert>
 
-    <insert id="insert" parameterType="FieldInfo">
-        <selectKey resultType="long" keyProperty="id" order="AFTER">
-            SELECT
-            LAST_INSERT_ID()
-        </selectKey>
+    <insert id="insert" parameterType="FieldInfo" useGeneratedKeys="true" keyProperty="fieldInfo.id">
         insert into field_info
         (
         <trim prefix="" prefixOverrides=",">
@@ -212,6 +208,10 @@
 
     <delete id="removeByTableId">
         delete from field_info where tableId = #{tableId}
+    </delete>
+
+    <delete id="removeById">
+        delete from field_info where id = #{id}
     </delete>
 
 

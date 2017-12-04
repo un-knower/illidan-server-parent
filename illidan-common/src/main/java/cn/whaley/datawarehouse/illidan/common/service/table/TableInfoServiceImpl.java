@@ -286,13 +286,21 @@ public class TableInfoServiceImpl implements TableInfoService {
             throw new RuntimeException("table已有的字段临时不支持修改");
         }
 
-        try {
-            if(newFields.size() > 0) {
-                fieldInfoService.insertBatch(newFields);
-                tableProcessor.addColumns(hiveTableId, newFields);
+        if (newFields.size() > 0) {
+            List<Long> fieldIds = fieldInfoService.insertMulti(newFields);
+            if(fieldIds.contains(-1L)) {
+                for(Long fieldId : fieldIds) {
+                    if(fieldId > 0) {
+                        fieldInfoService.removeById(fieldId);
+                    }
+                }
+                throw new RuntimeException("配置保存失败");
             }
-        }catch (Exception e) {
-            throw new RuntimeException("添加hive表字段未成功: " + e.getMessage());
+            try {
+                tableProcessor.addColumns(hiveTableId, newFields);
+            } catch (Exception e) {
+                throw new RuntimeException("添加hive表字段未成功: " + e.getMessage());
+            }
         }
 
         //处理mysql配置变动的情况
