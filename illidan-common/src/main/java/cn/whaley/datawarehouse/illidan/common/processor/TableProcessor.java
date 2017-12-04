@@ -5,7 +5,10 @@ import cn.whaley.datawarehouse.illidan.common.domain.table.FullHiveTable;
 import cn.whaley.datawarehouse.illidan.common.domain.table.TableWithField;
 import cn.whaley.datawarehouse.illidan.common.service.table.TableInfoService;
 import cn.whaley.datawarehouse.illidan.common.util.DateUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.BadSqlGrammarException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +22,7 @@ import java.util.stream.Collectors;
  */
 @Service
 public class TableProcessor {
+    private Logger logger = LoggerFactory.getLogger(TableProcessor.class);
 
     @Autowired
     private JdbcFactory jdbcFactory;
@@ -59,7 +63,22 @@ public class TableProcessor {
     private boolean createHiveTable(TableWithField hiveTable) {
         JdbcTemplate jdbcTemplate = jdbcFactory.create(hiveTable.getDbInfo().getDbCode());
         String createSql = assemblyHiveCreateSql(hiveTable);
-        jdbcTemplate.update(createSql);
+        int retry = 3;
+        while (retry > 0) {
+            retry --;
+            try {
+                jdbcTemplate.update(createSql);
+                break;
+            } catch (BadSqlGrammarException e) {
+                logger.warn("语法错误", e);
+                throw e;
+            } catch (Exception e) {
+                logger.warn("创建hive表失败，还有" + retry + "次机会");
+                if(retry == 0) {
+                    throw e;
+                }
+            }
+        }
         return true;
     }
 
@@ -67,21 +86,66 @@ public class TableProcessor {
     public boolean createMysqlTable(TableWithField mysqlTable, TableWithField hiveTable) {
         JdbcTemplate jdbcTemplate = jdbcFactory.create(mysqlTable.getDbInfo().getDbCode());
         String createSql = assemblyMysqlCreateSql(mysqlTable, hiveTable);
-        jdbcTemplate.update(createSql);
+        int retry = 3;
+        while (retry > 0) {
+            retry --;
+            try {
+                jdbcTemplate.update(createSql);
+                break;
+            } catch (BadSqlGrammarException e) {
+                logger.warn("语法错误", e);
+                throw e;
+            } catch (Exception e) {
+                logger.warn("创建mysql表失败，还有" + retry + "次机会");
+                if(retry == 0) {
+                    throw e;
+                }
+            }
+        }
         return true;
     }
 
     public boolean dropHiveTable(TableWithField hiveTable) {
         JdbcTemplate jdbcTemplate = jdbcFactory.create(hiveTable.getDbInfo().getDbCode());
         String sql = assemblyHiveDropSql(hiveTable);
-        jdbcTemplate.update(sql);
+        int retry = 3;
+        while (retry > 0) {
+            retry --;
+            try {
+                jdbcTemplate.update(sql);
+                break;
+            } catch (BadSqlGrammarException e) {
+                logger.warn("语法错误", e);
+                throw e;
+            } catch (Exception e) {
+                logger.warn("删除hive表失败，还有" + retry + "次机会\n", e);
+                if(retry == 0) {
+                    throw e;
+                }
+            }
+        }
         return true;
     }
 
     public boolean dropMysqlTable(TableWithField mysqlTable) {
         JdbcTemplate jdbcTemplate = jdbcFactory.create(mysqlTable.getDbInfo().getDbCode());
         String sql = assemblyMySqlDropSql(mysqlTable);
-        jdbcTemplate.update(sql);
+        int retry = 3;
+        while (retry > 0) {
+            retry --;
+            try {
+                jdbcTemplate.update(sql);
+                break;
+            } catch (BadSqlGrammarException e) {
+                logger.warn("语法错误", e);
+                throw e;
+            } catch (Exception e) {
+                logger.warn("删除mysql表失败，还有" + retry + "次机会");
+                if(retry == 0) {
+                    throw e;
+                }
+            }
+        }
         return true;
     }
 
