@@ -134,7 +134,7 @@ public class TableProcessor {
                 + "` ADD COLUMNS  (\n";
         sql += newColumns.stream().sorted(Comparator.comparingInt(FieldInfo::getColIndex))
                 .filter(f -> !"1".equals(f.getIsPartitionCol()))
-                .map(f -> f.getColName() + " " + f.getColType() + " COMMENT '" + f.getColDes() + "'")
+                .map(f -> "`" + f.getColName() + "` " + f.getColType() + " COMMENT '" + f.getColDes() + "'")
                 .collect(Collectors.joining(",\n"));
         sql += ")";
         return sql;
@@ -156,7 +156,7 @@ public class TableProcessor {
 
         sql += fieldInfoList.stream().sorted(Comparator.comparingInt(FieldInfo::getColIndex))
                 .filter(f -> !"1".equals(f.getIsPartitionCol()))
-                .map(f -> f.getColName() + " " + f.getColType() + " COMMENT '" + f.getColDes() + "'")
+                .map(f -> "`" + f.getColName() + "` " + f.getColType() + " COMMENT '" + f.getColDes() + "'")
                 .collect(Collectors.joining(",\n"));
         sql += ") COMMENT '" + hiveTable.getTableDes() + "'\n";
         sql += " PARTITIONED BY (" +
