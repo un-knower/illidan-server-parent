@@ -11,6 +11,7 @@
 <link rel="stylesheet" href="<%=path%>/static/css/theme.css"/>
 <link rel="stylesheet" href="<%=path%>/static/css/chosen.css"/>
 <link rel="stylesheet" href="<%=path%>/static/css/bootstrap-select.min.css">
+<link rel="stylesheet" href="<%=path%>/static/css/loading.css">
 
 <%--<link rel="icon" href="//r.360img.cn/images/H5/common/favicon.ico" >--%>
 
