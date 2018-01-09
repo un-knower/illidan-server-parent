@@ -175,9 +175,7 @@ public class SubmitService {
             }
         }
 
-        String tezStatement = "set tez.queue.name=bi;\n" +
-                "set tez.am.resource.memory.mb=4096;\n" +
-                "set hive.tez.container.size=4096;\n";
+        String tezStatement = "set tez.queue.name=bi;\n";
 
         return tezStatement + insertStatement + " " + selectSql;
     }
