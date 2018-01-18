@@ -5,6 +5,8 @@ import cn.whaley.datawarehouse.illidan.server.util.HttpClientUtil;
 import com.alibaba.fastjson.JSON;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -17,45 +19,27 @@ import java.util.Map;
  */
 @Service
 public class AuthorizeHttpService {
-
+    private Logger logger = LoggerFactory.getLogger(AuthorizeHttpService.class);
     private String url = ConfigUtils.get("newillidan.authorize.url");
-    private String project_node_id = ConfigUtils.get("newillidan.authorize.project_node_id");
-    private String table_node_id = ConfigUtils.get("newillidan.authorize.table_node_id");
     private String sys_id = ConfigUtils.get("newillidan.authorize.sys_id");
 
     /**
      * 创建目录
      * @param pid 目标父目录ID
-     * @param dir_name 目录名称
-     * @param group_id 默认授权的组,多个组以逗号隔开
+     * @param dirName 目录名称
      * @param uid 默认授权的用户,多个用户以逗号隔开
      * @return dir_id 目录id
      * */
-    public String createDir(String pid, String dir_name, String group_id, String uid){
-        String dir_id = "";
-        Map<String, String> params = new HashMap<String,String>();
-        params.put("pid", pid);
-        params.put("dir_name", dir_name);
-        params.put("group_id", group_id);
-        params.put("uid", uid);
-        String response = HttpClientUtil.URLPost(url+"/dir", params,"UTF-8");
-        JSONObject resultJson = new JSONObject(response);
-        if(resultJson.get("code").toString().equals("200") && resultJson.getString("msg").equals("success")){
-            JSONObject dir_id_json = resultJson.getJSONObject("data");
-            dir_id = dir_id_json.getString("dir_id");
-        }
-        return dir_id;
-    }
-
     public String createAuth(String pid, String dirName, String uid){
         String dir_id = "";
         Map<String, String> params = new HashMap<String,String>();
         List<Map> groupList = getGroups(uid, sys_id);
         String groupId = "";
         for (Map m : groupList){
-            groupId = groupId + m.get("id");
+            groupId = groupId + m.get("id") + ",";
         }
         groupId = groupId.substring(0,groupId.length()-1);
+        logger.info("groupId: "+groupId);
         params.put("pid", pid);
         params.put("dir_name", dirName);
         params.put("group_id", groupId);
