@@ -269,11 +269,13 @@
                 if (data.result == true) {
                     modalAlert("提示", data.msg, closeTip, "ok");
                 } else {
-                    modalAlert("提示", data.msg, closeWindow, "error");
+                    // modalAlert("提示", data.msg, closeWindow, "error");
+                    modalAlert("提示", data.msg, closeTip, "error");
                 }
             },
             error: function() {
-                modalAlert("提示", "修改输出表失败,请重新添加", closeWindow, "error");
+                // modalAlert("提示", "修改输出表失败,请重新添加", closeWindow, "error");
+                modalAlert("提示", "修改输出表失败,请重新添加", closeTip, "error");
             }
         });
     }

@@ -78,7 +78,8 @@
                 if (data.result == true) {
                     modalAlert("提示", data.msg, closeTip, "ok");
                 } else {
-                    modalAlert("提示", data.msg, closeWindow, "error");
+                    // modalAlert("提示", data.msg, closeWindow, "error");
+                    modalAlert("提示", data.msg, closeTip, "error");
                 }
             },
             error: function (XMLHttpRequest, data, textStatus) {
@@ -86,7 +87,8 @@
 //                alert("status:" + XMLHttpRequest.status);
 //                alert("readyState:" + XMLHttpRequest.readyState);
 //                alert("textStatus:" + textStatus);
-                modalAlert("提示", "修改产品失败,请重新修改", closeWindow, "error");
+//                 modalAlert("提示", "修改产品失败,请重新修改", closeWindow, "error");
+                modalAlert("提示", "修改产品失败,请重新修改", closeTip, "error");
             }
         });
     }
