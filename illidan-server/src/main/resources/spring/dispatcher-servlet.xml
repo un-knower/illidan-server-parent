@@ -2,7 +2,7 @@
 <beans xmlns:context="http://www.springframework.org/schema/context"
        xmlns:mvc="http://www.springframework.org/schema/mvc"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns="http://www.springframework.org/schema/beans"
+       xmlns="http://www.springframework.org/schema/beans" xmlns:aop="http://www.springframework.org/schema/aop"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
 	http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
 	http://www.springframework.org/schema/context
@@ -10,7 +10,7 @@
 
 
 	http://www.springframework.org/schema/mvc
-	http://www.springframework.org/schema/mvc/spring-mvc-4.0.xsd">
+	http://www.springframework.org/schema/mvc/spring-mvc-4.0.xsd http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd">
 
     <context:component-scan base-package="cn.whaley.datawarehouse.illidan"/>
 
@@ -64,6 +64,14 @@
 
     <bean id="fmXmlEscape" class="freemarker.template.utility.XmlEscape"/>
 
+    <bean id="loginRequiredInterceptor" class="cn.whaley.datawarehouse.illidan.server.auth.LoginRequiredInterceptor"/>
+    <aop:config proxy-target-class="true">
+        <!--切入点-->
+        <aop:pointcut id="loginPoint"
+                      expression="execution(public * cn.whaley.datawarehouse.illidan.server.controller..*.*(..)) "/>
+        <!--在该切入点使用自定义拦截器-->
+        <aop:advisor pointcut-ref="loginPoint" advice-ref="loginRequiredInterceptor"/>
+    </aop:config>
 
     <!--<bean class="org.springframework.web.multipart.commons.CommonsMultipartResolver" id="multipartResolver"/>-->
 

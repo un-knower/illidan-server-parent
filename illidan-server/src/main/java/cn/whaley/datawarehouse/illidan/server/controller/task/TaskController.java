@@ -1,16 +1,11 @@
 package cn.whaley.datawarehouse.illidan.server.controller.task;
 
 import cn.whaley.datawarehouse.illidan.common.domain.db.DbInfo;
-import cn.whaley.datawarehouse.illidan.common.domain.db.DbInfoQuery;
 import cn.whaley.datawarehouse.illidan.common.domain.field.FieldInfo;
 import cn.whaley.datawarehouse.illidan.common.domain.group.TaskGroup;
 import cn.whaley.datawarehouse.illidan.common.domain.group.TaskGroupQuery;
-import cn.whaley.datawarehouse.illidan.common.domain.storage.StorageInfo;
-import cn.whaley.datawarehouse.illidan.common.domain.storage.StorageInfoQuery;
 import cn.whaley.datawarehouse.illidan.common.domain.table.TableInfo;
 import cn.whaley.datawarehouse.illidan.common.domain.table.TableInfoQuery;
-import cn.whaley.datawarehouse.illidan.common.domain.table.TableWithField;
-import cn.whaley.datawarehouse.illidan.common.domain.task.Task;
 import cn.whaley.datawarehouse.illidan.common.domain.task.TaskFull;
 import cn.whaley.datawarehouse.illidan.common.domain.task.TaskQuery;
 import cn.whaley.datawarehouse.illidan.common.domain.task.TaskQueryResult;
@@ -20,8 +15,8 @@ import cn.whaley.datawarehouse.illidan.common.service.group.TaskGroupService;
 import cn.whaley.datawarehouse.illidan.common.service.storage.StorageInfoService;
 import cn.whaley.datawarehouse.illidan.common.service.table.TableInfoService;
 import cn.whaley.datawarehouse.illidan.common.service.task.TaskService;
-import cn.whaley.datawarehouse.illidan.server.util.Common;
-import org.json.JSONObject;
+import cn.whaley.datawarehouse.illidan.server.auth.LoginRequired;
+import cn.whaley.datawarehouse.illidan.server.controller.Common;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,9 +28,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -61,7 +56,7 @@ public class TaskController extends Common {
     private StorageInfoService storageInfoService;
 
     @RequestMapping("list")
-    public ModelAndView list(Long groupId, ModelAndView mav){
+    public ModelAndView list(Long groupId, ModelAndView mav, HttpSession httpSession){
         TaskGroup taskGroup = taskGroupService.get(groupId);
         if(taskGroup == null) {
             mav.addObject("msg","groupId参数不合法");

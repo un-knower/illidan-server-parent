@@ -14,9 +14,6 @@
 <body>
 <div class="content">
     <h2>${msg}</h2>
-    <p class="text">
-        由于您输入的projetId不合法,没有相应的页面
-    </p>
 </div>
 </body>
 </html>

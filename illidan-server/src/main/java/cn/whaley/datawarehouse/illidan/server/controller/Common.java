@@ -1,4 +1,4 @@
-package cn.whaley.datawarehouse.illidan.server.util;
+package cn.whaley.datawarehouse.illidan.server.controller;
 
 import com.alibaba.fastjson.JSONObject;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -16,6 +16,7 @@ import java.net.URLDecoder;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 共同类
@@ -27,27 +28,15 @@ public class Common {
     public static final String POSITION_ICON = "glyphicon glyphicon-user";
 
     public static final String USER_KEY = "CRM_USER_";
-    public static final Long KEY_EXPIRE = 3*24*60*60L;
+    public static final Long KEY_EXPIRE = 3 * 24 * 60 * 60L;
     public static final String VALIDATE_CODE = "CRM_VALIDATE_CODE_";
 
     public static final String AUTH_RES_ANY = "CRM_AUTH_RES_ANY";
     public static final String AUTH_RES = "CRM_AUTH_RES_";
-
+    protected static final String PROVINCE_KEY = "provinceId";
     protected HttpServletRequest request = null;
     protected HttpServletResponse response = null;
     protected HttpSession session = null;
-
-//    @Autowired
-//    private RedisUtil redisUtil;
-//
-//    @Autowired
-//    private SysuserManager sysuserManager;
-//    @Autowired
-//    private ExtendAttributeService extendAttributeService;
-//    @Autowired
-//    private SysDicConvert sysDicConvert;
-//    @Autowired
-//    private SysDicManager sysDicManager;
 
     @ModelAttribute
     public void setReqAndRes(HttpServletRequest request, HttpServletResponse response) {
@@ -57,23 +46,22 @@ public class Common {
 //        ThreadLocalHelper.setLoginUser(getSysuserFromSession());
 //        ThreadLocalHelper.setClient(getClientFromSession());
     }
-    //
-//    public Sysuser getUser(String token) {
-//        try {
-//            String json = redisUtil.get(USER_KEY + token).toString();
-//            return JSON.parseObject(json, Sysuser.class);
-//        } catch (Exception e) {
-//            return null;
-//        }
-//    }
-    @ModelAttribute("resourceDomain")
-    public String getResourceDomain() {
-        return "360img.cn";
+
+    protected Map<String, String> getUserFromSession(HttpSession httpSession) {
+        Object user = httpSession.getAttribute("user");
+        if (user instanceof Map) {
+            return (Map<String, String>) user;
+        } else {
+            return null;
+        }
     }
 
-    @ModelAttribute("webSiteDomain")
-    public String getWebsiteDomain() {
-        return "360haoyao.com";
+    protected String getUserNameFromSession(HttpSession httpSession) {
+        Map<String, String> user = getUserFromSession(httpSession);
+        if (user != null) {
+            return user.get("nickname");
+        }
+        return null;
     }
 
     public HttpServletRequest getRequest() {
@@ -87,81 +75,6 @@ public class Common {
     public HttpSession getSession() {
         return this.session;
     }
-
-    protected static final String PROVINCE_KEY = "provinceId";
-
-//    public Long getTenantIdFromSession() {
-////        return 1L;
-//        Sysuser sysuser = getSysuserFromSession();
-//        if(sysuser==null){
-//            return -1L;
-//        }else{
-//            return sysuser.getTenantId();
-//        }
-////        throw new RuntimeException("login timeout, login again !");
-//    }
-
-//    public Client getClientFromSession() {
-////        Sysuser nowSysuser = getSysuserFromSession();
-//        return Client.buildByTerminalSite(TerminalEnum.TERMINAL_PC, SiteEnum.SITE_MALL, "crm-admin", "1.0", getTenantIdFromSession());
-//    }
-//
-//    public Client getClientFromTenantId(Long tenantId ) {
-////        Sysuser nowSysuser = getSysuserFromSession();
-//        return Client.buildByTerminalSite(TerminalEnum.TERMINAL_PC, SiteEnum.SITE_MALL, "crm-admin", "1.0", tenantId);
-//    }
-
-    private String getUserFromCookie(Cookie[] cookieAry) {
-//        if(null == cookieAry || cookieAry.length <= 0){
-//            return null;
-//        }
-//        for(Cookie cookie : cookieAry){
-//            if(AdminConstant.USER_LOGIN_NAME.equals(cookie.getName())){
-//                return cookie.getValue();
-//            }
-//        }
-        return null;
-    }
-
-//    public Sysuser getSysuserFromSession(){
-////        if(getRequest()==null){
-////            return null;
-////        }
-////        HttpSession session = getRequest().getSession();
-////        return (Sysuser) session.getAttribute("NOW_SYSUSER");
-//
-//
-////        String token = getToken(getRequest());
-//        String sessionId = RequestContextHolder.currentRequestAttributes().getSessionId();
-//        Object inRedis = redisUtil.get(USER_KEY + sessionId);
-//        if(inRedis==null){
-//            return null;
-//        }else{
-//            return JSON.parseObject(inRedis.toString(),Sysuser.class);
-//        }
-//    }
-
-//    public String getUsernameFromSession() {
-//        return getSysuserFromSession().getUsername();
-////        return LoginThreadLocalHelper.getUserName();
-//    }
-//    public Long getUserIdFromSession() {
-//        return getSysuserFromSession().getId();
-////        return LoginThreadLocalHelper.getUserName();
-//    }
-//
-//    private Long getTenantFromCookie(Cookie[] cookieAry) {
-////        if(null == cookieAry || cookieAry.length <= 0){
-////            return null;
-////        }
-////        for(Cookie cookie : cookieAry){
-////            if(AdminConstant.USER_LOGIN_TENANT_ID.equals(cookie.getName())){
-////                return Long.valueOf(cookie.getValue());
-////            }
-////        }
-//        return null;
-//    }
-
 
     /**
      * 获取省id
@@ -214,7 +127,7 @@ public class Common {
         return null;
     }
 
-    public void clearCookie(String key){
+    public void clearCookie(String key) {
         Cookie newCookie = new Cookie(key, null);
         newCookie.setMaxAge(0);
 //        newCookie.setPath("/");
@@ -272,7 +185,7 @@ public class Common {
             jsonObject.put("result", false);
             jsonObject.put("msg", "系统错误");
             result = jsonObject.toString();
-            if (out != null){
+            if (out != null) {
                 out.print(jsonObject);
             }
         } finally {
@@ -293,12 +206,12 @@ public class Common {
         return str.matches(regex);
     }
 
-    public Boolean validateColumnNull(Object columnName){
+    public Boolean validateColumnNull(Object columnName) {
         return !(columnName == null || columnName.equals(""));
     }
 
-    public String validateMessage(String columnName){
-        return returnResult(false, columnName+"不能为空!!!");
+    public String validateMessage(String columnName) {
+        return returnResult(false, columnName + "不能为空!!!");
     }
 
 
@@ -346,8 +259,8 @@ public class Common {
 //        return node;
 //    }
 
-    public String formatDate(Date date){
-        if(date == null){
+    public String formatDate(Date date) {
+        if (date == null) {
             return "";
         }
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -355,7 +268,7 @@ public class Common {
         return dateString;
     }
 
-    public void printException(Logger logger, Exception e){
+    public void printException(Logger logger, Exception e) {
         logger.error("message:{}\r\n{}\r\n{}\r\n{}\r\n",
                 e.toString(), e.getStackTrace(), e.getSuppressed(), e.getCause());
     }
