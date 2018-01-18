@@ -51,8 +51,8 @@ public class AuthorizeHttpService {
      * @param dir_id 目录ID,多个以逗号隔开
      * @return 目录权限List, key为目录id， value表示是否有权限 1:有权限 0:没有权限
      * */
-    public List<Map> checkAuth(String uid, String sys_id, String dir_id){
-        List<Map> result = new ArrayList<>();
+    public Map checkAuth(String uid, String sys_id, String dir_id){
+        Map result = new HashMap();
         Map<String, String> params = new HashMap<String,String>();
         params.put("uid", uid);
         params.put("sys_id", sys_id);
@@ -60,8 +60,7 @@ public class AuthorizeHttpService {
         String response = HttpClientUtil.URLGet(url+"/check_auth", params, "UTF-8");
         JSONObject resultJson = new JSONObject(response);
         if(resultJson.get("code").toString().equals("200") && resultJson.getString("msg").equals("success")){
-            Map map = JSON.parseObject(resultJson.getJSONObject("data").toString());
-            result.add(map);
+            result = JSON.parseObject(resultJson.getJSONObject("data").toString());
         }
         return result;
     }

@@ -69,6 +69,7 @@ public class ProjectController extends Common {
         try {
             List<Project> resultProjects = new ArrayList<>();
             HashMap<String, String> map = new HashMap<String, String>();
+            String dir_id = "";
             map.put("1", "已发布");
             map.put("0", "未发布");
             if (project == null) {
@@ -76,17 +77,49 @@ public class ProjectController extends Common {
             }
             project.setLimitStart(start);
             project.setPageSize(length);
-            Long count = projectService.countByProject(project);
+//            Long count = projectService.countByProject(project);
             List<Project> projects = projectService.findByProject(project);
             for (int i=0;i<=projects.size()-1;++i){
                 projects.get(i).setIsPublish(map.get(projects.get(i).getIsPublish()));
                 projects.get(i).setOwnerName(ownerService.get(projects.get(i).getOwnerId()).getOwnerName());
-                Long projectId = projects.get(i).getId();
-                Authorize authorize = new Authorize();
-                authorize.setParentId(projectId);
-                List<Authorize> authorizes = authorizeService.findByAuthorize(authorize);
             }
-            outputTemplateJson(projects, count);
+            //获取project的读权限目录id
+            Authorize authorize1 = new Authorize();
+            authorize1.setType(1L);
+            List<Authorize> authorizes = authorizeService.findByAuthorize(authorize1);
+            if (authorizes != null && authorizes.size()>0){
+                for (Authorize a: authorizes){
+                    String readId = a.getReadId();
+                    dir_id = dir_id + readId + ",";
+                }
+            }
+            //检查当前用户是否有权限查看project
+            dir_id = dir_id.substring(0,dir_id.length()-1);
+            System.out.println("dir_id: "+dir_id);
+            // TODO 接入sso后从sso获取
+            String uid = "wu.jiulin";
+            Map authMap = authorizeHttpService.checkAuth(uid, sys_id, dir_id);
+            for (Object obj : authMap.keySet()){
+                System.out.println("key为："+obj+", 值为："+authMap.get(obj));
+                if (authMap.get(obj).toString().equals("1")){
+                    System.out.println("====");
+                    Authorize authorizeQuery = new Authorize();
+                    authorizeQuery.setReadId(obj.toString());
+                    Authorize authorize = authorizeService.getByAuthorize(authorizeQuery);
+                    Long projectId = authorize.getParentId();
+                    System.out.println("projectId: "+projectId);
+                    for (int i = projects.size()-1; i >=0; i--){
+                        if (projects.get(i).getId().equals(projectId)){
+                            resultProjects.add(projects.get(i));
+                        }
+                    }
+                }
+            }
+
+            System.out.println(resultProjects.size());
+            Long count = (long) resultProjects.size();
+            outputTemplateJson(resultProjects, count);
+//            outputTemplateJson(projects, count);
         } catch (Exception e) {
             logger.error(e.getMessage());
             e.printStackTrace();

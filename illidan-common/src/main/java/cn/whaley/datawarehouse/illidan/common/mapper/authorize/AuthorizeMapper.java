@@ -12,9 +12,13 @@ import java.util.List;
 public interface AuthorizeMapper {
     Authorize get(@Param("id") final Long id);
 
+    Authorize getByParentId(@Param("parentId") final Long parentId);
+
     Long insert(@Param("authorize") final Authorize authorize);
 
     List<Authorize> findByAuthorize(@Param("authorize") final Authorize Authorize);
+
+    Authorize getByAuthorize(@Param("authorize") final Authorize Authorize);
 
     void deleteById(@Param("id") final Long id);
 

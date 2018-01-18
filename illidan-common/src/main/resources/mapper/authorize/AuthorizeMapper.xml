@@ -46,6 +46,10 @@
         select * from authorize authorize where authorize.id = #{id}
     </select>
 
+    <select id="getByParentId"  resultMap="returnAuthorize">
+        select * from authorize authorize where authorize.parentId = #{parentId}
+    </select>
+
     <insert id="insert" parameterType="Authorize" useGeneratedKeys="true" keyProperty="authorize.id">
         insert into authorize
         (
@@ -60,6 +64,12 @@
     </insert>
 
     <select id="findByAuthorize" resultMap="returnAuthorize">
+        select <include refid="colList" /> from authorize authorize
+        <include refid="joinTables"/>
+        <include refid="smallWhereCase"/>
+    </select>
+
+    <select id="getByAuthorize" resultMap="returnAuthorize">
         select <include refid="colList" /> from authorize authorize
         <include refid="joinTables"/>
         <include refid="smallWhereCase"/>

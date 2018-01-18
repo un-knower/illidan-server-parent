@@ -25,6 +25,15 @@ public class AuthorizeServiceImpl implements AuthorizeService {
     }
 
     @Override
+    public Authorize getByParentId(Long parentId) {
+        if (parentId == null){
+            logger.error("get: id is null.");
+            return null;
+        }
+        return authorizeMapper.getByParentId(parentId);
+    }
+
+    @Override
     public Long insert(Authorize authorize) {
         if (authorize == null){
             logger.error("insert: authorize is null.");
@@ -41,6 +50,15 @@ public class AuthorizeServiceImpl implements AuthorizeService {
             return null;
         }
         return authorizeMapper.findByAuthorize(authorize);
+    }
+
+    @Override
+    public Authorize getByAuthorize(Authorize authorize) {
+        if (authorize == null){
+            logger.error("findByAuthorize: authorize is null.");
+            return null;
+        }
+        return authorizeMapper.getByAuthorize(authorize);
     }
 
     @Override
