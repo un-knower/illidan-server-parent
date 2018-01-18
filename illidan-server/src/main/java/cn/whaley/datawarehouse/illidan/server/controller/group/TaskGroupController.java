@@ -7,6 +7,7 @@ import cn.whaley.datawarehouse.illidan.common.domain.project.ProjectQuery;
 import cn.whaley.datawarehouse.illidan.common.service.group.TaskGroupService;
 import cn.whaley.datawarehouse.illidan.common.service.owner.OwnerService;
 import cn.whaley.datawarehouse.illidan.common.service.project.ProjectService;
+import cn.whaley.datawarehouse.illidan.server.response.ServerResponse;
 import cn.whaley.datawarehouse.illidan.server.service.AzkabanService;
 import cn.whaley.datawarehouse.illidan.server.controller.Common;
 import org.apache.logging.log4j.core.util.CronExpression;
@@ -57,7 +58,8 @@ public class TaskGroupController extends Common {
     }
 
     @RequestMapping("groupList")
-    public void groupList(Integer start, Integer length, @ModelAttribute("taskGroup") TaskGroupQuery taskGroup) {
+    @ResponseBody
+    public ServerResponse groupList(Integer start, Integer length, @ModelAttribute("taskGroup") TaskGroupQuery taskGroup) {
         try {
             if (taskGroup == null) {
                 taskGroup = new TaskGroupQuery();
@@ -70,10 +72,10 @@ public class TaskGroupController extends Common {
             for (int i=0;i<=taskGroups.size()-1;++i){
                 taskGroups.get(i).setProjectCode(projectService.get(taskGroups.get(i).getProjectId()).getProjectCode());
             }
-            outputTemplateJson(taskGroups, count);
+            return ServerResponse.responseBySuccessDataAndCount(taskGroups, count);
         } catch (Exception e) {
-            e.getMessage();
-            e.printStackTrace();
+            logger.warn(e.getMessage());
+            return ServerResponse.responseByError("查询失败:" + e.getMessage());
         }
     }
 
@@ -88,7 +90,7 @@ public class TaskGroupController extends Common {
 
     @RequestMapping("add")
     @ResponseBody
-    public void add(@RequestBody TaskGroup taskGroup) {
+    public ServerResponse add(@RequestBody TaskGroup taskGroup) {
         try {
             //状态默认置成有效
             taskGroup.setStatus("1");
@@ -96,16 +98,16 @@ public class TaskGroupController extends Common {
             taskGroup.setUpdateTime(new Date());
             String result = validTaskGroup(taskGroup);
             if(!result.equals("success")) {
-                returnResult(false, result);
+                return ServerResponse.responseByError( result);
             } else {
                 taskGroupService.insert(taskGroup);
                 logger.info("新增任务组成功!!!");
-                returnResult(true, "新增任务组成功!!!");
+                return ServerResponse.responseBySuccessMessage( "新增任务组成功!!!");
             }
         } catch (Exception e) {
             e.printStackTrace();
             logger.error(e.getMessage());
-            returnResult(false, "新增任务组失败: " + e.getMessage());
+            return ServerResponse.responseByError( "新增任务组失败: " + e.getMessage());
         }
     }
 
@@ -127,22 +129,22 @@ public class TaskGroupController extends Common {
 
     @RequestMapping("delete")
     @ResponseBody
-    public void delete(String ids) {
+    public ServerResponse delete(String ids) {
         try {
             if(StringUtils.isEmpty(ids)){
-                returnResult(false, "请选择要删除的记录");
+                return ServerResponse.responseByError( "请选择要删除的记录");
             }else {
                 String[] idArray = ids.split(",");
                 List<Long> idList = Arrays.asList(idArray).stream().map(x->Long.parseLong(x)).collect(Collectors.toList());
                 taskGroupService.removeByIds(idList);
                 logger.info("删除了任务组：" + ids);
-                returnResult(true, "删除任务组成功");
+                return ServerResponse.responseBySuccessMessage( "删除任务组成功");
             }
 
         } catch (Exception e) {
             e.printStackTrace();
             logger.error(e.getMessage());
-            returnResult(false, "删除任务组失败:" + e.getMessage());
+            return ServerResponse.responseByError( "删除任务组失败:" + e.getMessage());
         }
     }
 
@@ -158,11 +160,11 @@ public class TaskGroupController extends Common {
 
     @RequestMapping("edit")
     @ResponseBody
-    public void edit(@RequestBody TaskGroup taskGroup) {
+    public ServerResponse edit(@RequestBody TaskGroup taskGroup) {
         try {
             String valid = validTaskGroup(taskGroup);
             if(!valid.equals("success")){
-                returnResult(false, valid);
+                return ServerResponse.responseByError( valid);
             } else {
                 //为了操作azkaban数据异常回退
                 TaskGroup oldtaskGroup = taskGroupService.get(taskGroup.getId());
@@ -175,14 +177,14 @@ public class TaskGroupController extends Common {
 
                 if(!"1".equals(isPublish)){
                     //project为未发布，只需改数据库即可
-                    returnResult(true, "修改任务组成功!!!");
+                    return ServerResponse.responseBySuccessMessage( "修改任务组成功!!!");
                 }else{
                     if(cronExpression != null && cronExpression.equals(oldtaskGroup.getSchedule())){
                         //cronExpression未修改，只需改数据库即可
-                        returnResult(true, "修改任务组成功!!!");
+                        return ServerResponse.responseBySuccessMessage( "修改任务组成功!!!");
                     }else if(oldtaskGroup.getScheduleId() == null || Integer.parseInt(oldtaskGroup.getScheduleId()) <= 0) {
                         //未设置调度，只需改数据库即可
-                        returnResult(true, "修改任务组成功!!!");
+                        return ServerResponse.responseBySuccessMessage( "修改任务组成功!!!");
                     }
                     else {
                         //cronExpression修改，只需改数据库即可
@@ -197,12 +199,12 @@ public class TaskGroupController extends Common {
                             result = azkabanService.setSchedule(project.getId(),oldtaskGroup,cronExpression);
                         }
                         if("success".equals(result.getString("status"))){
-                            returnResult(true, "修改任务组成功!!!" );
+                            return ServerResponse.responseBySuccessMessage( "修改任务组成功!!!" );
                         }else{
                             //回退更新数据
                             taskGroupService.updateById(oldtaskGroup);
-//                            returnResult(true, "修改任务组成功!!!");
-                            returnResult(false, result.getString("message").replaceAll("'","\\\\'") );
+//                            return ServerResponse.responseBySuccessMessage( "修改任务组成功!!!");
+                            return ServerResponse.responseByError( result.getString("message").replaceAll("'","\\\\'") );
                         }
                     }
 
@@ -212,7 +214,7 @@ public class TaskGroupController extends Common {
         } catch (Exception e) {
             e.printStackTrace();
             logger.error(e.getMessage());
-            returnResult(false, "修改任务组失败" + e.getMessage());
+            return ServerResponse.responseByError( "修改任务组失败" + e.getMessage());
         }
     }
 

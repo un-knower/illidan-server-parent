@@ -1,8 +1,10 @@
 package cn.whaley.datawarehouse.illidan.server.auth;
 
 import cn.whaley.datawarehouse.illidan.common.util.ConfigUtils;
+import cn.whaley.datawarehouse.illidan.server.response.ServerResponse;
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 
@@ -16,7 +18,9 @@ public class LoginRequiredInterceptor implements MethodInterceptor {
     @Override
     public Object invoke(MethodInvocation methodInvocation) throws Throwable {
         // 判断该方法是否加了@LoginRequired 注解
-        if (!methodInvocation.getMethod().isAnnotationPresent(LoginRequired.class) || AuthService.skipLogin()) {
+        if (!methodInvocation.getMethod().isAnnotationPresent(LoginRequired.class)
+                ||!methodInvocation.getMethod().isAnnotationPresent(RequestMapping.class)
+                || UserService.skipLogin()) {
             return methodInvocation.proceed();
         }
 
@@ -35,11 +39,17 @@ public class LoginRequiredInterceptor implements MethodInterceptor {
 
         if (user == null) {
             Class clazz = methodInvocation.getMethod().getReturnType();
+            String url = ConfigUtils.get("newillidan.sso.server.url");
+            String loginCallbackUrl = ConfigUtils.get("newillidan.sso.callback.login");
+            url = url + "/user/login?appkey=bigdata-illidan&cb=" + loginCallbackUrl;
             if (clazz.equals(ModelAndView.class)) {
-                String url = ConfigUtils.get("newillidan.sso.server.url");
-                String loginCallbackUrl = ConfigUtils.get("newillidan.sso.callback.login");
-                url = url + "/user/login?appkey=bigdata-illidan&cb=" + loginCallbackUrl;
                 return new ModelAndView(new RedirectView(url));
+            }
+            if (clazz.equals(String.class)) {
+                return "redirect:" + url;
+            }
+            if (clazz.equals(ServerResponse.class)) {
+                return ServerResponse.responseByError(401, "请登录");
             }
         }
 

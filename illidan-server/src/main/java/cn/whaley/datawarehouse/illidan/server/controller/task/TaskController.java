@@ -17,6 +17,7 @@ import cn.whaley.datawarehouse.illidan.common.service.table.TableInfoService;
 import cn.whaley.datawarehouse.illidan.common.service.task.TaskService;
 import cn.whaley.datawarehouse.illidan.server.auth.LoginRequired;
 import cn.whaley.datawarehouse.illidan.server.controller.Common;
+import cn.whaley.datawarehouse.illidan.server.response.ServerResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -70,7 +71,8 @@ public class TaskController extends Common {
     }
 
     @RequestMapping("taskList")
-    public void taskList(Integer start, Integer length, @ModelAttribute("task") TaskQuery task) {
+    @ResponseBody
+    public ServerResponse taskList(Integer start, Integer length, @ModelAttribute("task") TaskQuery task) {
         try {
             if (task == null) {
                 task = new TaskQuery();
@@ -80,11 +82,11 @@ public class TaskController extends Common {
             task.setPageSize(length);
             Long count = taskService.countByTask(task);
             List<TaskQueryResult> tasks = taskService.findByTask(task);
-            outputTemplateJson(tasks, count);
+            return ServerResponse.responseBySuccessDataAndCount(tasks, count);
         } catch (Exception e) {
             e.printStackTrace();
             logger.error(e.getMessage());
-            returnResult(false, "获取任务列表失败" + e.getMessage());
+            return ServerResponse.responseByError( "获取任务列表失败" + e.getMessage());
         }
     }
 
@@ -103,7 +105,7 @@ public class TaskController extends Common {
 
     @RequestMapping("add")
     @ResponseBody
-    public String add(@RequestBody TaskFull taskFull) {
+    public ServerResponse add(@RequestBody TaskFull taskFull) {
         try {
             if(validateTask(taskFull).equals("ok")) {
                 //执行方式(List)
@@ -119,15 +121,15 @@ public class TaskController extends Common {
                     logger.info("清除cookie");
                 }
                 logger.info("新增任务成功!!!");
-                return returnResult(true, "新增任务成功!!!");
+                return ServerResponse.responseBySuccessMessage( "新增任务成功!!!");
             }else {
-                return returnResult(false, validateTask(taskFull));
+                return ServerResponse.responseByError( validateTask(taskFull));
             }
 
         } catch (Exception e) {
             e.printStackTrace();
             logger.error(e.getMessage());
-            return returnResult(false, "新增任务失败: " + e.getMessage());
+            return ServerResponse.responseByError( "新增任务失败: " + e.getMessage());
         }
     }
 
@@ -149,30 +151,30 @@ public class TaskController extends Common {
 
     @RequestMapping("edit")
     @ResponseBody
-    public String edit(@RequestBody TaskFull taskFull) {
+    public ServerResponse edit(@RequestBody TaskFull taskFull) {
         try {
             if(validateTask(taskFull).equals("ok")) {
                 taskFull.setTableId(taskFull.getFullHiveTable().getHiveTable().getId());
                 taskService.updateFullTask(taskFull);
                 logger.info("修改任务成功!!!");
-                return returnResult(true, "修改任务成功!!!");
+                return ServerResponse.responseBySuccessMessage( "修改任务成功!!!");
             }else {
                 logger.info("修改任务失败!!!");
-                return returnResult(false, "修改任务失败!!!");
+                return ServerResponse.responseByError( "修改任务失败!!!");
             }
         } catch (Exception e) {
             e.printStackTrace();
             logger.error(e.getMessage());
-            return returnResult(false, "修改任务失败," + e.getMessage());
+            return ServerResponse.responseByError( "修改任务失败," + e.getMessage());
         }
     }
 
     @RequestMapping("delete")
     @ResponseBody
-    public void delete(String ids) {
+    public ServerResponse delete(String ids) {
         try {
             if(StringUtils.isEmpty(ids)){
-                returnResult(false, "请选择要删除的记录");
+                return ServerResponse.responseByError( "请选择要删除的记录");
             }else {
                 String[] idArray = ids.split(",");
                 List<Long> idList = Arrays.asList(idArray).stream().map(x->Long.parseLong(x)).collect(Collectors.toList());
@@ -182,18 +184,24 @@ public class TaskController extends Common {
                     clearCookie("taskId");
                     logger.info("清除cookie");
                 }
-                returnResult(true, "删除任务成功");
+                return ServerResponse.responseBySuccessMessage( "删除任务成功");
             }
 
         } catch (Exception e) {
             e.printStackTrace();
             logger.error(e.getMessage());
-            returnResult(false, "删除任务失败:" + e.getMessage());
+            return ServerResponse.responseByError( "删除任务失败:" + e.getMessage());
         }
     }
 
     @RequestMapping("getTables")
     @ResponseBody
+    public ServerResponse getTableList(Long dbId){
+        List<TableInfo> tableInfoList = getTables(dbId);
+        return ServerResponse.responseBySuccess(tableInfoList);
+
+    }
+
     public List<TableInfo> getTables(Long dbId){
         List<TableInfo> tableInfoList = new ArrayList<>();
         try {
@@ -220,13 +228,13 @@ public class TaskController extends Common {
     public String validateTask(TaskFull task){
         String result = "ok";
         if(StringUtils.isEmpty(task)){
-            return returnResult(false, "失败!!!");
+            return "失败!!!";
         }
         if(!validateColumnNull(task.getTaskCode())){
             return validateMessage("任务code");
         }
         if (!codeReg(task.getTaskCode())){
-            return returnResult(false, "任务code只能由英文字母,数字,-,_组成!!!");
+            return "任务code只能由英文字母,数字,-,_组成!!!";
         }
         if (!validateColumnNull(task.getAddUser())){
             return validateMessage("任务添加用户");

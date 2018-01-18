@@ -3,6 +3,7 @@ package cn.whaley.datawarehouse.illidan.server.controller.owner;
 import cn.whaley.datawarehouse.illidan.common.domain.owner.Owner;
 import cn.whaley.datawarehouse.illidan.common.domain.owner.OwnerQuery;
 import cn.whaley.datawarehouse.illidan.common.service.owner.OwnerService;
+import cn.whaley.datawarehouse.illidan.server.response.ServerResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -18,7 +19,7 @@ public class OwnerController {
 
     @RequestMapping("getOwner")
     @ResponseBody
-    public List<Owner> getOwner(OwnerQuery owner){
-        return ownerService.findByOwner(owner);
+    public ServerResponse getOwner(OwnerQuery owner){
+        return ServerResponse.responseBySuccess(ownerService.findByOwner(owner));
     }
 }

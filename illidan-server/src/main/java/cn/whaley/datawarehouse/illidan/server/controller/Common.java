@@ -211,7 +211,7 @@ public class Common {
     }
 
     public String validateMessage(String columnName) {
-        return returnResult(false, columnName + "不能为空!!!");
+        return columnName + "不能为空!!!";
     }
 
 

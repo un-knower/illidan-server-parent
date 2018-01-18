@@ -1,7 +1,7 @@
 package cn.whaley.datawarehouse.illidan.server.controller.auth;
 
 import cn.whaley.datawarehouse.illidan.common.util.ConfigUtils;
-import cn.whaley.datawarehouse.illidan.server.auth.AuthService;
+import cn.whaley.datawarehouse.illidan.server.auth.UserService;
 import cn.whaley.datawarehouse.illidan.server.controller.Common;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,12 +29,12 @@ public class HomeController extends Common {
     @ResponseBody
     public ModelAndView login(String sso_tn, String url, HttpSession httpSession, ModelAndView mav) {
         Map<String, String> loginUser = getUserFromSession(httpSession);
-        Map<String, String> user = AuthService.getUserInfo(sso_tn);
+        Map<String, String> user = UserService.getUserInfo(sso_tn);
         if (url == null || url.trim().length() == 0) {
             url = ConfigUtils.get("newillidan.entranceUrl");
         }
         if (user == null) {
-            if (loginUser != null || AuthService.skipLogin()) {
+            if (loginUser != null || UserService.skipLogin()) {
                 return new ModelAndView(new RedirectView(url));
             }
             mav.addObject("msg", "登陆失败，token无效");

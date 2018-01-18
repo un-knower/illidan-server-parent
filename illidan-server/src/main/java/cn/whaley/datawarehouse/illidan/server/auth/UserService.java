@@ -13,8 +13,8 @@ import java.util.Map;
 /**
  * Created by lituo on 2018/1/17.
  */
-public class AuthService {
-    private static Logger logger = LoggerFactory.getLogger(AuthService.class);
+public class UserService {
+    private static Logger logger = LoggerFactory.getLogger(UserService.class);
 
     public static boolean skipLogin() {
         String skipLogin = ConfigUtils.get("streaming.skipLogin");
