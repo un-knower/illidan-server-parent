@@ -1,5 +1,6 @@
 package cn.whaley.datawarehouse.illidan.server.service;
 
+import cn.whaley.datawarehouse.illidan.common.util.ConfigUtils;
 import cn.whaley.datawarehouse.illidan.server.util.HttpClientUtil;
 import com.alibaba.fastjson.JSON;
 import org.json.JSONArray;
@@ -17,8 +18,10 @@ import java.util.Map;
 @Service
 public class AuthorizeHttpService {
 
-    private String url = "http://auth-platform.aginomoto.com";
-//    private String url = ConfigUtils.get("newillidan.authorize.url");
+    private String url = ConfigUtils.get("newillidan.authorize.url");
+    private String project_node_id = ConfigUtils.get("newillidan.authorize.project_node_id");
+    private String table_node_id = ConfigUtils.get("newillidan.authorize.table_node_id");
+    private String sys_id = ConfigUtils.get("newillidan.authorize.sys_id");
 
     /**
      * 创建目录
@@ -34,6 +37,28 @@ public class AuthorizeHttpService {
         params.put("pid", pid);
         params.put("dir_name", dir_name);
         params.put("group_id", group_id);
+        params.put("uid", uid);
+        String response = HttpClientUtil.URLPost(url+"/dir", params,"UTF-8");
+        JSONObject resultJson = new JSONObject(response);
+        if(resultJson.get("code").toString().equals("200") && resultJson.getString("msg").equals("success")){
+            JSONObject dir_id_json = resultJson.getJSONObject("data");
+            dir_id = dir_id_json.getString("dir_id");
+        }
+        return dir_id;
+    }
+
+    public String createAuth(String pid, String dirName, String uid){
+        String dir_id = "";
+        Map<String, String> params = new HashMap<String,String>();
+        List<Map> groupList = getGroups(uid, sys_id);
+        String groupId = "";
+        for (Map m : groupList){
+            groupId = groupId + m.get("id");
+        }
+        groupId = groupId.substring(0,groupId.length()-1);
+        params.put("pid", pid);
+        params.put("dir_name", dirName);
+        params.put("group_id", groupId);
         params.put("uid", uid);
         String response = HttpClientUtil.URLPost(url+"/dir", params,"UTF-8");
         JSONObject resultJson = new JSONObject(response);
