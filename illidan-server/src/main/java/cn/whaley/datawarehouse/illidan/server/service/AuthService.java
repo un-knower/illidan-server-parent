@@ -1,31 +1,30 @@
 package cn.whaley.datawarehouse.illidan.server.service;
 
+import cn.whaley.datawarehouse.illidan.common.domain.authorize.Authorize;
 import cn.whaley.datawarehouse.illidan.common.domain.project.Project;
 import cn.whaley.datawarehouse.illidan.common.domain.table.TableInfo;
 import cn.whaley.datawarehouse.illidan.common.util.ConfigUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Service
 public class AuthService {
-
-    @Autowired
-    private AuthorizeHttpService authorizeHttpService;
     private String projectNodeId = ConfigUtils.get("newillidan.authorize.project_node_id");
     private String tableNodeId = ConfigUtils.get("newillidan.authorize.table_node_id");
     private String sysId = ConfigUtils.get("newillidan.authorize.sys_id");
 
-    public String createProjectAuth(Project project, String createUserName){
+    public Authorize createProjectAuth(Project project, String createUserName){
         //project_112
         //read_project_112
         //write_project_112
         //publish_project_112
-        String dirName = "project_"+project.getId();
-        return authorizeHttpService.createAuth(projectNodeId, dirName, createUserName);
+        return null;
     }
 
-    public String createTableAuth(TableInfo tableInfo, String createUserName){
-        return "";
+    public Authorize createTableAuth(TableInfo tableInfo, String createUserName){
+        return null;
     }
 
     public List<Project> filterProjectList(List<Project> projects, String userName){
