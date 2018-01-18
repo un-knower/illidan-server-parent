@@ -99,7 +99,8 @@
                 if (data.result == true) {
                     modalAlert("提示", data.msg, closeTip, "ok");
                 } else {
-                    modalAlert("提示", data.msg, closeWindow, "error");
+                    // modalAlert("提示", data.msg, closeWindow, "error");
+                    modalAlert("提示", data.msg, closeTip, "error");
                 }
             },
             error: function (XMLHttpRequest, data, textStatus) {
@@ -107,7 +108,8 @@
 //                alert("status:" + XMLHttpRequest.status);
 //                alert("readyState:" + XMLHttpRequest.readyState);
 //                alert("textStatus:" + textStatus);
-                modalAlert("提示", "新增产品失败,请重新添加", closeWindow, "error");
+//                 modalAlert("提示", "新增产品失败,请重新添加", closeWindow, "error");
+                modalAlert("提示", "新增产品失败,请重新添加", closeTip, "error");
             }
         });
     }

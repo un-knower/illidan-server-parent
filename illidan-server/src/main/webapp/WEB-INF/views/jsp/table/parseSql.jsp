@@ -45,11 +45,13 @@
                 if (data.result == true) {
                     modalAlert("提示", data.msg, closeTip, "ok");
                 } else {
-                    modalAlert("提示", data.msg, closeWindow, "error");
+                    modalAlert("提示", data.msg, closeTip, "error");
+                    // modalAlert("提示", data.msg, closeWindow, "error");
                 }
             },
             error: function() {
-                modalAlert("提示", "解析建表语句失败", closeWindow, "error");
+                modalAlert("提示", "解析建表语句失败", closeTip, "error");
+                // modalAlert("提示", "解析建表语句失败", closeWindow, "error");
             }
         });
     }
