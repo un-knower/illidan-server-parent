@@ -1,14 +1,17 @@
 package cn.whaley.datawarehouse.illidan.server.controller.table;
 
+import cn.whaley.datawarehouse.illidan.common.domain.authorize.Authorize;
 import cn.whaley.datawarehouse.illidan.common.domain.db.DbInfo;
 import cn.whaley.datawarehouse.illidan.common.domain.field.FieldInfo;
 import cn.whaley.datawarehouse.illidan.common.domain.table.FullHiveTable;
 import cn.whaley.datawarehouse.illidan.common.domain.table.TableInfo;
 import cn.whaley.datawarehouse.illidan.common.domain.table.TableInfoQuery;
 import cn.whaley.datawarehouse.illidan.common.domain.table.TableWithField;
+import cn.whaley.datawarehouse.illidan.common.service.authorize.AuthorizeService;
 import cn.whaley.datawarehouse.illidan.common.service.db.DbInfoService;
 import cn.whaley.datawarehouse.illidan.common.service.field.FieldInfoService;
 import cn.whaley.datawarehouse.illidan.common.service.table.TableInfoService;
+import cn.whaley.datawarehouse.illidan.server.service.AuthorizeHttpService;
 import cn.whaley.datawarehouse.illidan.server.service.TableFieldService;
 import cn.whaley.datawarehouse.illidan.server.util.Common;
 import org.slf4j.Logger;
@@ -44,6 +47,15 @@ public class TableInfoController extends Common {
     private DbInfoService dbInfoService;
     @Autowired
     private TableFieldService tableFieldService;
+    @Autowired
+    private AuthorizeHttpService authorizeHttpService;
+    @Autowired
+    private AuthorizeService authorizeService;
+    // TODO 后续改成从lion读取
+    private String table_node_id = "7_37";
+    private String sys_id = "7";
+//    private String table_node_id = ConfigUtils.get("newillidan.authorize.table_node_id");
+//    private String sys_id = ConfigUtils.get("newillidan.authorize.sys_id");
 
     @RequestMapping("list")
     public String list(){
@@ -110,12 +122,31 @@ public class TableInfoController extends Common {
                     fieldInfos = hiveTable.getFieldList();
                 }
                 fieldInfoService.setFiledValue(fieldInfos);
-                tableInfoService.insertFullHiveTable(fullHiveTable);
+                Long tableId = tableInfoService.insertFullHiveTable(fullHiveTable);
                 if (getCookieValue("tableId")!=null && !getCookieValue("tableId").equals("")){
                     clearCookie("tableId");
                     logger.info("清除cookie");
                 }
                 logger.info("新增输出表成功!!!");
+                String dir_name = fullHiveTable.getHiveTable().getTableCode();
+                // TODO 接入sso后group_id和uid从sso获取
+                String group_id = "3";
+                String uid = "wu.jiulin";
+                String node_id = authorizeHttpService.createDir(table_node_id, dir_name, group_id, uid);
+                String read_id = authorizeHttpService.createDir(node_id, "read", group_id, uid);
+                String write_id = authorizeHttpService.createDir(node_id, "write", group_id, uid);
+                if ("".equals(node_id) || "".equals(read_id) || "".equals(write_id)){
+                    //创建失败，回滚
+                    tableInfoService.dropFullHiveTable(tableId);
+                    returnResult(false, "创建table权限失败");
+                }
+                Authorize authorize = new Authorize();
+                authorize.setParentId(tableId);
+                authorize.setNodeId(node_id);
+                authorize.setReadId(read_id);
+                authorize.setWriteId(write_id);
+                authorize.setType(2L);//table
+                authorizeService.insert(authorize);
                 return returnResult(true, "新增输出表成功!!!");
             }else {
                 return returnResult(false, "新增输出表失败!!!");

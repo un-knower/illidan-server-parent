@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="cn.whaley.datawarehouse.illidan.common.mapper.authorize.AuthorizeMapper">
+
+    <sql id="colList">
+        <trim prefix="" prefixOverrides=",">
+            , authorize.parentId AS parentId
+            , authorize.nodeId AS nodeId
+            , authorize.readId AS readId
+            , authorize.writeId AS writeId
+            , authorize.publishId AS publishId
+            , authorize.type AS type
+            , authorize.id AS id
+
+        </trim>
+    </sql>
+
+    <sql id="joinTables">
+    </sql>
+
+    <sql id="smallWhereCase">
+        <where>
+            <if test="authorize != null and authorize.id != null">and authorize.id = #{authorize.id}</if>
+            <if test="authorize != null and authorize.parentId != null">and authorize.parentId = #{authorize.parentId}</if>
+            <if test="authorize != null and authorize.nodeId != null">and authorize.nodeId = #{authorize.nodeId}</if>
+            <if test="authorize != null and authorize.readId != null">and authorize.readId = #{authorize.readId}</if>
+            <if test="authorize != null and authorize.writeId != null">and authorize.writeId = #{authorize.writeId}</if>
+            <if test="authorize != null and authorize.publishId != null">and authorize.publishId = #{authorize.publishId}</if>
+            <if test="authorize != null and authorize.type != null">and authorize.type = #{authorize.type}</if>
+        </where>
+    </sql>
+
+    <resultMap id="returnAuthorize" type="cn.whaley.datawarehouse.illidan.common.domain.authorize.Authorize">
+        <id column="id" javaType="Long" jdbcType="BIGINT" property="id"/>
+        <result column="parentId" javaType="Long" jdbcType="BIGINT" property="parentId"/>
+        <result column="nodeId" javaType="String" jdbcType="VARCHAR" property="nodeId"/>
+        <result column="readId" javaType="String" jdbcType="VARCHAR" property="readId"/>
+        <result column="writeId" javaType="String" jdbcType="VARCHAR" property="writeId"/>
+        <result column="publishId" javaType="String" jdbcType="VARCHAR" property="publishId"/>
+        <result column="type" javaType="Long" jdbcType="BIGINT" property="type"/>
+
+    </resultMap>
+
+    <select id="get"  resultMap="returnAuthorize">
+        select * from authorize authorize where authorize.id = #{id}
+    </select>
+
+    <insert id="insert" parameterType="Authorize" useGeneratedKeys="true" keyProperty="authorize.id">
+        insert into authorize
+        (
+        <trim prefix="" prefixOverrides=",">
+            ,parentId,nodeId,readId,writeId,publishId,type
+        </trim>
+        )values(
+        <trim prefix="" prefixOverrides=",">
+            ,#{authorize.parentId},#{authorize.nodeId},#{authorize.readId},#{authorize.writeId},#{authorize.publishId},#{authorize.type}
+        </trim>
+        )
+    </insert>
+
+    <select id="findByAuthorize" resultMap="returnAuthorize">
+        select <include refid="colList" /> from authorize authorize
+        <include refid="joinTables"/>
+        <include refid="smallWhereCase"/>
+    </select>
+
+    <delete id="deleteById">
+        delete from authorize where id = #{id}
+    </delete>
+
+</mapper>

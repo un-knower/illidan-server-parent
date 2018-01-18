@@ -1,15 +1,14 @@
 package cn.whaley.datawarehouse.illidan.server.controller.project;
 
-import cn.whaley.datawarehouse.illidan.common.domain.group.TaskGroup;
+import cn.whaley.datawarehouse.illidan.common.domain.authorize.Authorize;
 import cn.whaley.datawarehouse.illidan.common.domain.owner.Owner;
 import cn.whaley.datawarehouse.illidan.common.domain.owner.OwnerQuery;
 import cn.whaley.datawarehouse.illidan.common.domain.project.Project;
 import cn.whaley.datawarehouse.illidan.common.domain.project.ProjectQuery;
-import cn.whaley.datawarehouse.illidan.common.domain.task.Task;
-import cn.whaley.datawarehouse.illidan.common.service.group.TaskGroupService;
+import cn.whaley.datawarehouse.illidan.common.service.authorize.AuthorizeService;
 import cn.whaley.datawarehouse.illidan.common.service.owner.OwnerService;
 import cn.whaley.datawarehouse.illidan.common.service.project.ProjectService;
-import cn.whaley.datawarehouse.illidan.common.service.task.TaskService;
+import cn.whaley.datawarehouse.illidan.server.service.AuthorizeHttpService;
 import cn.whaley.datawarehouse.illidan.server.service.AzkabanService;
 import cn.whaley.datawarehouse.illidan.server.util.*;
 import org.json.JSONObject;
@@ -25,10 +24,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
-import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
@@ -44,12 +41,16 @@ public class ProjectController extends Common {
     @Autowired
     private OwnerService ownerService;
     @Autowired
-    private TaskGroupService taskGroupService;
-    @Autowired
-    private TaskService taskService;
-    @Autowired
     private AzkabanService azkabanService;
-
+    @Autowired
+    private AuthorizeHttpService authorizeHttpService;
+    @Autowired
+    private AuthorizeService authorizeService;
+    // TODO 后续改成从lion读取
+    private String project_node_id = "7_35";
+    private String sys_id = "7";
+//    private String project_node_id = ConfigUtils.get("newillidan.authorize.project_node_id");
+//    private String sys_id = ConfigUtils.get("newillidan.authorize.sys_id");
 
     @RequestMapping("list")
     public String list(){
@@ -65,6 +66,7 @@ public class ProjectController extends Common {
     @RequestMapping("projectList")
     public void projectList(Integer start, Integer length, @ModelAttribute("project") ProjectQuery project) {
         try {
+            List<Project> resultProjects = new ArrayList<>();
             HashMap<String, String> map = new HashMap<String, String>();
             map.put("1", "已发布");
             map.put("0", "未发布");
@@ -78,6 +80,10 @@ public class ProjectController extends Common {
             for (int i=0;i<=projects.size()-1;++i){
                 projects.get(i).setIsPublish(map.get(projects.get(i).getIsPublish()));
                 projects.get(i).setOwnerName(ownerService.get(projects.get(i).getOwnerId()).getOwnerName());
+                Long projectId = projects.get(i).getId();
+                Authorize authorize = new Authorize();
+                authorize.setParentId(projectId);
+                List<Authorize> authorizes = authorizeService.findByAuthorize(authorize);
             }
             outputTemplateJson(projects, count);
         } catch (Exception e) {
@@ -165,6 +171,28 @@ public class ProjectController extends Common {
                 returnResult(false, "工程code只能由英文字母,数字,-,_组成!!!");
             } else {
                 projectService.insert(project);
+                //创建权限
+                String dir_name = project.getProjectCode();
+                // TODO 接入sso后group_id和uid从sso获取
+                String group_id = "3";
+                String uid = "wu.jiulin";
+                String node_id = authorizeHttpService.createDir(project_node_id, dir_name, group_id, uid);
+                String read_id = authorizeHttpService.createDir(node_id, "read", group_id, uid);
+                String write_id = authorizeHttpService.createDir(node_id, "write", group_id, uid);
+                String publish_id = authorizeHttpService.createDir(node_id, "publish", group_id, uid);
+                if ("".equals(node_id) || "".equals(read_id) || "".equals(write_id) || "".equals(publish_id)){
+                    //创建失败，回滚
+                    projectService.deleteById(project.getId());
+                    returnResult(false, "创建project权限失败");
+                }
+                Authorize authorize = new Authorize();
+                authorize.setParentId(project.getId());
+                authorize.setNodeId(node_id);
+                authorize.setReadId(read_id);
+                authorize.setWriteId(write_id);
+                authorize.setPublishId(publish_id);
+                authorize.setType(1L);//project
+                authorizeService.insert(authorize);
                 //azkaban创建project
                 Owner owner = ownerService.get(project.getOwnerId());
                 project.setOwnerName(owner.getOwnerName());
@@ -172,6 +200,7 @@ public class ProjectController extends Common {
                 if("error".equals(reseult.getString("status"))){
                     //创建失败，回滚
                     projectService.deleteById(project.getId());
+                    authorizeService.deleteById(authorize.getId());
                     returnResult(false, reseult.getString("message").replaceAll("'","\\\\'"));
                 }
                 logger.info("新增项目成功!!!");
