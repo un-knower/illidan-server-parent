@@ -57,6 +57,7 @@ public class TaskController extends Common {
     private StorageInfoService storageInfoService;
 
     @RequestMapping("list")
+    @LoginRequired
     public ModelAndView list(Long groupId, ModelAndView mav, HttpSession httpSession){
         TaskGroup taskGroup = taskGroupService.get(groupId);
         if(taskGroup == null) {
@@ -72,7 +73,8 @@ public class TaskController extends Common {
 
     @RequestMapping("taskList")
     @ResponseBody
-    public ServerResponse taskList(Integer start, Integer length, @ModelAttribute("task") TaskQuery task) {
+    @LoginRequired
+    public ServerResponse taskList(Integer start, Integer length, @ModelAttribute("task") TaskQuery task, HttpSession httpSession) {
         try {
             if (task == null) {
                 task = new TaskQuery();
@@ -91,7 +93,8 @@ public class TaskController extends Common {
     }
 
     @RequestMapping("toAdd")
-    public ModelAndView toAdd(ModelAndView mav, Long groupId) {
+    @LoginRequired
+    public ModelAndView toAdd(ModelAndView mav, Long groupId, HttpSession httpSession) {
         mav.setViewName("task/add");
         List<TaskGroup> groupList = getTaskGroup();
         List<DbInfo> hiveDbInfoList = dbInfoService.getDbInfo(1L);//hive
@@ -105,7 +108,8 @@ public class TaskController extends Common {
 
     @RequestMapping("add")
     @ResponseBody
-    public ServerResponse add(@RequestBody TaskFull taskFull) {
+    @LoginRequired
+    public ServerResponse add(@RequestBody TaskFull taskFull, HttpSession httpSession) {
         try {
             if(validateTask(taskFull).equals("ok")) {
                 //执行方式(List)
@@ -134,7 +138,8 @@ public class TaskController extends Common {
     }
 
     @RequestMapping("toEdit")
-    public ModelAndView toEdit(Long id, ModelAndView mav, Long groupId, int isCopy) {
+    @LoginRequired
+    public ModelAndView toEdit(Long id, ModelAndView mav, Long groupId, int isCopy, HttpSession httpSession) {
         mav.setViewName("/task/edit");
         TaskFull task = taskService.getFullTask(id);
         List<TaskGroup> groupList = getTaskGroup();
@@ -151,7 +156,8 @@ public class TaskController extends Common {
 
     @RequestMapping("edit")
     @ResponseBody
-    public ServerResponse edit(@RequestBody TaskFull taskFull) {
+    @LoginRequired
+    public ServerResponse edit(@RequestBody TaskFull taskFull, HttpSession httpSession) {
         try {
             if(validateTask(taskFull).equals("ok")) {
                 taskFull.setTableId(taskFull.getFullHiveTable().getHiveTable().getId());
@@ -171,7 +177,8 @@ public class TaskController extends Common {
 
     @RequestMapping("delete")
     @ResponseBody
-    public ServerResponse delete(String ids) {
+    @LoginRequired
+    public ServerResponse delete(String ids, HttpSession httpSession) {
         try {
             if(StringUtils.isEmpty(ids)){
                 return ServerResponse.responseByError( "请选择要删除的记录");
@@ -196,7 +203,8 @@ public class TaskController extends Common {
 
     @RequestMapping("getTables")
     @ResponseBody
-    public ServerResponse getTableList(Long dbId){
+    @LoginRequired
+    public ServerResponse getTableList(Long dbId, HttpSession httpSession){
         List<TableInfo> tableInfoList = getTables(dbId);
         return ServerResponse.responseBySuccess(tableInfoList);
 
@@ -256,7 +264,7 @@ public class TaskController extends Common {
                 colNames.add(fieldInfo.getColName());
             }
             if(!colNames.contains("hour_p")){
-                return returnResult(false, "执行方式包含hour时输出表必须包含hour_p分区字段,请重新选择输出表");
+                return "执行方式包含hour时输出表必须包含hour_p分区字段,请重新选择输出表";
             }
         }
         if (!validateColumnNull(task.getContent())){

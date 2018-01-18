@@ -7,6 +7,7 @@ import cn.whaley.datawarehouse.illidan.common.domain.project.ProjectQuery;
 import cn.whaley.datawarehouse.illidan.common.service.group.TaskGroupService;
 import cn.whaley.datawarehouse.illidan.common.service.owner.OwnerService;
 import cn.whaley.datawarehouse.illidan.common.service.project.ProjectService;
+import cn.whaley.datawarehouse.illidan.server.auth.LoginRequired;
 import cn.whaley.datawarehouse.illidan.server.response.ServerResponse;
 import cn.whaley.datawarehouse.illidan.server.service.AzkabanService;
 import cn.whaley.datawarehouse.illidan.server.controller.Common;
@@ -23,6 +24,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.servlet.http.HttpSession;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -45,8 +47,10 @@ public class TaskGroupController extends Common {
     private OwnerService ownerService;
     @Autowired
     private AzkabanService azkabanService;
+
     @RequestMapping("list")
-    public ModelAndView list(Long projectId, ModelAndView mav){
+    @LoginRequired
+    public ModelAndView list(Long projectId, ModelAndView mav, HttpSession httpSession){
         if (projectId != null){
             mav.addObject("projectId",projectId);
             mav.setViewName("group/list");
@@ -59,7 +63,8 @@ public class TaskGroupController extends Common {
 
     @RequestMapping("groupList")
     @ResponseBody
-    public ServerResponse groupList(Integer start, Integer length, @ModelAttribute("taskGroup") TaskGroupQuery taskGroup) {
+    @LoginRequired
+    public ServerResponse groupList(Integer start, Integer length, @ModelAttribute("taskGroup") TaskGroupQuery taskGroup, HttpSession httpSession) {
         try {
             if (taskGroup == null) {
                 taskGroup = new TaskGroupQuery();
@@ -80,7 +85,8 @@ public class TaskGroupController extends Common {
     }
 
     @RequestMapping("toAdd")
-    public ModelAndView toAdd(ModelAndView mav,Long projectId) {
+    @LoginRequired
+    public ModelAndView toAdd(ModelAndView mav, Long projectId, HttpSession httpSession) {
         List<Project> projectList = getProject();
         mav.addObject("project",projectList);
         mav.addObject("projectId",projectId);
@@ -90,7 +96,8 @@ public class TaskGroupController extends Common {
 
     @RequestMapping("add")
     @ResponseBody
-    public ServerResponse add(@RequestBody TaskGroup taskGroup) {
+    @LoginRequired
+    public ServerResponse add(@RequestBody TaskGroup taskGroup, HttpSession httpSession) {
         try {
             //状态默认置成有效
             taskGroup.setStatus("1");
@@ -129,7 +136,8 @@ public class TaskGroupController extends Common {
 
     @RequestMapping("delete")
     @ResponseBody
-    public ServerResponse delete(String ids) {
+    @LoginRequired
+    public ServerResponse delete(String ids, HttpSession httpSession) {
         try {
             if(StringUtils.isEmpty(ids)){
                 return ServerResponse.responseByError( "请选择要删除的记录");
@@ -149,7 +157,8 @@ public class TaskGroupController extends Common {
     }
 
     @RequestMapping("toEdit")
-    public ModelAndView toEdit(Long id, ModelAndView mav) {
+    @LoginRequired
+    public ModelAndView toEdit(Long id, ModelAndView mav, HttpSession httpSession) {
         mav.setViewName("/group/edit");
         TaskGroup taskGroup = taskGroupService.get(id);
         List<Project> projectList = getProject();
@@ -160,7 +169,8 @@ public class TaskGroupController extends Common {
 
     @RequestMapping("edit")
     @ResponseBody
-    public ServerResponse edit(@RequestBody TaskGroup taskGroup) {
+    @LoginRequired
+    public ServerResponse edit(@RequestBody TaskGroup taskGroup, HttpSession httpSession) {
         try {
             String valid = validTaskGroup(taskGroup);
             if(!valid.equals("success")){

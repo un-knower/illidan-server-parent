@@ -11,6 +11,7 @@ import cn.whaley.datawarehouse.illidan.common.service.authorize.AuthorizeService
 import cn.whaley.datawarehouse.illidan.common.service.db.DbInfoService;
 import cn.whaley.datawarehouse.illidan.common.service.field.FieldInfoService;
 import cn.whaley.datawarehouse.illidan.common.service.table.TableInfoService;
+import cn.whaley.datawarehouse.illidan.server.auth.LoginRequired;
 import cn.whaley.datawarehouse.illidan.server.response.ServerResponse;
 import cn.whaley.datawarehouse.illidan.server.service.AuthorizeHttpService;
 import cn.whaley.datawarehouse.illidan.server.service.TableFieldService;
@@ -26,6 +27,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -58,12 +60,15 @@ public class TableInfoController extends Common {
 //    private String sys_id = ConfigUtils.get("newillidan.authorize.sys_id");
 
     @RequestMapping("list")
-    public String list(){
+    @LoginRequired
+    public String list(HttpSession httpSession){
         return "table/list";
     }
 
     @RequestMapping("tableList")
-    public void tableList(Integer start, Integer length, @ModelAttribute("tableInfo") TableInfoQuery tableInfo) {
+    @LoginRequired
+    @ResponseBody
+    public ServerResponse tableList(Integer start, Integer length, @ModelAttribute("tableInfo") TableInfoQuery tableInfo, HttpSession httpSession) {
         try {
             if(tableInfo == null){
                 tableInfo = new TableInfoQuery();
@@ -72,16 +77,17 @@ public class TableInfoController extends Common {
             tableInfo.setPageSize(length);
             Long count = tableInfoService.countByTableInfo(tableInfo);
             List<TableInfo> tableInfos = tableInfoService.findByTableInfo(tableInfo);
-            outputTemplateJson(tableInfos, count);
+            return ServerResponse.responseBySuccessDataAndCount(tableInfos, count);
         } catch (Exception e){
             logger.error(e.getMessage());
-            e.printStackTrace();
+            return ServerResponse.responseByError("查询失败：" + e.getMessage());
         }
 
     }
 
     @RequestMapping("toAdd")
-    public ModelAndView toAdd(ModelAndView mav,Long id) {
+    @LoginRequired
+    public ModelAndView toAdd(ModelAndView mav, Long id, HttpSession httpSession) {
         FullHiveTable fullHiveTable;
         if(!id.equals(-1L)){
             fullHiveTable = tableInfoService.getFullHiveTable(id);
@@ -108,7 +114,8 @@ public class TableInfoController extends Common {
 
     @RequestMapping("add")
     @ResponseBody
-    public ServerResponse add(@RequestBody FullHiveTable fullHiveTable) {
+    @LoginRequired
+    public ServerResponse add(@RequestBody FullHiveTable fullHiveTable, HttpSession httpSession) {
         try {
             if(validateTable(fullHiveTable).equals("ok")) {
                 List<FieldInfo> fieldInfos = new ArrayList<>();
@@ -159,7 +166,8 @@ public class TableInfoController extends Common {
     }
 
     @RequestMapping("toEdit")
-    public ModelAndView toEdit(Long id, ModelAndView mav) {
+    @LoginRequired
+    public ModelAndView toEdit(Long id, ModelAndView mav, HttpSession httpSession) {
         mav.setViewName("table/edit");
         FullHiveTable fullHiveTable = tableInfoService.getFullHiveTable(id);
         TableWithField mysqlTable = (TableWithField) fullHiveTable.getMysqlTable();
@@ -178,7 +186,8 @@ public class TableInfoController extends Common {
 
     @RequestMapping("edit")
     @ResponseBody
-    public ServerResponse edit(@RequestBody FullHiveTable fullHiveTable) {
+    @LoginRequired
+    public ServerResponse edit(@RequestBody FullHiveTable fullHiveTable, HttpSession httpSession) {
         try {
             if(validateTable(fullHiveTable).equals("ok")) {
                 tableInfoService.updateFullHiveTable(fullHiveTable);
@@ -197,7 +206,8 @@ public class TableInfoController extends Common {
 
     @RequestMapping("checkTable")
     @ResponseBody
-    public ServerResponse checkTable() {
+    @LoginRequired
+    public ServerResponse checkTable(HttpSession httpSession) {
         try {
             tableFieldService.completeTableInfoAll();
             return ServerResponse.responseBySuccessMessage( "检查字段完成，结果见日志");
@@ -208,14 +218,16 @@ public class TableInfoController extends Common {
     }
 
     @RequestMapping("toParseSql")
-    public ModelAndView toParseSql(ModelAndView mav) {
+    @LoginRequired
+    public ModelAndView toParseSql(ModelAndView mav, HttpSession httpSession) {
         mav.setViewName("table/parseSql");
         return mav;
     }
 
     @RequestMapping("parseSql")
     @ResponseBody
-    public ServerResponse parseSql(String createSql) {
+    @LoginRequired
+    public ServerResponse parseSql(String createSql, HttpSession httpSession) {
         try {
             if (StringUtils.isEmpty(createSql)){
                 return ServerResponse.responseByError( "建表语句不能为空");
@@ -253,7 +265,8 @@ public class TableInfoController extends Common {
 
     @RequestMapping("delete")
     @ResponseBody
-    public ServerResponse delete(String ids) {
+    @LoginRequired
+    public ServerResponse delete(String ids, HttpSession httpSession) {
         try {
             if(StringUtils.isEmpty(ids)){
                 return ServerResponse.responseByError( "请选择要删除的记录");

@@ -133,7 +133,7 @@ public class Common {
 //        newCookie.setPath("/");
         this.getResponse().addCookie(newCookie);
     }
-
+/*
     protected void writeJson(Object obj) {
         PrintWriter out = null;
         this.getResponse().setContentType("application/json; charset=utf-8");
@@ -195,6 +195,7 @@ public class Common {
         }
         return result;
     }
+    */
 
     public boolean codeReg(String str) {
         String regex = "^[a-z0-9A-Z_\\-]+$";
