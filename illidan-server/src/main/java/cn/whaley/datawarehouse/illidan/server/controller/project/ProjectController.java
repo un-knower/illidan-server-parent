@@ -11,6 +11,7 @@ import cn.whaley.datawarehouse.illidan.common.service.project.ProjectService;
 import cn.whaley.datawarehouse.illidan.server.auth.LoginRequired;
 import cn.whaley.datawarehouse.illidan.server.controller.Common;
 import cn.whaley.datawarehouse.illidan.server.response.ServerResponse;
+import cn.whaley.datawarehouse.illidan.server.service.AuthService;
 import cn.whaley.datawarehouse.illidan.server.service.AuthorizeHttpService;
 import cn.whaley.datawarehouse.illidan.server.service.AzkabanService;
 import org.json.JSONObject;
@@ -46,14 +47,9 @@ public class ProjectController extends Common {
     @Autowired
     private AzkabanService azkabanService;
     @Autowired
-    private AuthorizeHttpService authorizeHttpService;
-    @Autowired
     private AuthorizeService authorizeService;
-    // TODO 后续改成从lion读取
-    private String project_node_id = "7_35";
-    private String sys_id = "7";
-//    private String project_node_id = ConfigUtils.get("newillidan.authorize.project_node_id");
-//    private String sys_id = ConfigUtils.get("newillidan.authorize.sys_id");
+    @Autowired
+    private AuthService authService;
 
     @RequestMapping("list")
     @LoginRequired
@@ -73,7 +69,6 @@ public class ProjectController extends Common {
     @ResponseBody
     public ServerResponse projectList(Integer start, Integer length, @ModelAttribute("project") ProjectQuery project, HttpSession httpSession) {
         try {
-            List<Project> resultProjects = new ArrayList<>();
             HashMap<String, String> map = new HashMap<String, String>();
             String dir_id = "";
             map.put("1", "已发布");
@@ -81,51 +76,20 @@ public class ProjectController extends Common {
             if (project == null) {
                 project = new ProjectQuery();
             }
-            project.setLimitStart(start);
-            project.setPageSize(length);
+//            project.setLimitStart(start);
+//            project.setPageSize(length);
 //            Long count = projectService.countByProject(project);
             List<Project> projects = projectService.findByProject(project);
             for (int i = 0; i <= projects.size() - 1; ++i) {
                 projects.get(i).setIsPublish(map.get(projects.get(i).getIsPublish()));
                 projects.get(i).setOwnerName(ownerService.get(projects.get(i).getOwnerId()).getOwnerName());
             }
-            //获取project的读权限目录id
-            Authorize authorize1 = new Authorize();
-            authorize1.setType(1L);
-            List<Authorize> authorizes = authorizeService.findByAuthorize(authorize1);
-            if (authorizes != null && authorizes.size() > 0) {
-                for (Authorize a : authorizes) {
-                    String readId = a.getReadId();
-                    dir_id = dir_id + readId + ",";
-                }
-            }
-            //检查当前用户是否有权限查看project
-            dir_id = dir_id.substring(0, dir_id.length() - 1);
-            System.out.println("dir_id: " + dir_id);
-            // TODO 接入sso后从sso获取
-            String uid = "wu.jiulin";
-            Map authMap = authorizeHttpService.checkAuth(uid, sys_id, dir_id);
-            for (Object obj : authMap.keySet()) {
-                System.out.println("key为：" + obj + ", 值为：" + authMap.get(obj));
-                if (authMap.get(obj).toString().equals("1")) {
-                    System.out.println("====");
-                    Authorize authorizeQuery = new Authorize();
-                    authorizeQuery.setReadId(obj.toString());
-                    Authorize authorize = authorizeService.getByAuthorize(authorizeQuery);
-                    Long projectId = authorize.getParentId();
-                    System.out.println("projectId: " + projectId);
-                    for (int i = projects.size() - 1; i >= 0; i--) {
-                        if (projects.get(i).getId().equals(projectId)) {
-                            resultProjects.add(projects.get(i));
-                        }
-                    }
-                }
-            }
-
-            System.out.println(resultProjects.size());
+            logger.info("userName: "+getUserNameFromSession(httpSession));
+            List<Project> resultProjects = authService.filterProjectList(projects, getUserNameFromSession(httpSession));
             Long count = (long) resultProjects.size();
-            return ServerResponse.responseBySuccessDataAndCount(resultProjects, count);
-//            outputTemplateJson(projects, count);
+            //分页显示
+            List<Project> result = resultProjects.subList(start, (int) (count - start > length ? start + length : count));
+            return ServerResponse.responseBySuccessDataAndCount(result, count);
         } catch (Exception e) {
             logger.error(e.getMessage());
             e.printStackTrace();
@@ -217,28 +181,14 @@ public class ProjectController extends Common {
                 return ServerResponse.responseByError("工程code只能由英文字母,数字,-,_组成!!!");
             } else {
                 projectService.insert(project);
+                logger.info("userName: "+getUserNameFromSession(httpSession));
                 //创建权限
-                String dir_name = project.getProjectCode();
-                // TODO 接入sso后group_id和uid从sso获取
-                String group_id = "3";
-                String uid = "wu.jiulin";
-                String node_id = authorizeHttpService.createDir(project_node_id, dir_name, group_id, uid);
-                String read_id = authorizeHttpService.createDir(node_id, "read", group_id, uid);
-                String write_id = authorizeHttpService.createDir(node_id, "write", group_id, uid);
-                String publish_id = authorizeHttpService.createDir(node_id, "publish", group_id, uid);
-                if ("".equals(node_id) || "".equals(read_id) || "".equals(write_id) || "".equals(publish_id)) {
+                Authorize authorize = authService.createProjectAuth(project, getUserNameFromSession(httpSession));
+                if (authorize.getNodeId() == null) {
                     //创建失败，回滚
                     projectService.deleteById(project.getId());
                     return ServerResponse.responseByError("创建project权限失败");
                 }
-                Authorize authorize = new Authorize();
-                authorize.setParentId(project.getId());
-                authorize.setNodeId(node_id);
-                authorize.setReadId(read_id);
-                authorize.setWriteId(write_id);
-                authorize.setPublishId(publish_id);
-                authorize.setType(1L);//project
-                authorizeService.insert(authorize);
                 //azkaban创建project
                 Owner owner = ownerService.get(project.getOwnerId());
                 project.setOwnerName(owner.getOwnerName());

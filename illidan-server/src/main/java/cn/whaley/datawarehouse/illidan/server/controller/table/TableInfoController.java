@@ -13,6 +13,7 @@ import cn.whaley.datawarehouse.illidan.common.service.field.FieldInfoService;
 import cn.whaley.datawarehouse.illidan.common.service.table.TableInfoService;
 import cn.whaley.datawarehouse.illidan.server.auth.LoginRequired;
 import cn.whaley.datawarehouse.illidan.server.response.ServerResponse;
+import cn.whaley.datawarehouse.illidan.server.service.AuthService;
 import cn.whaley.datawarehouse.illidan.server.service.AuthorizeHttpService;
 import cn.whaley.datawarehouse.illidan.server.service.TableFieldService;
 import cn.whaley.datawarehouse.illidan.server.controller.Common;
@@ -53,6 +54,8 @@ public class TableInfoController extends Common {
     private AuthorizeHttpService authorizeHttpService;
     @Autowired
     private AuthorizeService authorizeService;
+    @Autowired
+    private AuthService authService;
     // TODO 后续改成从lion读取
     private String table_node_id = "7_37";
     private String sys_id = "7";
@@ -135,25 +138,14 @@ public class TableInfoController extends Common {
                     logger.info("清除cookie");
                 }
                 logger.info("新增输出表成功!!!");
-                String dir_name = fullHiveTable.getHiveTable().getTableCode();
-                // TODO 接入sso后group_id和uid从sso获取
-                String group_id = "3";
-                String uid = "wu.jiulin";
-                String node_id = authorizeHttpService.createDir(table_node_id, dir_name, group_id, uid);
-                String read_id = authorizeHttpService.createDir(node_id, "read", group_id, uid);
-                String write_id = authorizeHttpService.createDir(node_id, "write", group_id, uid);
-                if ("".equals(node_id) || "".equals(read_id) || "".equals(write_id)){
+                //创建权限
+                fullHiveTable.getHiveTable().setId(tableId);
+                Authorize authorize = authService.createTableAuth(fullHiveTable.getHiveTable(), getUserNameFromSession(httpSession));
+                if (authorize.getNodeId() == null) {
                     //创建失败，回滚
                     tableInfoService.dropFullHiveTable(tableId);
                     return ServerResponse.responseByError( "创建table权限失败");
                 }
-                Authorize authorize = new Authorize();
-                authorize.setParentId(tableId);
-                authorize.setNodeId(node_id);
-                authorize.setReadId(read_id);
-                authorize.setWriteId(write_id);
-                authorize.setType(2L);//table
-                authorizeService.insert(authorize);
                 return ServerResponse.responseBySuccessMessage( "新增输出表成功!!!");
             }else {
                 return ServerResponse.responseByError( "新增输出表失败!!!");
