@@ -18,6 +18,7 @@ import cn.whaley.datawarehouse.illidan.common.service.task.TaskService;
 import cn.whaley.datawarehouse.illidan.server.auth.LoginRequired;
 import cn.whaley.datawarehouse.illidan.server.controller.Common;
 import cn.whaley.datawarehouse.illidan.server.response.ServerResponse;
+import cn.whaley.datawarehouse.illidan.server.service.AuthService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,18 +56,20 @@ public class TaskController extends Common {
     private FieldInfoService fieldInfoService;
     @Autowired
     private StorageInfoService storageInfoService;
+    @Autowired
+    private AuthService authService;
 
     @RequestMapping("list")
     @LoginRequired
-    public ModelAndView list(Long groupId, ModelAndView mav, HttpSession httpSession){
+    public ModelAndView list(Long groupId, ModelAndView mav, HttpSession httpSession) {
         TaskGroup taskGroup = taskGroupService.get(groupId);
-        if(taskGroup == null) {
-            mav.addObject("msg","groupId参数不合法");
+        if (taskGroup == null) {
+            mav.addObject("msg", "groupId参数不合法");
             mav.setViewName("error");
             return mav;
         }
-        mav.addObject("groupId",groupId);
-        mav.addObject("projectId",taskGroup.getProjectId());
+        mav.addObject("groupId", groupId);
+        mav.addObject("projectId", taskGroup.getProjectId());
         mav.setViewName("task/list");
         return mav;
     }
@@ -77,7 +80,21 @@ public class TaskController extends Common {
     public ServerResponse taskList(Integer start, Integer length, @ModelAttribute("task") TaskQuery task, HttpSession httpSession) {
         try {
             if (task == null) {
-                task = new TaskQuery();
+                return ServerResponse.responseByError("查询失败，参数是空");
+            }
+            Long taskGroupId = task.getGroupId();
+            Long projectId = task.getProjectId();
+            String userName = getUserNameFromSession(httpSession);
+            if (taskGroupId != null) {
+                if (!authService.hasTaskGroupPermission(taskGroupId, "read", userName)) {
+                    return ServerResponse.responseByError(403, "查询失败，缺少任务组读权限");
+                }
+            } else if (projectId != null) {
+                if (!authService.hasProjectPermission(projectId, "read", userName)) {
+                    return ServerResponse.responseByError(403, "查询失败，缺少工程读权限");
+                }
+            } else {
+                return ServerResponse.responseByError("查询失败，参数是不合法");
             }
 
             task.setLimitStart(start);
@@ -88,7 +105,7 @@ public class TaskController extends Common {
         } catch (Exception e) {
             e.printStackTrace();
             logger.error(e.getMessage());
-            return ServerResponse.responseByError( "获取任务列表失败" + e.getMessage());
+            return ServerResponse.responseByError("获取任务列表失败" + e.getMessage());
         }
     }
 
@@ -99,10 +116,10 @@ public class TaskController extends Common {
         List<TaskGroup> groupList = getTaskGroup();
         List<DbInfo> hiveDbInfoList = dbInfoService.getDbInfo(1L);//hive
 //        List<DbInfo> mysqlDbInfoList = dbInfoService.getDbInfo(2L);//mysql
-        mav.addObject("group",groupList);
-        mav.addObject("hiveDbInfoList",hiveDbInfoList);
+        mav.addObject("group", groupList);
+        mav.addObject("hiveDbInfoList", hiveDbInfoList);
 //        mav.addObject("mysqlDbInfoList",mysqlDbInfoList);
-        mav.addObject("groupId",groupId);
+        mav.addObject("groupId", groupId);
         return mav;
     }
 
@@ -111,7 +128,16 @@ public class TaskController extends Common {
     @LoginRequired
     public ServerResponse add(@RequestBody TaskFull taskFull, HttpSession httpSession) {
         try {
-            if(validateTask(taskFull).equals("ok")) {
+            Long taskGroupId = taskFull.getGroupId();
+            String userName = getUserNameFromSession(httpSession);
+            if (taskGroupId != null) {
+                if (!authService.hasTaskGroupPermission(taskGroupId, "write", userName)) {
+                    return ServerResponse.responseByError(403, "查询失败，缺少任务组写权限");
+                }
+            } else {
+                return ServerResponse.responseByError("查询失败，参数是不合法");
+            }
+            if (validateTask(taskFull).equals("ok")) {
                 //执行方式(List)
                 String[] executeTypeArray = taskFull.getExecuteType().split(",");
                 List<String> executeTypeList = new ArrayList<>(Arrays.asList(executeTypeArray));
@@ -120,20 +146,20 @@ public class TaskController extends Common {
                 taskFull.setStatus("1");
                 taskFull.setTableId(taskFull.getFullHiveTable().getHiveTable().getId());
                 taskService.insertFullTask(taskFull);
-                if (getCookieValue("taskId")!=null && !getCookieValue("taskId").equals("")){
+                if (getCookieValue("taskId") != null && !getCookieValue("taskId").equals("")) {
                     clearCookie("taskId");
                     logger.info("清除cookie");
                 }
                 logger.info("新增任务成功!!!");
-                return ServerResponse.responseBySuccessMessage( "新增任务成功!!!");
-            }else {
-                return ServerResponse.responseByError( validateTask(taskFull));
+                return ServerResponse.responseBySuccessMessage("新增任务成功!!!");
+            } else {
+                return ServerResponse.responseByError(validateTask(taskFull));
             }
 
         } catch (Exception e) {
             e.printStackTrace();
             logger.error(e.getMessage());
-            return ServerResponse.responseByError( "新增任务失败: " + e.getMessage());
+            return ServerResponse.responseByError("新增任务失败: " + e.getMessage());
         }
     }
 
@@ -159,19 +185,28 @@ public class TaskController extends Common {
     @LoginRequired
     public ServerResponse edit(@RequestBody TaskFull taskFull, HttpSession httpSession) {
         try {
-            if(validateTask(taskFull).equals("ok")) {
+            Long taskId = taskFull.getId();
+            String userName = getUserNameFromSession(httpSession);
+            if (taskId != null) {
+                if (!authService.hasTaskPermission(taskId, "write", userName)) {
+                    return ServerResponse.responseByError(403, "查询失败，缺少任务写权限");
+                }
+            } else {
+                return ServerResponse.responseByError("查询失败，参数是不合法");
+            }
+            if (validateTask(taskFull).equals("ok")) {
                 taskFull.setTableId(taskFull.getFullHiveTable().getHiveTable().getId());
                 taskService.updateFullTask(taskFull);
                 logger.info("修改任务成功!!!");
-                return ServerResponse.responseBySuccessMessage( "修改任务成功!!!");
-            }else {
+                return ServerResponse.responseBySuccessMessage("修改任务成功!!!");
+            } else {
                 logger.info("修改任务失败!!!");
-                return ServerResponse.responseByError( "修改任务失败!!!");
+                return ServerResponse.responseByError("修改任务失败!!!");
             }
         } catch (Exception e) {
             e.printStackTrace();
             logger.error(e.getMessage());
-            return ServerResponse.responseByError( "修改任务失败," + e.getMessage());
+            return ServerResponse.responseByError("修改任务失败," + e.getMessage());
         }
     }
 
@@ -180,94 +215,104 @@ public class TaskController extends Common {
     @LoginRequired
     public ServerResponse delete(String ids, HttpSession httpSession) {
         try {
-            if(StringUtils.isEmpty(ids)){
-                return ServerResponse.responseByError( "请选择要删除的记录");
-            }else {
+            String userName = getUserNameFromSession(httpSession);
+            if (StringUtils.isEmpty(ids)) {
+                return ServerResponse.responseByError("请选择要删除的记录");
+            } else {
                 String[] idArray = ids.split(",");
-                List<Long> idList = Arrays.asList(idArray).stream().map(x->Long.parseLong(x)).collect(Collectors.toList());
+                List<Long> idList = Arrays.asList(idArray).stream()
+                        .map(x -> Long.parseLong(x))
+                        .filter(id -> authService.hasTaskPermission(id, "write", userName))
+                        .collect(Collectors.toList());
                 taskService.removeByIds(idList);
-                logger.info("删除了任务：" + ids);
-                if (getCookieValue("taskId")!=null && !getCookieValue("taskId").equals("")){
+                String resultInfo;
+                if(Arrays.asList(idArray).size() == idList.size()) {
+                    resultInfo = "删除任务组成功";
+                } else {
+                    resultInfo = "成功删除有权限部分任务组";
+                }
+                logger.info(resultInfo + "：" + Arrays.toString(idList.toArray()));
+                if (getCookieValue("taskId") != null && !getCookieValue("taskId").equals("")) {
                     clearCookie("taskId");
                     logger.info("清除cookie");
                 }
-                return ServerResponse.responseBySuccessMessage( "删除任务成功");
+                return ServerResponse.responseBySuccessMessage(resultInfo);
             }
 
         } catch (Exception e) {
             e.printStackTrace();
             logger.error(e.getMessage());
-            return ServerResponse.responseByError( "删除任务失败:" + e.getMessage());
+            return ServerResponse.responseByError("删除任务失败:" + e.getMessage());
         }
     }
 
     @RequestMapping("getTables")
     @ResponseBody
     @LoginRequired
-    public ServerResponse getTableList(Long dbId, HttpSession httpSession){
+    public ServerResponse getTableList(Long dbId, HttpSession httpSession) {
         List<TableInfo> tableInfoList = getTables(dbId);
         return ServerResponse.responseBySuccess(tableInfoList);
 
     }
 
-    public List<TableInfo> getTables(Long dbId){
+    public List<TableInfo> getTables(Long dbId) {
         List<TableInfo> tableInfoList = new ArrayList<>();
         try {
             TableInfo tableInfo = new TableInfo();
             tableInfo.setDbId(dbId);
             tableInfoList = tableInfoService.findTableInfo(tableInfo);
-        } catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             logger.error(e.getMessage());
         }
         return tableInfoList;
     }
 
-    public List<TaskGroup> getTaskGroup(){
+    public List<TaskGroup> getTaskGroup() {
         return taskGroupService.findByTaskGroup(new TaskGroupQuery());
     }
 
-    public TableInfo getOneTableInfo(String tableCode){
+    public TableInfo getOneTableInfo(String tableCode) {
         TableInfoQuery tableInfoQuery = new TableInfoQuery();
         tableInfoQuery.setTableCode(tableCode);
         return tableInfoService.findOne(tableInfoQuery);
     }
 
-    public String validateTask(TaskFull task){
+    public String validateTask(TaskFull task) {
         String result = "ok";
-        if(StringUtils.isEmpty(task)){
+        if (StringUtils.isEmpty(task)) {
             return "失败!!!";
         }
-        if(!validateColumnNull(task.getTaskCode())){
+        if (!validateColumnNull(task.getTaskCode())) {
             return validateMessage("任务code");
         }
-        if (!codeReg(task.getTaskCode())){
+        if (!codeReg(task.getTaskCode())) {
             return "任务code只能由英文字母,数字,-,_组成!!!";
         }
-        if (!validateColumnNull(task.getAddUser())){
+        if (!validateColumnNull(task.getAddUser())) {
             return validateMessage("任务添加用户");
         }
-        if (!validateColumnNull(task.getFullHiveTable().getHiveTable().getDbId())){
+        if (!validateColumnNull(task.getFullHiveTable().getHiveTable().getDbId())) {
             return validateMessage("目标数据库");
         }
-        if (!validateColumnNull(task.getFullHiveTable().getHiveTable().getId())){
+        if (!validateColumnNull(task.getFullHiveTable().getHiveTable().getId())) {
             return validateMessage("目标表");
         }
-        if (!validateColumnNull(task.getExecuteType())){
+        if (!validateColumnNull(task.getExecuteType())) {
             return validateMessage("执行方式");
         }
         //执行方式有hour时要校验所选择的输出表是否有hour_p分区字段
-        if(task.getExecuteType().contains("hour")){
+        if (task.getExecuteType().contains("hour")) {
             List<String> colNames = new ArrayList<>();
             List<FieldInfo> fieldInfos = fieldInfoService.getByTableId(task.getFullHiveTable().getHiveTable().getId());
-            for (FieldInfo fieldInfo:fieldInfos){
+            for (FieldInfo fieldInfo : fieldInfos) {
                 colNames.add(fieldInfo.getColName());
             }
-            if(!colNames.contains("hour_p")){
+            if (!colNames.contains("hour_p")) {
                 return "执行方式包含hour时输出表必须包含hour_p分区字段,请重新选择输出表";
             }
         }
-        if (!validateColumnNull(task.getContent())){
+        if (!validateColumnNull(task.getContent())) {
             return validateMessage("业务分析语句");
         }
         return result;

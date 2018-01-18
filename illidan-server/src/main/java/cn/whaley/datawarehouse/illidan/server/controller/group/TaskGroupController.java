@@ -9,6 +9,7 @@ import cn.whaley.datawarehouse.illidan.common.service.owner.OwnerService;
 import cn.whaley.datawarehouse.illidan.common.service.project.ProjectService;
 import cn.whaley.datawarehouse.illidan.server.auth.LoginRequired;
 import cn.whaley.datawarehouse.illidan.server.response.ServerResponse;
+import cn.whaley.datawarehouse.illidan.server.service.AuthService;
 import cn.whaley.datawarehouse.illidan.server.service.AzkabanService;
 import cn.whaley.datawarehouse.illidan.server.controller.Common;
 import org.apache.logging.log4j.core.util.CronExpression;
@@ -47,6 +48,8 @@ public class TaskGroupController extends Common {
     private OwnerService ownerService;
     @Autowired
     private AzkabanService azkabanService;
+    @Autowired
+    private AuthService authService;
 
     @RequestMapping("list")
     @LoginRequired
@@ -66,16 +69,22 @@ public class TaskGroupController extends Common {
     @LoginRequired
     public ServerResponse groupList(Integer start, Integer length, @ModelAttribute("taskGroup") TaskGroupQuery taskGroup, HttpSession httpSession) {
         try {
-            if (taskGroup == null) {
-                taskGroup = new TaskGroupQuery();
-            }
 
+            if (taskGroup == null || taskGroup.getProjectId() == null) {
+                return ServerResponse.responseByError("查询失败，参数不合法");
+            }
+            Long projectId = taskGroup.getProjectId();
+            String userName = getUserNameFromSession(httpSession);
+            if(!authService.hasProjectPermission(projectId, "read", userName)){
+                return ServerResponse.responseByError(403, "查询失败，缺少工程读权限");
+            }
             taskGroup.setLimitStart(start);
             taskGroup.setPageSize(length);
             Long count = taskGroupService.countByTaskGroup(taskGroup);
             List<TaskGroup> taskGroups = taskGroupService.findByTaskGroup(taskGroup);
-            for (int i=0;i<=taskGroups.size()-1;++i){
-                taskGroups.get(i).setProjectCode(projectService.get(taskGroups.get(i).getProjectId()).getProjectCode());
+            String projectCode = projectService.get(projectId).getProjectCode();
+            for (int i=0; i<=taskGroups.size()-1;++i){
+                taskGroups.get(i).setProjectCode(projectCode);
             }
             return ServerResponse.responseBySuccessDataAndCount(taskGroups, count);
         } catch (Exception e) {
@@ -99,6 +108,15 @@ public class TaskGroupController extends Common {
     @LoginRequired
     public ServerResponse add(@RequestBody TaskGroup taskGroup, HttpSession httpSession) {
         try {
+            if (taskGroup == null || taskGroup.getProjectId() == null) {
+                return ServerResponse.responseByError("添加失败，参数不合法");
+            }
+            Long projectId = taskGroup.getProjectId();
+            String userName = getUserNameFromSession(httpSession);
+            if(!authService.hasProjectPermission(projectId, "write", userName)){
+                return ServerResponse.responseByError(403, "添加失败，缺少工程写权限");
+            }
+
             //状态默认置成有效
             taskGroup.setStatus("1");
             taskGroup.setCreateTime(new Date());
@@ -139,14 +157,24 @@ public class TaskGroupController extends Common {
     @LoginRequired
     public ServerResponse delete(String ids, HttpSession httpSession) {
         try {
+            String userName = getUserNameFromSession(httpSession);
             if(StringUtils.isEmpty(ids)){
                 return ServerResponse.responseByError( "请选择要删除的记录");
             }else {
                 String[] idArray = ids.split(",");
-                List<Long> idList = Arrays.asList(idArray).stream().map(x->Long.parseLong(x)).collect(Collectors.toList());
+                List<Long> idList = Arrays.stream(idArray)
+                        .map(Long::parseLong)
+                        .filter(id -> authService.hasTaskGroupPermission(id, "write", userName))
+                        .collect(Collectors.toList());
                 taskGroupService.removeByIds(idList);
-                logger.info("删除了任务组：" + ids);
-                return ServerResponse.responseBySuccessMessage( "删除任务组成功");
+                String resultInfo;
+                if(Arrays.asList(idArray).size() == idList.size()) {
+                    resultInfo = "删除任务组成功";
+                } else {
+                    resultInfo = "成功删除有权限部分任务组";
+                }
+                logger.info(resultInfo + "：" + Arrays.toString(idList.toArray()));
+                return ServerResponse.responseBySuccessMessage(resultInfo);
             }
 
         } catch (Exception e) {
@@ -159,6 +187,12 @@ public class TaskGroupController extends Common {
     @RequestMapping("toEdit")
     @LoginRequired
     public ModelAndView toEdit(Long id, ModelAndView mav, HttpSession httpSession) {
+        String userName = getUserNameFromSession(httpSession);
+        if(!authService.hasTaskGroupPermission(id, "write", userName)) {
+            mav.setViewName("error");
+            mav.addObject("msg", "没有编辑权限");
+            return mav;
+        }
         mav.setViewName("/group/edit");
         TaskGroup taskGroup = taskGroupService.get(id);
         List<Project> projectList = getProject();
@@ -172,6 +206,14 @@ public class TaskGroupController extends Common {
     @LoginRequired
     public ServerResponse edit(@RequestBody TaskGroup taskGroup, HttpSession httpSession) {
         try {
+            if (taskGroup == null || taskGroup.getProjectId() == null) {
+                return ServerResponse.responseByError("编辑失败，参数不合法");
+            }
+            Long id = taskGroup.getId();
+            String userName = getUserNameFromSession(httpSession);
+            if(!authService.hasTaskGroupPermission(id, "write", userName)){
+                return ServerResponse.responseByError(403, "编辑失败，缺少任务组写权限");
+            }
             String valid = validTaskGroup(taskGroup);
             if(!valid.equals("success")){
                 return ServerResponse.responseByError( valid);

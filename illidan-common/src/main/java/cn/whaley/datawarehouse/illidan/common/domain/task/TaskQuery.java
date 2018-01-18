@@ -25,7 +25,7 @@ public class TaskQuery extends BaseQueryEntity {
     /**
      * 任务所属group的id
      */
-    private String groupId;
+    private Long groupId;
 
     /**
      * 任务所属group的code
@@ -35,7 +35,7 @@ public class TaskQuery extends BaseQueryEntity {
     /**
      * 任务所属项目的id
      */
-    private String projectId;
+    private Long projectId;
 
     private Long hiveTableId;
     /**
@@ -82,11 +82,11 @@ public class TaskQuery extends BaseQueryEntity {
         this.addUser = addUser;
     }
 
-    public String getGroupId() {
+    public Long getGroupId() {
         return groupId;
     }
 
-    public void setGroupId(String groupId) {
+    public void setGroupId(Long groupId) {
         this.groupId = groupId;
     }
 
@@ -98,11 +98,11 @@ public class TaskQuery extends BaseQueryEntity {
         this.groupCode = groupCode;
     }
 
-    public String getProjectId() {
+    public Long getProjectId() {
         return projectId;
     }
 
-    public void setProjectId(String projectId) {
+    public void setProjectId(Long projectId) {
         this.projectId = projectId;
     }
 
