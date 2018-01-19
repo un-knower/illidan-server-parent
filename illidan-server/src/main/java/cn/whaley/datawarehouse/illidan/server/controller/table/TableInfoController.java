@@ -56,11 +56,6 @@ public class TableInfoController extends Common {
     private AuthorizeService authorizeService;
     @Autowired
     private AuthService authService;
-    // TODO 后续改成从lion读取
-    private String table_node_id = "7_37";
-    private String sys_id = "7";
-//    private String table_node_id = ConfigUtils.get("newillidan.authorize.table_node_id");
-//    private String sys_id = ConfigUtils.get("newillidan.authorize.sys_id");
 
     @RequestMapping("list")
     @LoginRequired
@@ -76,12 +71,17 @@ public class TableInfoController extends Common {
             if(tableInfo == null){
                 tableInfo = new TableInfoQuery();
             }
-            //TODO 查询用户有权限的db，修改query
-            tableInfo.setLimitStart(start);
-            tableInfo.setPageSize(length);
-            Long count = tableInfoService.countByTableInfo(tableInfo);
-            List<TableInfo> tableInfos = tableInfoService.findByTableInfo(tableInfo);
-            return ServerResponse.responseBySuccessDataAndCount(tableInfos, count);
+//            tableInfo.setLimitStart(start);
+//            tableInfo.setPageSize(length);
+//            Long count = tableInfoService.countByTableInfo(tableInfo);
+//            List<TableInfo> tableInfos = tableInfoService.findByTableInfo(tableInfo);
+            List<Long> resultDbIds = authService.filterTableListByDb(getUserNameFromSession(httpSession));
+            tableInfo.setDbIdList(resultDbIds);
+            List<TableInfo> tableInfoList = tableInfoService.findByTableInfo(tableInfo);
+            Long count = (long) tableInfoList.size();
+            //分页显示
+            List<TableInfo> result = tableInfoList.subList(start, (int) (count - start > length ? start + length : count));
+            return ServerResponse.responseBySuccessDataAndCount(result, count);
         } catch (Exception e){
             logger.error(e.getMessage());
             return ServerResponse.responseByError("查询失败：" + e.getMessage());

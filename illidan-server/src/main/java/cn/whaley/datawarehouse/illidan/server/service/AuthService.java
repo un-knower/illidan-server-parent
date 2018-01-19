@@ -35,10 +35,6 @@ public class AuthService {
     @Autowired
     private TaskService taskService;
 
-    private String projectNodeId = ConfigUtils.get("newillidan.authorize.project_node_id");
-    private String tableNodeId = ConfigUtils.get("newillidan.authorize.table_node_id");
-    private String sysId = ConfigUtils.get("newillidan.authorize.sys_id");
-
     public Authorize createProjectAuth(Project project, String createUserName) throws Exception{
         Authorize authorize = new Authorize();
         Long projectId = project.getId();
@@ -46,6 +42,7 @@ public class AuthService {
         String readDirName = "read_project_" + projectId;
         String writeDirName = "write_project_" + projectId;
         String publishDirName = "publish_project_" + projectId;
+        String projectNodeId = ConfigUtils.get("newillidan.authorize.project_node_id");
         String nodeId = authorizeHttpService.createAuth(projectNodeId, dirName, createUserName);
         String readId = authorizeHttpService.createAuth(nodeId, readDirName, createUserName);
         String writeId = authorizeHttpService.createAuth(nodeId, writeDirName, createUserName);
@@ -70,6 +67,7 @@ public class AuthService {
         String dirName = "table_" + tableId;
         String readDirName = "read_table_" + tableId;
         String writeDirName = "write_table_" + tableId;
+        String tableNodeId = ConfigUtils.get("newillidan.authorize.table_node_id");
         String nodeId = authorizeHttpService.createAuth(tableNodeId, dirName, createUserName);
         String readId = authorizeHttpService.createAuth(nodeId, readDirName, createUserName);
         String writeId = authorizeHttpService.createAuth(nodeId, writeDirName, createUserName);
@@ -101,6 +99,7 @@ public class AuthService {
         dir_id = dir_id.substring(0, dir_id.length() - 1);
         logger.info("dir_id: " + dir_id);
         //检查当前用户是否有权限查看project
+        String sysId = ConfigUtils.get("newillidan.authorize.sys_id");
         Map authMap = authorizeHttpService.checkAuth(userName, sysId, dir_id);
         for (Object obj : authMap.keySet()) {
             if (authMap.get(obj).toString().equals("1")) {
@@ -134,6 +133,7 @@ public class AuthService {
         dir_id = dir_id.substring(0, dir_id.length() - 1);
         logger.info("dir_id: " + dir_id);
         //检查当前用户是否有权限查看table
+        String sysId = ConfigUtils.get("newillidan.authorize.sys_id");
         Map tableAuthMap = authorizeHttpService.checkAuth(userName, sysId, dir_id);
         for (Object obj : tableAuthMap.keySet()) {
             if (tableAuthMap.get(obj).toString().equals("1")) {
@@ -151,8 +151,9 @@ public class AuthService {
         return tableInfoList;
     }
 
-    public List<TableInfo> filterTableListByDb(List<TableInfo> tableInfos, String userName){
+    public List<Long> filterTableListByDb(String userName){
         List<TableInfo> tableInfoList = new ArrayList<>();
+        List<Long> dbIds = new ArrayList<>();
         String dir_id = "";
         Authorize authorize1 = new Authorize();
         authorize1.setType(3L);
@@ -165,6 +166,7 @@ public class AuthService {
         }
         dir_id = dir_id.substring(0, dir_id.length() - 1);
         logger.info("dir_id: " + dir_id);
+        String sysId = ConfigUtils.get("newillidan.authorize.sys_id");
         Map dbAuthMap = authorizeHttpService.checkAuth(userName, sysId, dir_id);
         for (Object obj : dbAuthMap.keySet()) {
             if (dbAuthMap.get(obj).toString().equals("1")) {
@@ -172,18 +174,11 @@ public class AuthService {
                 authorizeQuery.setReadId(obj.toString());
                 Authorize authorize = authorizeService.getByAuthorize(authorizeQuery);
                 Long dbId = authorize.getParentId();
-                TableInfoQuery tableInfoQuery = new TableInfoQuery();
-                tableInfoQuery.setDbId(dbId);
-                List<TableInfo> tableInfoList1 = tableInfoService.findByTableInfo(tableInfoQuery);
-                //找出两个list相同的元素
-                Collection exists = new ArrayList<TableInfo>(tableInfos);
-                Collection notexists = new ArrayList<TableInfo>(tableInfos);
-                exists.removeAll(tableInfoList1);
-                notexists.removeAll(exists);
-                tableInfoList.addAll(notexists);
+                dbIds.add(dbId);
             }
         }
-        return tableInfoList;
+        System.out.println("dbIds: "+dbIds);
+        return dbIds;
     }
 
     public boolean hasTablePermission(Long tabletId, String operateType, String userName) {

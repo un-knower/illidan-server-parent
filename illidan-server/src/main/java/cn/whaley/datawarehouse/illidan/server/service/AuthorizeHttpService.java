@@ -20,8 +20,6 @@ import java.util.Map;
 @Service
 public class AuthorizeHttpService {
     private Logger logger = LoggerFactory.getLogger(AuthorizeHttpService.class);
-    private String url = ConfigUtils.get("newillidan.authorize.url");
-    private String sys_id = ConfigUtils.get("newillidan.authorize.sys_id");
 
     /**
      * 创建目录
@@ -33,6 +31,7 @@ public class AuthorizeHttpService {
     public String createAuth(String pid, String dirName, String uid){
         String dir_id = "";
         Map<String, String> params = new HashMap<String,String>();
+        String sys_id = ConfigUtils.get("newillidan.authorize.sys_id");
         List<Map> groupList = getGroups(uid, sys_id);
         String groupId = "";
         for (Map m : groupList){
@@ -44,6 +43,7 @@ public class AuthorizeHttpService {
         params.put("dir_name", dirName);
         params.put("group_id", groupId);
         params.put("uid", uid);
+        String url = ConfigUtils.get("newillidan.authorize.url");
         String response = HttpClientUtil.URLPost(url+"/dir", params,"UTF-8");
         JSONObject resultJson = new JSONObject(response);
         if(resultJson.get("code").toString().equals("200") && resultJson.getString("msg").equals("success")){
@@ -66,6 +66,7 @@ public class AuthorizeHttpService {
         params.put("uid", uid);
         params.put("sys_id", sys_id);
         params.put("dir_id", dir_id);
+        String url = ConfigUtils.get("newillidan.authorize.url");
         String response = HttpClientUtil.URLGet(url+"/check_auth", params, "UTF-8");
         JSONObject resultJson = new JSONObject(response);
         if(resultJson.get("code").toString().equals("200") && resultJson.getString("msg").equals("success")){
@@ -85,6 +86,7 @@ public class AuthorizeHttpService {
         Map<String, String> params = new HashMap<String,String>();
         params.put("uid", uid);
         params.put("sys_id", sys_id);
+        String url = ConfigUtils.get("newillidan.authorize.url");
         String response = HttpClientUtil.URLGet(url+"/dirs", params, "UTF-8");
         JSONObject resultJson = new JSONObject(response);
         if(resultJson.get("code").toString().equals("200") && resultJson.getString("msg").equals("success")){
@@ -110,6 +112,7 @@ public class AuthorizeHttpService {
         Map<String, String> params = new HashMap<String,String>();
         params.put("uid", uid);
         params.put("sys_id", sys_id);
+        String url = ConfigUtils.get("newillidan.authorize.url");
         String response = HttpClientUtil.URLGet(url+"/groups", params, "UTF-8");
         JSONObject resultJson = new JSONObject(response);
         if(resultJson.get("code").toString().equals("200") && resultJson.getString("msg").equals("success")){

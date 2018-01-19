@@ -59,7 +59,7 @@ public class HttpClientTest {
         //查询用户是否拥有目录权限
         params.put("uid", "wu.jiulin");
         params.put("sys_id", "7");
-        params.put("dir_id", "7_123");
+        params.put("dir_id", "7_127");
         Map result = new HashMap();
         String response = HttpClientUtil.URLGet(url+"/check_auth", params, "UTF-8");
         JSONObject resultJson = new JSONObject(response);
