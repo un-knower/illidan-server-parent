@@ -58,8 +58,9 @@ public class DbInfoServiceImpl implements DbInfoService {
             return null;
         }
         DbInfoWithStorage dbInfoWithStorage = new DbInfoWithStorage();
-        BeanUtils.copyProperties(dbInfo, dbInfoWithStorage);
         BeanUtils.copyProperties(storageInfo, dbInfoWithStorage);
+        BeanUtils.copyProperties(dbInfo, dbInfoWithStorage);
+
         return dbInfoWithStorage;
     }
 
