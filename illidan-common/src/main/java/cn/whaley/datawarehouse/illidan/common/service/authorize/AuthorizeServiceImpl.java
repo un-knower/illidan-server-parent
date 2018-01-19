@@ -1,6 +1,7 @@
 package cn.whaley.datawarehouse.illidan.common.service.authorize;
 
 import cn.whaley.datawarehouse.illidan.common.domain.authorize.Authorize;
+import cn.whaley.datawarehouse.illidan.common.enums.AuthorityTypeEnum;
 import cn.whaley.datawarehouse.illidan.common.mapper.authorize.AuthorizeMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,12 +26,12 @@ public class AuthorizeServiceImpl implements AuthorizeService {
     }
 
     @Override
-    public Authorize getByParentId(Long parentId) {
+    public Authorize getByParentId(Long parentId, AuthorityTypeEnum authorityTypeEnum) {
         if (parentId == null){
             logger.error("get: id is null.");
             return null;
         }
-        return authorizeMapper.getByParentId(parentId);
+        return authorizeMapper.getByParentId(parentId, authorityTypeEnum.getCode());
     }
 
     @Override

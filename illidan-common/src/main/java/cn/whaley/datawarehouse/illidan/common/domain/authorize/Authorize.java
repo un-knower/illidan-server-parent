@@ -30,7 +30,7 @@ public class Authorize implements Serializable {
     /**
      * 1:project,2:table
      */
-    private Long type;
+    private Integer type;
 
     public Long getId() {
         return id;
@@ -80,11 +80,11 @@ public class Authorize implements Serializable {
         this.publishId = publishId;
     }
 
-    public Long getType() {
+    public Integer getType() {
         return type;
     }
 
-    public void setType(Long type) {
+    public void setType(Integer type) {
         this.type = type;
     }
 

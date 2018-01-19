@@ -4,8 +4,8 @@ import cn.whaley.datawarehouse.illidan.common.domain.authorize.Authorize;
 import cn.whaley.datawarehouse.illidan.common.domain.group.TaskGroup;
 import cn.whaley.datawarehouse.illidan.common.domain.project.Project;
 import cn.whaley.datawarehouse.illidan.common.domain.table.TableInfo;
-import cn.whaley.datawarehouse.illidan.common.domain.table.TableInfoQuery;
 import cn.whaley.datawarehouse.illidan.common.domain.task.Task;
+import cn.whaley.datawarehouse.illidan.common.enums.AuthorityTypeEnum;
 import cn.whaley.datawarehouse.illidan.common.service.authorize.AuthorizeService;
 import cn.whaley.datawarehouse.illidan.common.service.group.TaskGroupService;
 import cn.whaley.datawarehouse.illidan.common.service.table.TableInfoService;
@@ -17,7 +17,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -35,7 +34,7 @@ public class AuthService {
     @Autowired
     private TaskService taskService;
 
-    public Authorize createProjectAuth(Project project, String createUserName) throws Exception{
+    public Authorize createProjectAuth(Project project, String createUserName) throws Exception {
         Authorize authorize = new Authorize();
         Long projectId = project.getId();
         String dirName = "project_" + projectId;
@@ -55,7 +54,7 @@ public class AuthService {
         authorize.setReadId(readId);
         authorize.setWriteId(writeId);
         authorize.setPublishId(publishId);
-        authorize.setType(1L);
+        authorize.setType(AuthorityTypeEnum.PROJECT.getCode());
         authorizeService.insert(authorize);
         return authorize;
     }
@@ -63,7 +62,7 @@ public class AuthService {
     public Authorize createTableAuth(TableInfo tableInfo, String createUserName) throws Exception {
         Authorize authorize = new Authorize();
         Long tableId = tableInfo.getId();
-        logger.info("tableId: "+tableId);
+        logger.info("tableId: " + tableId);
         String dirName = "table_" + tableId;
         String readDirName = "read_table_" + tableId;
         String writeDirName = "write_table_" + tableId;
@@ -78,29 +77,27 @@ public class AuthService {
         authorize.setNodeId(nodeId);
         authorize.setReadId(readId);
         authorize.setWriteId(writeId);
-        authorize.setType(2L);
+        authorize.setType(AuthorityTypeEnum.TABLE.getCode());
         authorizeService.insert(authorize);
         return authorize;
     }
 
-    public List<Project> filterProjectList(List<Project> projects, String userName){
+    public List<Project> filterProjectList(List<Project> projects, String userName) {
         List<Project> resultProjects = new ArrayList<>();
         //获取project的读权限目录id
-        String dir_id = "";
+        List<String> dir_ids = new ArrayList<>();
         Authorize authorize1 = new Authorize();
-        authorize1.setType(1L);
+        authorize1.setType(AuthorityTypeEnum.PROJECT.getCode());
         List<Authorize> authorizes = authorizeService.findByAuthorize(authorize1);
         if (authorizes != null && authorizes.size() > 0) {
             for (Authorize a : authorizes) {
                 String readId = a.getReadId();
-                dir_id = dir_id + readId + ",";
+                dir_ids.add(readId);
             }
         }
-        dir_id = dir_id.substring(0, dir_id.length() - 1);
-        logger.info("dir_id: " + dir_id);
         //检查当前用户是否有权限查看project
         String sysId = ConfigUtils.get("newillidan.authorize.sys_id");
-        Map authMap = authorizeHttpService.checkAuth(userName, sysId, dir_id);
+        Map authMap = authorizeHttpService.checkAuth(userName, sysId, dir_ids);
         for (Object obj : authMap.keySet()) {
             if (authMap.get(obj).toString().equals("1")) {
                 Authorize authorizeQuery = new Authorize();
@@ -117,31 +114,29 @@ public class AuthService {
         return resultProjects;
     }
 
-    public List<TableInfo> filterTableList(List<TableInfo> tableInfos, String userName){
+    public List<TableInfo> filterTableList(List<TableInfo> tableInfos, String userName) {
         List<TableInfo> tableInfoList = new ArrayList<>();
         //获取table的读权限目录id
-        String dir_id = "";
+        List<String> dir_ids = new ArrayList<>();
         Authorize authorize1 = new Authorize();
-        authorize1.setType(2L);
+        authorize1.setType(AuthorityTypeEnum.TABLE.getCode());
         List<Authorize> authorizes = authorizeService.findByAuthorize(authorize1);
         if (authorizes != null && authorizes.size() > 0) {
             for (Authorize a : authorizes) {
                 String readId = a.getReadId();
-                dir_id = dir_id + readId + ",";
+                dir_ids.add(readId);
             }
         }
-        dir_id = dir_id.substring(0, dir_id.length() - 1);
-        logger.info("dir_id: " + dir_id);
         //检查当前用户是否有权限查看table
         String sysId = ConfigUtils.get("newillidan.authorize.sys_id");
-        Map tableAuthMap = authorizeHttpService.checkAuth(userName, sysId, dir_id);
+        Map tableAuthMap = authorizeHttpService.checkAuth(userName, sysId, dir_ids);
         for (Object obj : tableAuthMap.keySet()) {
             if (tableAuthMap.get(obj).toString().equals("1")) {
                 Authorize authorizeQuery = new Authorize();
                 authorizeQuery.setReadId(obj.toString());
                 Authorize authorize = authorizeService.getByAuthorize(authorizeQuery);
                 Long tableId = authorize.getParentId();
-                for (int i = 0; i<= tableInfos.size() - 1; i++) {
+                for (int i = 0; i <= tableInfos.size() - 1; i++) {
                     if (tableInfos.get(i).getId().equals(tableId)) {
                         tableInfoList.add(tableInfos.get(i));
                     }
@@ -151,23 +146,21 @@ public class AuthService {
         return tableInfoList;
     }
 
-    public List<Long> filterTableListByDb(String userName){
+    public List<Long> filterTableListByDb(String userName) {
         List<TableInfo> tableInfoList = new ArrayList<>();
         List<Long> dbIds = new ArrayList<>();
-        String dir_id = "";
+        List<String> dir_ids = new ArrayList<>();
         Authorize authorize1 = new Authorize();
-        authorize1.setType(3L);
+        authorize1.setType(AuthorityTypeEnum.DATABASE.getCode());
         List<Authorize> authorizes = authorizeService.findByAuthorize(authorize1);
         if (authorizes != null && authorizes.size() > 0) {
             for (Authorize a : authorizes) {
                 String readId = a.getReadId();
-                dir_id = dir_id + readId + ",";
+                dir_ids.add(readId);
             }
         }
-        dir_id = dir_id.substring(0, dir_id.length() - 1);
-        logger.info("dir_id: " + dir_id);
         String sysId = ConfigUtils.get("newillidan.authorize.sys_id");
-        Map dbAuthMap = authorizeHttpService.checkAuth(userName, sysId, dir_id);
+        Map dbAuthMap = authorizeHttpService.checkAuth(userName, sysId, dir_ids);
         for (Object obj : dbAuthMap.keySet()) {
             if (dbAuthMap.get(obj).toString().equals("1")) {
                 Authorize authorizeQuery = new Authorize();
@@ -177,14 +170,14 @@ public class AuthService {
                 dbIds.add(dbId);
             }
         }
-        System.out.println("dbIds: "+dbIds);
+        System.out.println("dbIds: " + dbIds);
         return dbIds;
     }
 
     public boolean hasTablePermission(Long tabletId, String operateType, String userName) {
         try {
             TableInfo tableInfo = tableInfoService.get(tabletId);
-            if(tableInfo == null || tableInfo.getDbId() == null) {
+            if (tableInfo == null || tableInfo.getDbId() == null) {
                 return false;
             }
             return hasDbPermission(tableInfo.getDbId(), operateType, userName);
@@ -196,8 +189,17 @@ public class AuthService {
 
     public boolean hasDbPermission(Long dbId, String operateType, String userName) {
         try {
-            //TODO
-            return true;
+            Authorize authorize = authorizeService.getByParentId(dbId, AuthorityTypeEnum.DATABASE);
+            String nodeId;
+            if ("read".equals(operateType)) {
+                nodeId = authorize.getReadId();
+            } else if ("write".equals(operateType)) {
+                nodeId = authorize.getWriteId();
+            } else {
+                nodeId = null;
+            }
+            String sysId = ConfigUtils.get("newillidan.authorize.sys_id");
+            return authorizeHttpService.checkAuth(userName, sysId, nodeId);
         } catch (Exception e) {
             logger.warn("查询数据库权限异常", e);
             return false;
@@ -206,8 +208,19 @@ public class AuthService {
 
     public boolean hasProjectPermission(Long projectId, String operateType, String userName) {
         try {
-            //TODO
-            return true;
+            Authorize authorize = authorizeService.getByParentId(projectId, AuthorityTypeEnum.PROJECT);
+            String nodeId;
+            if ("read".equals(operateType)) {
+                nodeId = authorize.getReadId();
+            } else if ("write".equals(operateType)) {
+                nodeId = authorize.getWriteId();
+            } else if ("publish".equals(operateType)) {
+                nodeId = authorize.getPublishId();
+            } else {
+                nodeId = null;
+            }
+            String sysId = ConfigUtils.get("newillidan.authorize.sys_id");
+            return authorizeHttpService.checkAuth(userName, sysId, nodeId);
         } catch (Exception e) {
             logger.warn("查询工程权限异常", e);
             return false;
@@ -217,7 +230,7 @@ public class AuthService {
     public boolean hasTaskGroupPermission(Long taskGroupId, String operateType, String userName) {
         try {
             TaskGroup taskGroup = taskGroupService.get(taskGroupId);
-            if(taskGroup == null || taskGroup.getProjectId() == null) {
+            if (taskGroup == null || taskGroup.getProjectId() == null) {
                 return false;
             }
             return hasProjectPermission(taskGroup.getProjectId(), operateType, userName);
@@ -230,12 +243,23 @@ public class AuthService {
     public boolean hasTaskPermission(Long taskId, String operateType, String userName) {
         try {
             Task task = taskService.get(taskId);
-            if(task == null || task.getGroupId() == null) {
+            if (task == null || task.getGroupId() == null) {
                 return false;
             }
             return hasTaskGroupPermission(task.getGroupId(), operateType, userName);
         } catch (Exception e) {
             logger.warn("查询任务权限异常", e);
+            return false;
+        }
+    }
+
+    public boolean hasCreateProjectPermission(String userName) {
+        try {
+            String node = ConfigUtils.get("newillidan.authorize.create_project_node_id");
+            String sysId = ConfigUtils.get("newillidan.authorize.sys_id");
+            return authorizeHttpService.checkAuth(userName, sysId, node);
+        } catch (Exception e) {
+            logger.warn("查询查询工程权限异常", e);
             return false;
         }
     }

@@ -47,7 +47,7 @@
     </select>
 
     <select id="getByParentId"  resultMap="returnAuthorize">
-        select * from authorize authorize where authorize.parentId = #{parentId}
+        select * from authorize authorize where authorize.parentId = #{parentId} and authorize.type = #{type}
     </select>
 
     <insert id="insert" parameterType="Authorize" useGeneratedKeys="true" keyProperty="authorize.id">
