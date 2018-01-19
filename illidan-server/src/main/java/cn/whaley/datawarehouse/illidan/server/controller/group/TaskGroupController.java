@@ -188,9 +188,9 @@ public class TaskGroupController extends Common {
     @LoginRequired
     public ModelAndView toEdit(Long id, ModelAndView mav, HttpSession httpSession) {
         String userName = getUserNameFromSession(httpSession);
-        if(!authService.hasTaskGroupPermission(id, "write", userName)) {
+        if(!authService.hasTaskGroupPermission(id, "read", userName)) {
             mav.setViewName("error");
-            mav.addObject("msg", "没有编辑权限");
+            mav.addObject("msg", "没有查看权限");
             return mav;
         }
         mav.setViewName("/group/edit");
