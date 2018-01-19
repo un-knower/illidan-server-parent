@@ -105,10 +105,43 @@ public class AuthService {
     }
 
     public List<TableInfo> filterTableList(List<TableInfo> tableInfos, String userName){
-        return null;
+        List<TableInfo> tableInfoList = new ArrayList<>();
+        //获取table的读权限目录id
+        String dir_id = "";
+        Authorize authorize1 = new Authorize();
+        authorize1.setType(2L);
+        List<Authorize> authorizes = authorizeService.findByAuthorize(authorize1);
+        if (authorizes != null && authorizes.size() > 0) {
+            for (Authorize a : authorizes) {
+                String readId = a.getReadId();
+                dir_id = dir_id + readId + ",";
+            }
+        }
+        dir_id = dir_id.substring(0, dir_id.length() - 1);
+        logger.info("dir_id: " + dir_id);
+        //检查当前用户是否有权限查看table
+        Map tableAuthMap = authorizeHttpService.checkAuth(userName, sysId, dir_id);
+        for (Object obj : tableAuthMap.keySet()) {
+            if (tableAuthMap.get(obj).toString().equals("1")) {
+                Authorize authorizeQuery = new Authorize();
+                authorizeQuery.setReadId(obj.toString());
+                Authorize authorize = authorizeService.getByAuthorize(authorizeQuery);
+                Long tableId = authorize.getParentId();
+                for (int i = 0; i<= tableInfos.size() - 1; i++) {
+                    if (tableInfos.get(i).getId().equals(tableId)) {
+                        tableInfoList.add(tableInfos.get(i));
+                    }
+                }
+            }
+        }
+        return tableInfoList;
     }
 
     public boolean hasTablePermission(Long tabletId, String operateType, String userName) {
+        return true;
+    }
+
+    public boolean hasDbPermission(Long dbId, String operateType, String userName) {
         return true;
     }
 
