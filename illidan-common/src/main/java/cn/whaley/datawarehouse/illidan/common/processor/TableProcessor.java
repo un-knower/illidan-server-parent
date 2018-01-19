@@ -179,11 +179,12 @@ public class TableProcessor {
         List<FieldInfo> fieldInfoList = hiveTable.getFieldList();
 
         String sql = "CREATE TABLE `" + mysqlTable.getDbInfo().getDbCode() + "`.`" + mysqlTable.getTableCode() + "`( \n";
-
+        sql += " `id` int(11) unsigned NOT NULL AUTO_INCREMENT,\n";
         sql += fieldInfoList.stream().sorted(Comparator.comparingInt(FieldInfo::getColIndex))
                 .map(f ->
                         "`" + f.getColName() + "` " + mapColTypeToMysql(f.getColType()) + " DEFAULT NULL COMMENT '" + f.getColDes() + "'")
                 .collect(Collectors.joining(",\n"));
+        sql += ",  PRIMARY KEY (`id`)";
         sql += ") COMMENT '" + hiveTable.getTableDes() + "'\n";
 
         return sql;
