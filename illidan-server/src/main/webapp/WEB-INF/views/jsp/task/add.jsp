@@ -132,10 +132,10 @@
             url: "<%=path%>/task/getTables",
             data: "dbId=" + dbId,
             success: function(data) {
-                if (data != null && data.length > 0) {
+                if (data.data != null && data.data.length > 0) {
                     var html = "";
-                    for (var i = 0; i < data.length; i++) {
-                        html += "<option value='" + data[i].id + "'>" + data[i].tableCode + "</option>";
+                    for (var i = 0; i < data.data.length; i++) {
+                        html += "<option value='" + data.data[i].id + "'>" + data.data[i].tableCode + "</option>";
                     }
                 }
                 $("#tableCode").html(html).selectpicker('refresh');
