@@ -65,6 +65,8 @@ public class JdbcFactory {
             dataSource.setPassword(map.get("passWord"));
             dataSource.setMinPoolSize(Integer.parseInt(map.get("minPoolSize")));
             dataSource.setMaxPoolSize(Integer.parseInt(map.get("maxPoolSize")));
+            dataSource.setTestConnectionOnCheckin(false);
+            dataSource.setTestConnectionOnCheckout(true);
 
             JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
             return jdbcTemplate;
