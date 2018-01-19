@@ -3,16 +3,14 @@ package cn.whaley.datawarehouse.illidan.server.service;
 import cn.whaley.datawarehouse.illidan.common.util.ConfigUtils;
 import cn.whaley.datawarehouse.illidan.server.util.HttpClientUtil;
 import com.alibaba.fastjson.JSON;
+import org.apache.commons.lang3.StringUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by wujiulin on 2018/1/16.
@@ -57,15 +55,18 @@ public class AuthorizeHttpService {
      * 查询用户是否拥有目录权限
      * @param uid oa 用户名,如wang.gang
      * @param sys_id 系统ID,系统后台分配的
-     * @param dir_id 目录ID,多个以逗号隔开
+     * @param dir_ids 目录ID
      * @return 目录权限List, key为目录id， value表示是否有权限 1:有权限 0:没有权限
      * */
-    public Map checkAuth(String uid, String sys_id, String dir_id){
+    public Map checkAuth(String uid, String sys_id, List<String> dir_ids){
         Map result = new HashMap();
+        if(dir_ids == null || dir_ids.isEmpty()) {
+            return result;
+        }
         Map<String, String> params = new HashMap<String,String>();
         params.put("uid", uid);
         params.put("sys_id", sys_id);
-        params.put("dir_id", dir_id);
+        params.put("dir_id", StringUtils.join(dir_ids, ","));
         String url = ConfigUtils.get("newillidan.authorize.url");
         String response = HttpClientUtil.URLGet(url+"/check_auth", params, "UTF-8");
         JSONObject resultJson = new JSONObject(response);
@@ -73,6 +74,14 @@ public class AuthorizeHttpService {
             result = JSON.parseObject(resultJson.getJSONObject("data").toString());
         }
         return result;
+    }
+
+    public boolean checkAuth(String uid, String sys_id, String dir_id) {
+        Map map = checkAuth(uid, sys_id, Collections.singletonList(dir_id));
+        if(map.get(dir_id) != null && map.get(dir_id).toString().equals("1")) {
+            return true;
+        }
+        return false;
     }
 
     /**

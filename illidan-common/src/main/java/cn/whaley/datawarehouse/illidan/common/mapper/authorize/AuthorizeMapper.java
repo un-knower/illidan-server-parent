@@ -12,7 +12,7 @@ import java.util.List;
 public interface AuthorizeMapper {
     Authorize get(@Param("id") final Long id);
 
-    Authorize getByParentId(@Param("parentId") final Long parentId);
+    Authorize getByParentId(@Param("parentId") final Long parentId, @Param("type") final int type);
 
     Long insert(@Param("authorize") final Authorize authorize);
 

@@ -182,7 +182,11 @@ public class ProjectController extends Common {
     @LoginRequired
     public ServerResponse add(@RequestBody Project project, HttpSession httpSession) {
         try {
-            //TODO 验证创建权限
+            //验证创建权限
+            String userName = getUserNameFromSession(httpSession);
+            if(!authService.hasCreateProjectPermission(userName)) {
+                return ServerResponse.responseByError(403, "缺少创建工程权限，请联系系统管理员");
+            }
             //状态默认置成有效
             project.setStatus("1");
             //发布状态默认置成未发布
