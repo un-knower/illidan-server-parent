@@ -1,9 +1,14 @@
 package cn.whaley.datawarehouse.illidan.server.service;
 
 import cn.whaley.datawarehouse.illidan.common.domain.authorize.Authorize;
+import cn.whaley.datawarehouse.illidan.common.domain.group.TaskGroup;
 import cn.whaley.datawarehouse.illidan.common.domain.project.Project;
 import cn.whaley.datawarehouse.illidan.common.domain.table.TableInfo;
+import cn.whaley.datawarehouse.illidan.common.domain.task.Task;
 import cn.whaley.datawarehouse.illidan.common.service.authorize.AuthorizeService;
+import cn.whaley.datawarehouse.illidan.common.service.group.TaskGroupService;
+import cn.whaley.datawarehouse.illidan.common.service.table.TableInfoService;
+import cn.whaley.datawarehouse.illidan.common.service.task.TaskService;
 import cn.whaley.datawarehouse.illidan.common.util.ConfigUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,6 +26,13 @@ public class AuthService {
     private AuthorizeHttpService authorizeHttpService;
     @Autowired
     private AuthorizeService authorizeService;
+    @Autowired
+    private TableInfoService tableInfoService;
+    @Autowired
+    private TaskGroupService taskGroupService;
+    @Autowired
+    private TaskService taskService;
+
     private String projectNodeId = ConfigUtils.get("newillidan.authorize.project_node_id");
     private String tableNodeId = ConfigUtils.get("newillidan.authorize.table_node_id");
     private String sysId = ConfigUtils.get("newillidan.authorize.sys_id");
@@ -138,23 +150,62 @@ public class AuthService {
     }
 
     public boolean hasTablePermission(Long tabletId, String operateType, String userName) {
-        return true;
+        try {
+            TableInfo tableInfo = tableInfoService.get(tabletId);
+            if(tableInfo == null || tableInfo.getDbId() == null) {
+                return false;
+            }
+            return hasDbPermission(tableInfo.getDbId(), operateType, userName);
+        } catch (Exception e) {
+            logger.warn("查询数据表权限异常", e);
+            return false;
+        }
     }
 
     public boolean hasDbPermission(Long dbId, String operateType, String userName) {
-        return true;
+        try {
+            //TODO
+            return true;
+        } catch (Exception e) {
+            logger.warn("查询数据库权限异常", e);
+            return false;
+        }
     }
 
     public boolean hasProjectPermission(Long projectId, String operateType, String userName) {
-        return true;
+        try {
+            //TODO
+            return true;
+        } catch (Exception e) {
+            logger.warn("查询工程权限异常", e);
+            return false;
+        }
     }
 
     public boolean hasTaskGroupPermission(Long taskGroupId, String operateType, String userName) {
-        return true;
+        try {
+            TaskGroup taskGroup = taskGroupService.get(taskGroupId);
+            if(taskGroup == null || taskGroup.getProjectId() == null) {
+                return false;
+            }
+            return hasProjectPermission(taskGroup.getProjectId(), operateType, userName);
+        } catch (Exception e) {
+            logger.warn("查询任务组权限异常", e);
+            return false;
+        }
     }
 
     public boolean hasTaskPermission(Long taskId, String operateType, String userName) {
-        return true;
+        try {
+            Task task = taskService.get(taskId);
+            if(task == null || task.getGroupId() == null) {
+                return false;
+            }
+            return hasTaskGroupPermission(task.getGroupId(), operateType, userName);
+        } catch (Exception e) {
+            logger.warn("查询任务权限异常", e);
+            return false;
+        }
     }
 
 }
