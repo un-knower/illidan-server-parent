@@ -4,6 +4,7 @@ import cn.whaley.datawarehouse.illidan.common.domain.authorize.Authorize;
 import cn.whaley.datawarehouse.illidan.common.domain.group.TaskGroup;
 import cn.whaley.datawarehouse.illidan.common.domain.project.Project;
 import cn.whaley.datawarehouse.illidan.common.domain.table.TableInfo;
+import cn.whaley.datawarehouse.illidan.common.domain.table.TableInfoQuery;
 import cn.whaley.datawarehouse.illidan.common.domain.task.Task;
 import cn.whaley.datawarehouse.illidan.common.service.authorize.AuthorizeService;
 import cn.whaley.datawarehouse.illidan.common.service.group.TaskGroupService;
@@ -16,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -144,6 +146,41 @@ public class AuthService {
                         tableInfoList.add(tableInfos.get(i));
                     }
                 }
+            }
+        }
+        return tableInfoList;
+    }
+
+    public List<TableInfo> filterTableListByDb(List<TableInfo> tableInfos, String userName){
+        List<TableInfo> tableInfoList = new ArrayList<>();
+        String dir_id = "";
+        Authorize authorize1 = new Authorize();
+        authorize1.setType(3L);
+        List<Authorize> authorizes = authorizeService.findByAuthorize(authorize1);
+        if (authorizes != null && authorizes.size() > 0) {
+            for (Authorize a : authorizes) {
+                String readId = a.getReadId();
+                dir_id = dir_id + readId + ",";
+            }
+        }
+        dir_id = dir_id.substring(0, dir_id.length() - 1);
+        logger.info("dir_id: " + dir_id);
+        Map dbAuthMap = authorizeHttpService.checkAuth(userName, sysId, dir_id);
+        for (Object obj : dbAuthMap.keySet()) {
+            if (dbAuthMap.get(obj).toString().equals("1")) {
+                Authorize authorizeQuery = new Authorize();
+                authorizeQuery.setReadId(obj.toString());
+                Authorize authorize = authorizeService.getByAuthorize(authorizeQuery);
+                Long dbId = authorize.getParentId();
+                TableInfoQuery tableInfoQuery = new TableInfoQuery();
+                tableInfoQuery.setDbId(dbId);
+                List<TableInfo> tableInfoList1 = tableInfoService.findByTableInfo(tableInfoQuery);
+                //找出两个list相同的元素
+                Collection exists = new ArrayList<TableInfo>(tableInfos);
+                Collection notexists = new ArrayList<TableInfo>(tableInfos);
+                exists.removeAll(tableInfoList1);
+                notexists.removeAll(exists);
+                tableInfoList.addAll(notexists);
             }
         }
         return tableInfoList;
