@@ -80,6 +80,10 @@
             <if test="tableInfo != null and tableInfo.id != null">and tableInfo.id = #{tableInfo.id}</if>
             <if test="tableInfo != null and tableInfo.tableCode != null">and tableInfo.tableCode LIKE concat('%',#{tableInfo.tableCode},'%')</if>
             <if test="tableInfo != null and tableInfo.tableDes != null">and tableInfo.tableDes LIKE concat('%',#{tableInfo.tableDes},'%')</if>
+            <if test="tableInfo != null and tableInfo.dbIdList != null">and tableInfo.dbId in
+                <foreach item="item" collection="tableInfo.dbIdList" open="(" separator="," close=")" >
+                    #{item}
+                </foreach></if>
         </where>
     </sql>
 
