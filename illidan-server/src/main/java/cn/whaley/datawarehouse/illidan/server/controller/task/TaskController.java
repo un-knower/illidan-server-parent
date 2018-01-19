@@ -34,6 +34,7 @@ import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -144,6 +145,7 @@ public class TaskController extends Common {
                 taskFull.setExecuteTypeList(executeTypeList);
                 //状态默认置成有效
                 taskFull.setStatus("1");
+                taskFull.setAddUser(userName);
                 taskFull.setTableId(taskFull.getFullHiveTable().getHiveTable().getId());
                 taskService.insertFullTask(taskFull);
                 if (getCookieValue("taskId") != null && !getCookieValue("taskId").equals("")) {
