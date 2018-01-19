@@ -102,6 +102,12 @@ public class ProjectController extends Common {
     public ModelAndView detail(Long id, ModelMap modelMap, HttpSession httpSession) {
         ModelAndView view = null;
         try {
+            String userName = getUserNameFromSession(httpSession);
+            if(!authService.hasProjectPermission(id, "read", userName)) {
+                view = new ModelAndView("error");
+                view.addObject("msg", "没有查看权限");
+                return view;
+            }
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             Project project = projectService.get(id);
             String createTime;
@@ -124,6 +130,12 @@ public class ProjectController extends Common {
     @LoginRequired
     public ModelAndView toEdit(Long id, ModelAndView mav, HttpSession httpSession) {
         mav.setViewName("/project/edit");
+        String userName = getUserNameFromSession(httpSession);
+        if(!authService.hasProjectPermission(id, "read", userName)) {
+            mav.setViewName("error");
+            mav.addObject("msg", "没有查看权限");
+            return mav;
+        }
         Project project = projectService.get(id);
         List<Owner> ownerList = getOwner();
         mav.addObject("project", project);
@@ -136,15 +148,19 @@ public class ProjectController extends Common {
     @LoginRequired
     public ServerResponse edit(@RequestBody Project project, HttpSession httpSession) {
         try {
-            if (StringUtils.isEmpty(project)) {
-                logger.error("修改项目失败!!!");
-                return ServerResponse.responseByError("修改项目失败!!!");
-            } else {
-                project.setUpdateTime(new Date());
-                projectService.updateById(project);
-                logger.info("修改项目成功!!!");
-                return ServerResponse.responseBySuccessMessage("修改项目成功!!!");
+            if (project == null || project.getId() == null) {
+                return ServerResponse.responseByError("编辑失败，参数不合法");
             }
+            Long id = project.getId();
+            String userName = getUserNameFromSession(httpSession);
+            if(!authService.hasProjectPermission(id, "write", userName)) {
+                return ServerResponse.responseByError(403, "编辑失败，缺少工程写权限");
+            }
+            project.setUpdateTime(new Date());
+            projectService.updateById(project);
+            logger.info("修改项目成功!!!");
+            return ServerResponse.responseBySuccessMessage("修改项目成功!!!");
+
         } catch (Exception e) {
             e.printStackTrace();
             logger.error(e.getMessage());
@@ -166,6 +182,7 @@ public class ProjectController extends Common {
     @LoginRequired
     public ServerResponse add(@RequestBody Project project, HttpSession httpSession) {
         try {
+            //TODO 验证创建权限
             //状态默认置成有效
             project.setStatus("1");
             //发布状态默认置成未发布
@@ -220,6 +237,15 @@ public class ProjectController extends Common {
             }
             String[] idArray = ids.split(",");
             List<Long> idList = Arrays.asList(idArray).stream().map(x -> Long.parseLong(x)).collect(Collectors.toList());
+            if(idList.size() > 1) {
+                return ServerResponse.responseByError("不能同时操作多个工程");
+
+            }
+            Long id = idList.get(0);
+            String userName = getUserNameFromSession(httpSession);
+            if(!authService.hasProjectPermission(id, "write", userName)) {
+                return ServerResponse.responseByError(403, "编辑失败，缺少工程写权限");
+            }
             projectService.removeByIds(idList);
             logger.info("删除了项目：" + ids);
             return ServerResponse.responseBySuccessMessage("删除项目成功");
@@ -230,11 +256,6 @@ public class ProjectController extends Common {
         }
     }
 
-//    @RequestMapping("test")
-//    public ModelAndView test(){
-//        ModelAndView modelAndView = new ModelAndView("/project/test");
-//        return modelAndView;
-//    }
 
     public List<Owner> getOwner() {
         return ownerService.findByOwner(new OwnerQuery());
@@ -245,6 +266,10 @@ public class ProjectController extends Common {
     @ResponseBody
     @LoginRequired
     public ServerResponse toPublishProject(Long id, HttpSession httpSession) {
+        String userName = getUserNameFromSession(httpSession);
+        if(!authService.hasProjectPermission(id, "publish", userName)) {
+            return ServerResponse.responseByError(403, "发布失败，缺少工程发布权限");
+        }
         JSONObject result = azkabanService.publishProject(id);
         if ("success".equals(result.getString("status"))) {
             logger.info("发布项目成功,项目id: " + id);

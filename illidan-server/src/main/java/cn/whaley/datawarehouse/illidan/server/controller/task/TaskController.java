@@ -166,11 +166,17 @@ public class TaskController extends Common {
     @RequestMapping("toEdit")
     @LoginRequired
     public ModelAndView toEdit(Long id, ModelAndView mav, Long groupId, int isCopy, HttpSession httpSession) {
+        String userName = getUserNameFromSession(httpSession);
+        if(!authService.hasTaskPermission(id, "read", userName)) {
+            mav.setViewName("error");
+            mav.addObject("msg", "没有查看权限");
+            return mav;
+        }
         mav.setViewName("/task/edit");
         TaskFull task = taskService.getFullTask(id);
         List<TaskGroup> groupList = getTaskGroup();
         List<DbInfo> dbInfoList = dbInfoService.getDbInfo(1L);
-        List<TableInfo> tableList = getTables(task.getFullHiveTable().getHiveTable().getDbId());
+        List<TableInfo> tableList = getTables(task.getFullHiveTable().getHiveTable().getDbId(), userName);
         mav.addObject("dbInfo", dbInfoList);
         mav.addObject("tableInfo", tableList);
         mav.addObject("task", task);
@@ -250,12 +256,16 @@ public class TaskController extends Common {
     @ResponseBody
     @LoginRequired
     public ServerResponse getTableList(Long dbId, HttpSession httpSession) {
-        List<TableInfo> tableInfoList = getTables(dbId);
+        String userName = getUserNameFromSession(httpSession);
+        if(!authService.hasDbPermission(dbId, "read", userName)) {
+            return ServerResponse.responseByError(403, "缺少数据库读权限");
+        }
+        List<TableInfo> tableInfoList = getTables(dbId, userName);
         return ServerResponse.responseBySuccess(tableInfoList);
 
     }
 
-    public List<TableInfo> getTables(Long dbId) {
+    public List<TableInfo> getTables(Long dbId, String userName) {
         List<TableInfo> tableInfoList = new ArrayList<>();
         try {
             TableInfo tableInfo = new TableInfo();

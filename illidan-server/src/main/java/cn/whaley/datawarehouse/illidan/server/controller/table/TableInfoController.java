@@ -76,6 +76,7 @@ public class TableInfoController extends Common {
             if(tableInfo == null){
                 tableInfo = new TableInfoQuery();
             }
+            //TODO 查询用户有权限的db，修改query
             tableInfo.setLimitStart(start);
             tableInfo.setPageSize(length);
             Long count = tableInfoService.countByTableInfo(tableInfo);
@@ -93,6 +94,7 @@ public class TableInfoController extends Common {
     public ModelAndView toAdd(ModelAndView mav, Long id, HttpSession httpSession) {
         FullHiveTable fullHiveTable;
         if(!id.equals(-1L)){
+            //复制
             fullHiveTable = tableInfoService.getFullHiveTable(id);
             TableWithField mysqlTable = (TableWithField) fullHiveTable.getMysqlTable();
             Boolean flag = fullHiveTable.getHiveTable().getMysqlTableId() != null;
@@ -121,6 +123,11 @@ public class TableInfoController extends Common {
     public ServerResponse add(@RequestBody FullHiveTable fullHiveTable, HttpSession httpSession) {
         try {
             if(validateTable(fullHiveTable).equals("ok")) {
+                String userName = getUserNameFromSession(httpSession);
+                Long dbId = fullHiveTable.getHiveTable().getDbId();
+                if (!authService.hasDbPermission(dbId, "write", userName)) {
+                    return ServerResponse.responseByError(403, "新增失败，缺少数据库写权限");
+                }
                 List<FieldInfo> fieldInfos = new ArrayList<>();
                 TableWithField hiveTable = fullHiveTable.getHiveTable();
                 TableInfo mysqlTable = fullHiveTable.getMysqlTable();
@@ -161,6 +168,12 @@ public class TableInfoController extends Common {
     @LoginRequired
     public ModelAndView toEdit(Long id, ModelAndView mav, HttpSession httpSession) {
         mav.setViewName("table/edit");
+        String userName = getUserNameFromSession(httpSession);
+        if (!authService.hasTablePermission(id, "read", userName)) {
+            mav.setViewName("error");
+            mav.addObject("msg", "没有查看权限");
+            return mav;
+        }
         FullHiveTable fullHiveTable = tableInfoService.getFullHiveTable(id);
         TableWithField mysqlTable = (TableWithField) fullHiveTable.getMysqlTable();
         Boolean flag = fullHiveTable.getHiveTable().getMysqlTableId() != null;
@@ -181,13 +194,18 @@ public class TableInfoController extends Common {
     @LoginRequired
     public ServerResponse edit(@RequestBody FullHiveTable fullHiveTable, HttpSession httpSession) {
         try {
-            if(validateTable(fullHiveTable).equals("ok")) {
+            String validateResult = validateTable(fullHiveTable);
+            if(validateResult.equals("ok")) {
+                String userName = getUserNameFromSession(httpSession);
+                if (!authService.hasTablePermission(fullHiveTable.getHiveTable().getId(), "write", userName)) {
+                    return ServerResponse.responseByError(403, "编辑失败，缺少数据表写权限");
+                }
                 tableInfoService.updateFullHiveTable(fullHiveTable);
                 logger.info("修改任务成功!!!");
                 return ServerResponse.responseBySuccessMessage( "修改输出表成功!!!");
             }else {
                 logger.info("修改输出表失败!!!");
-                return ServerResponse.responseBySuccessMessage( "修改输出表成功!!!");
+                return ServerResponse.responseByError( "修改输出表失败" + validateResult);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -230,6 +248,11 @@ public class TableInfoController extends Common {
             fullHiveTable.setHiveTable(tableWithField);
             String validResult = validateTable(fullHiveTable);
             if(validResult.equals("ok")) {
+                String userName = getUserNameFromSession(httpSession);
+                Long dbId = fullHiveTable.getHiveTable().getDbId();
+                if (!authService.hasDbPermission(dbId, "write", userName)) {
+                    return ServerResponse.responseByError(403, "新增失败，缺少数据库写权限");
+                }
                 List<FieldInfo> fieldInfos = new ArrayList<>();
                 TableWithField hiveTable = fullHiveTable.getHiveTable();
                 TableInfo mysqlTable = fullHiveTable.getMysqlTable();
@@ -265,9 +288,16 @@ public class TableInfoController extends Common {
             }
             String[] idArray = ids.split(",");
             List<Long> idList = Arrays.asList(idArray).stream().map(x->Long.parseLong(x)).collect(Collectors.toList());
-            for (Long id:idList){
-                tableInfoService.dropFullHiveTable(id);
+            if(idList.size() > 1) {
+                ServerResponse.responseByError( "删除目标表失败:不支持同时删除多个表");
             }
+            Long id = idList.get(0);
+            String userName = getUserNameFromSession(httpSession);
+            if (!authService.hasTablePermission(id, "write", userName)) {
+                return ServerResponse.responseByError(403, "删除失败，缺少数据表写权限");
+            }
+            tableInfoService.dropFullHiveTable(id);
+
             logger.info("删除了目标表：" + ids);
             return ServerResponse.responseBySuccessMessage( "删除目标表成功");
         } catch (Exception e) {
