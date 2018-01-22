@@ -9,6 +9,8 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 
 import javax.servlet.http.HttpSession;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by lituo on 2018/1/12.
@@ -49,7 +51,11 @@ public class LoginRequiredInterceptor implements MethodInterceptor {
                 return "redirect:" + url;
             }
             if (clazz.equals(ServerResponse.class)) {
-                return ServerResponse.responseByError(401, "请登录");
+                ServerResponse sr = ServerResponse.responseByError(401, "请登录");
+                Map<String, String> data = new HashMap<>();
+                data.put("url", url);
+                sr.setData(data);
+                return sr;
             }
         }
 
