@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -46,10 +47,10 @@ public class AuthService {
         if (authorizeQuery != null){
             throw new Exception("权限已经存在");
         }
-        String nodeId = authorizeHttpService.createAuth(projectNodeId, dirName, createUserName);
-        String readId = authorizeHttpService.createAuth(nodeId, readDirName, createUserName);
-        String writeId = authorizeHttpService.createAuth(nodeId, writeDirName, createUserName);
-        String publishId = authorizeHttpService.createAuth(nodeId, publishDirName, createUserName);
+        String nodeId = authorizeHttpService.createAuth(projectNodeId, dirName, Collections.singletonList(createUserName), null);
+        String readId = authorizeHttpService.createAuth(nodeId, readDirName, Collections.singletonList(createUserName), null);
+        String writeId = authorizeHttpService.createAuth(nodeId, writeDirName, Collections.singletonList(createUserName), null);
+        String publishId = authorizeHttpService.createAuth(nodeId, publishDirName, Collections.singletonList(createUserName), null);
         if ("".equals(nodeId) || "".equals(readId) || "".equals(writeId) || "".equals(publishId)) {
             throw new Exception("创建工程权限失败");
         }
@@ -71,9 +72,9 @@ public class AuthService {
         String readDirName = "read_table_" + tableId;
         String writeDirName = "write_table_" + tableId;
         String tableNodeId = ConfigUtils.get("newillidan.authorize.table_node_id");
-        String nodeId = authorizeHttpService.createAuth(tableNodeId, dirName, createUserName);
-        String readId = authorizeHttpService.createAuth(nodeId, readDirName, createUserName);
-        String writeId = authorizeHttpService.createAuth(nodeId, writeDirName, createUserName);
+        String nodeId = authorizeHttpService.createAuth(tableNodeId, dirName, Collections.singletonList(createUserName), null);
+        String readId = authorizeHttpService.createAuth(nodeId, readDirName, Collections.singletonList(createUserName), null);
+        String writeId = authorizeHttpService.createAuth(nodeId, writeDirName, Collections.singletonList(createUserName), null);
         if ("".equals(nodeId) || "".equals(readId) || "".equals(writeId)) {
             throw new Exception("创建目标表权限失败");
         }
