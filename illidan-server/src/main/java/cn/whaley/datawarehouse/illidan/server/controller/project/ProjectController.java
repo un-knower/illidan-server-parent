@@ -70,7 +70,6 @@ public class ProjectController extends Common {
     public ServerResponse projectList(Integer start, Integer length, @ModelAttribute("project") ProjectQuery project, HttpSession httpSession) {
         try {
             HashMap<String, String> map = new HashMap<String, String>();
-            String dir_id = "";
             map.put("1", "已发布");
             map.put("0", "未发布");
             if (project == null) {
@@ -79,14 +78,24 @@ public class ProjectController extends Common {
 //            project.setLimitStart(start);
 //            project.setPageSize(length);
 //            Long count = projectService.countByProject(project);
+            //获取所有owner
+            Map<Long,String> ownerMap = new HashMap<>();
+            OwnerQuery ownerQuery = new OwnerQuery();
+            ownerQuery.setStatus("1");
+            List<Owner> owners = ownerService.findByOwner(ownerQuery);
+            for (Owner owner:owners){
+                ownerMap.put(owner.getId(), owner.getOwnerName());
+            }
+            //赋值
             List<Project> projects = projectService.findByProject(project);
             for (int i = 0; i <= projects.size() - 1; ++i) {
                 projects.get(i).setIsPublish(map.get(projects.get(i).getIsPublish()));
-                projects.get(i).setOwnerName(ownerService.get(projects.get(i).getOwnerId()).getOwnerName());
+                projects.get(i).setOwnerName(ownerMap.get(projects.get(i).getOwnerId()));
             }
             logger.info("userName: "+getUserNameFromSession(httpSession));
             List<Project> resultProjects = authService.filterProjectList(projects, getUserNameFromSession(httpSession));
             Long count = (long) resultProjects.size();
+            logger.info("total num: "+count);
             //分页显示
             List<Project> result = resultProjects.subList(start, (int) (count - start > length ? start + length : count));
             return ServerResponse.responseBySuccessDataAndCount(result, count);

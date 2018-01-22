@@ -16,10 +16,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class AuthService {
@@ -95,6 +92,7 @@ public class AuthService {
         List<Project> resultProjects = new ArrayList<>();
         //获取project的读权限目录id
         List<String> dir_ids = new ArrayList<>();
+        Map<String, Long> allAuth = new HashMap<>();
         Authorize authorize1 = new Authorize();
         authorize1.setType(AuthorityTypeEnum.PROJECT.getCode());
         List<Authorize> authorizes = authorizeService.findByAuthorize(authorize1);
@@ -102,6 +100,7 @@ public class AuthService {
             for (Authorize a : authorizes) {
                 String readId = a.getReadId();
                 dir_ids.add(readId);
+                allAuth.put(readId, a.getParentId());
             }
         }
         //检查当前用户是否有权限查看project
@@ -109,11 +108,8 @@ public class AuthService {
         Map authMap = authorizeHttpService.checkAuth(userName, sysId, dir_ids);
         for (Object obj : authMap.keySet()) {
             if (authMap.get(obj).toString().equals("1")) {
-                Authorize authorizeQuery = new Authorize();
-                authorizeQuery.setReadId(obj.toString());
-                Authorize authorize = authorizeService.getByAuthorize(authorizeQuery);
-                Long projectId = authorize.getParentId();
-                for (int i = projects.size() - 1; i >= 0; i--) {
+                Long projectId = allAuth.get(obj.toString());
+                for (int i = 0; i <= projects.size() - 1; i++) {
                     if (projects.get(i).getId().equals(projectId)) {
                         resultProjects.add(projects.get(i));
                     }
