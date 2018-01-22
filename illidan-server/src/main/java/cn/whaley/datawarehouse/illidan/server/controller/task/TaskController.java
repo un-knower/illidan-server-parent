@@ -135,7 +135,7 @@ public class TaskController extends Common {
                 if (!authService.hasTaskGroupPermission(taskFull.getGroupId(), "write", userName)) {
                     return ServerResponse.responseByError(403, "添加失败，缺少任务组写权限");
                 }
-                if (!authService.hasTablePermission(taskFull.getTable().getId(), "write", userName)) {
+                if (!authService.hasTablePermission(taskFull.getFullHiveTable().getHiveTable().getId(), "write", userName)) {
                     return ServerResponse.responseByError(403, "添加失败，缺少数据表写权限");
                 }
                 //执行方式(List)
@@ -197,7 +197,7 @@ public class TaskController extends Common {
                 if (!authService.hasTaskPermission(taskFull.getId(), "write", userName)) {
                     return ServerResponse.responseByError(403, "查询失败，缺少任务写权限");
                 }
-                if (!authService.hasTablePermission(taskFull.getTable().getId(), "write", userName)) {
+                if (!authService.hasTablePermission(taskFull.getFullHiveTable().getHiveTable().getId(), "write", userName)) {
                     return ServerResponse.responseByError(403, "添加失败，缺少数据表写权限");
                 }
                 taskFull.setTableId(taskFull.getFullHiveTable().getHiveTable().getId());

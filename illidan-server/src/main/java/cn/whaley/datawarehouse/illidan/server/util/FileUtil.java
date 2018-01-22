@@ -187,8 +187,8 @@ public class FileUtil {
             pw.write(jobContent.toCharArray());
             pw.flush();
         }catch (Exception e){
-            log.error("writeFile is err : "+e.getMessage());
-            throw new RuntimeException("writeFile is err ...");
+            log.error("创建job配置文件失败 : "+e.getMessage());
+            throw new RuntimeException("创建job配置文件失败");
         }finally {
            close(fos,pw);
         }
@@ -216,8 +216,8 @@ public class FileUtil {
             pw.write(buffer.toString().toCharArray());
             pw.flush();
         }catch (Exception e){
-            log.error("writeFile is err : "+e.getMessage());
-            throw new RuntimeException("writeFile is err ...");
+            log.error("创建job配置文件失败 : "+e.getMessage());
+            throw new RuntimeException("创建job配置文件失败.");
         }finally {
             close(fos,pw);
         }

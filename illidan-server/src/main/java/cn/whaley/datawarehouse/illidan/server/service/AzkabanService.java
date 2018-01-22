@@ -67,7 +67,7 @@ public class AzkabanService {
                 jobMap.put("emails",email);
                 List<Task> taskList = taskService.findTaskByGroupId(groupId);
                 //group下至少有一个task
-                if(taskList.size() == 0){
+                if(taskList == null || taskList.size() == 0){
                     result.put("status","error");
                     result.put("message","group '"+groupCode + "' has no task , please add  or delete...");
                     return result;
