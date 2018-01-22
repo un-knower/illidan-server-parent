@@ -1,5 +1,8 @@
 package cn.whaley.datawarehouse.illidan.server.service;
 
+import cn.whaley.datawarehouse.illidan.common.domain.authorize.Authorize;
+import cn.whaley.datawarehouse.illidan.common.enums.AuthorityTypeEnum;
+import cn.whaley.datawarehouse.illidan.common.service.authorize.AuthorizeService;
 import cn.whaley.datawarehouse.illidan.server.util.HttpClientUtil;
 import com.alibaba.fastjson.JSON;
 import org.apache.commons.httpclient.HttpClient;
@@ -8,32 +11,27 @@ import org.apache.commons.httpclient.methods.PostMethod;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.io.IOException;
 import java.util.*;
 
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations = {
+        "classpath*:spring/application-illidan-*.xml"})
 public class HttpClientTest {
+    @Autowired
+    private AuthorizeService authorizeService;
     private String url = "http://auth-platform.aginomoto.com";
 
 
     @Test
     public void test(){
-        List<String> list1 = new ArrayList<>();
-        List<String> list2 = new ArrayList<>();
-        list1.add("a");
-        list1.add("b");
-        list1.add("c");
-
-        list2.add("a");
-        list2.add("b");
-        list2.add("d");
-
-        Collection exists = new ArrayList<String>(list2);
-        Collection notexists = new ArrayList<String>(list2);
-        exists.removeAll(list1);
-        notexists.removeAll(exists);
-        System.out.println(notexists);
-
+        Authorize authorizeQuery = authorizeService.getByParentId(1L, AuthorityTypeEnum.PROJECT);
+        System.out.println("====="+authorizeQuery);
     }
 
     @Test
@@ -57,9 +55,9 @@ public class HttpClientTest {
 
 
         //查询用户是否拥有目录权限
-        params.put("uid", "wu.jiulin");
+        params.put("uid", "li.tuo");
         params.put("sys_id", "7");
-        params.put("dir_id", "7_127");
+        params.put("dir_id", "7_171");
         Map result = new HashMap();
         String response = HttpClientUtil.URLGet(url+"/check_auth", params, "UTF-8");
         JSONObject resultJson = new JSONObject(response);
