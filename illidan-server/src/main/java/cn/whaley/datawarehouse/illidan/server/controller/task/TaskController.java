@@ -129,16 +129,15 @@ public class TaskController extends Common {
     @LoginRequired
     public ServerResponse add(@RequestBody TaskFull taskFull, HttpSession httpSession) {
         try {
-            Long taskGroupId = taskFull.getGroupId();
             String userName = getUserNameFromSession(httpSession);
-            if (taskGroupId != null) {
-                if (!authService.hasTaskGroupPermission(taskGroupId, "write", userName)) {
-                    return ServerResponse.responseByError(403, "查询失败，缺少任务组写权限");
-                }
-            } else {
-                return ServerResponse.responseByError("查询失败，参数是不合法");
-            }
+
             if (validateTask(taskFull).equals("ok")) {
+                if (!authService.hasTaskGroupPermission(taskFull.getGroupId(), "write", userName)) {
+                    return ServerResponse.responseByError(403, "添加失败，缺少任务组写权限");
+                }
+                if (!authService.hasTablePermission(taskFull.getTable().getId(), "write", userName)) {
+                    return ServerResponse.responseByError(403, "添加失败，缺少数据表写权限");
+                }
                 //执行方式(List)
                 String[] executeTypeArray = taskFull.getExecuteType().split(",");
                 List<String> executeTypeList = new ArrayList<>(Arrays.asList(executeTypeArray));
@@ -193,16 +192,14 @@ public class TaskController extends Common {
     @LoginRequired
     public ServerResponse edit(@RequestBody TaskFull taskFull, HttpSession httpSession) {
         try {
-            Long taskId = taskFull.getId();
             String userName = getUserNameFromSession(httpSession);
-            if (taskId != null) {
-                if (!authService.hasTaskPermission(taskId, "write", userName)) {
+            if (validateTask(taskFull).equals("ok")) {
+                if (!authService.hasTaskPermission(taskFull.getId(), "write", userName)) {
                     return ServerResponse.responseByError(403, "查询失败，缺少任务写权限");
                 }
-            } else {
-                return ServerResponse.responseByError("查询失败，参数是不合法");
-            }
-            if (validateTask(taskFull).equals("ok")) {
+                if (!authService.hasTablePermission(taskFull.getTable().getId(), "write", userName)) {
+                    return ServerResponse.responseByError(403, "添加失败，缺少数据表写权限");
+                }
                 taskFull.setTableId(taskFull.getFullHiveTable().getHiveTable().getId());
                 taskService.updateFullTask(taskFull);
                 logger.info("修改任务成功!!!");
