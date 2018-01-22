@@ -162,10 +162,16 @@ public class TaskGroupController extends Common {
                 return ServerResponse.responseByError( "请选择要删除的记录");
             }else {
                 String[] idArray = ids.split(",");
+                if(Arrays.asList(idArray).size() == 0) {
+                    return ServerResponse.responseByError("请选择要删除的记录");
+                }
                 List<Long> idList = Arrays.stream(idArray)
                         .map(Long::parseLong)
                         .filter(id -> authService.hasTaskGroupPermission(id, "write", userName))
                         .collect(Collectors.toList());
+                if(idList.size() == 0) {
+                    return ServerResponse.responseByError(403, "删除失败，缺少编辑权限");
+                }
                 taskGroupService.removeByIds(idList);
                 String resultInfo;
                 if(Arrays.asList(idArray).size() == idList.size()) {
@@ -206,7 +212,7 @@ public class TaskGroupController extends Common {
     @LoginRequired
     public ServerResponse edit(@RequestBody TaskGroup taskGroup, HttpSession httpSession) {
         try {
-            if (taskGroup == null || taskGroup.getProjectId() == null) {
+            if (taskGroup == null || taskGroup.getId() == null) {
                 return ServerResponse.responseByError("编辑失败，参数不合法");
             }
             Long id = taskGroup.getId();

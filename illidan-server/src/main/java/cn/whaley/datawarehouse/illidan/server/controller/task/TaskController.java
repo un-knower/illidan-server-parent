@@ -225,16 +225,22 @@ public class TaskController extends Common {
                 return ServerResponse.responseByError("请选择要删除的记录");
             } else {
                 String[] idArray = ids.split(",");
+                if(Arrays.asList(idArray).size() == 0) {
+                    return ServerResponse.responseByError("请选择要删除的记录");
+                }
                 List<Long> idList = Arrays.asList(idArray).stream()
                         .map(x -> Long.parseLong(x))
                         .filter(id -> authService.hasTaskPermission(id, "write", userName))
                         .collect(Collectors.toList());
+                if(idList.size() == 0) {
+                    return ServerResponse.responseByError(403, "删除失败，缺少编辑权限");
+                }
                 taskService.removeByIds(idList);
                 String resultInfo;
                 if(Arrays.asList(idArray).size() == idList.size()) {
                     resultInfo = "删除任务组成功";
                 } else {
-                    resultInfo = "成功删除有权限部分任务组";
+                    resultInfo = "成功删除有权限部分任务";
                 }
                 logger.info(resultInfo + "：" + Arrays.toString(idList.toArray()));
                 if (getCookieValue("taskId") != null && !getCookieValue("taskId").equals("")) {

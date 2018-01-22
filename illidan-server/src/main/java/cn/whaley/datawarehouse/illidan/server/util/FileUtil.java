@@ -299,8 +299,8 @@ public class FileUtil {
             pw.write(buffer.toString().toCharArray());
             pw.flush();
         }catch (Exception e){
-            log.error("write2Properties is err : "+e.getMessage());
-            throw new RuntimeException("write2Properties is err ...");
+            log.error("创建Properties配置文件失败 : "+e.getMessage());
+            throw new RuntimeException("创建Properties配置文件失败 ...");
         }finally {
             close(fos,pw);
         }
@@ -308,8 +308,12 @@ public class FileUtil {
 
     public static void close(FileOutputStream fos,PrintWriter pw){
         try {
-            fos.close();
-            pw.close();
+            if(fos != null) {
+                fos.close();
+            }
+            if(pw != null) {
+                pw.close();
+            }
         }catch (Exception e){
             log.error("writeFile is err : "+e.getMessage());
             throw new RuntimeException("writeFile is err ...");
