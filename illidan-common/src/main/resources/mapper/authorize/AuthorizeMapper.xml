@@ -38,7 +38,7 @@
         <result column="readId" javaType="String" jdbcType="VARCHAR" property="readId"/>
         <result column="writeId" javaType="String" jdbcType="VARCHAR" property="writeId"/>
         <result column="publishId" javaType="String" jdbcType="VARCHAR" property="publishId"/>
-        <result column="type" javaType="Long" jdbcType="BIGINT" property="type"/>
+        <result column="type" javaType="int" jdbcType="INTEGER" property="type"/>
 
     </resultMap>
 

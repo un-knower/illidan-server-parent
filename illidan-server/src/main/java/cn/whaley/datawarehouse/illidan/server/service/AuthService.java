@@ -42,6 +42,10 @@ public class AuthService {
         String writeDirName = "write_project_" + projectId;
         String publishDirName = "publish_project_" + projectId;
         String projectNodeId = ConfigUtils.get("newillidan.authorize.project_node_id");
+        Authorize authorizeQuery = authorizeService.getByParentId(projectId, AuthorityTypeEnum.PROJECT);
+        if (authorizeQuery != null){
+            throw new Exception("权限已经存在");
+        }
         String nodeId = authorizeHttpService.createAuth(projectNodeId, dirName, createUserName);
         String readId = authorizeHttpService.createAuth(nodeId, readDirName, createUserName);
         String writeId = authorizeHttpService.createAuth(nodeId, writeDirName, createUserName);
