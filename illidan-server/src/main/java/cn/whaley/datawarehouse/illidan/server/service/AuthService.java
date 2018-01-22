@@ -47,10 +47,12 @@ public class AuthService {
         if (authorizeQuery != null){
             throw new Exception("权限已经存在");
         }
-        String nodeId = authorizeHttpService.createAuth(projectNodeId, dirName, Collections.singletonList(createUserName), null);
-        String readId = authorizeHttpService.createAuth(nodeId, readDirName, Collections.singletonList(createUserName), null);
-        String writeId = authorizeHttpService.createAuth(nodeId, writeDirName, Collections.singletonList(createUserName), null);
-        String publishId = authorizeHttpService.createAuth(nodeId, publishDirName, Collections.singletonList(createUserName), null);
+        List<String> createUserNames = Collections.singletonList(createUserName);
+        List<String> adminGroups = Collections.singletonList(ConfigUtils.get("newillidan.authorize.admin.group"));
+        String nodeId = authorizeHttpService.createAuth(projectNodeId, dirName, createUserNames, adminGroups);
+        String readId = authorizeHttpService.createAuth(nodeId, readDirName, createUserNames, adminGroups);
+        String writeId = authorizeHttpService.createAuth(nodeId, writeDirName, createUserNames, adminGroups);
+        String publishId = authorizeHttpService.createAuth(nodeId, publishDirName, createUserNames, adminGroups);
         if ("".equals(nodeId) || "".equals(readId) || "".equals(writeId) || "".equals(publishId)) {
             throw new Exception("创建工程权限失败");
         }
@@ -72,9 +74,11 @@ public class AuthService {
         String readDirName = "read_table_" + tableId;
         String writeDirName = "write_table_" + tableId;
         String tableNodeId = ConfigUtils.get("newillidan.authorize.table_node_id");
-        String nodeId = authorizeHttpService.createAuth(tableNodeId, dirName, Collections.singletonList(createUserName), null);
-        String readId = authorizeHttpService.createAuth(nodeId, readDirName, Collections.singletonList(createUserName), null);
-        String writeId = authorizeHttpService.createAuth(nodeId, writeDirName, Collections.singletonList(createUserName), null);
+        List<String> createUserNames = Collections.singletonList(createUserName);
+        List<String> adminGroups = Collections.singletonList(ConfigUtils.get("newillidan.authorize.admin.group"));
+        String nodeId = authorizeHttpService.createAuth(tableNodeId, dirName, createUserNames, adminGroups);
+        String readId = authorizeHttpService.createAuth(nodeId, readDirName, createUserNames, adminGroups);
+        String writeId = authorizeHttpService.createAuth(nodeId, writeDirName, createUserNames, adminGroups);
         if ("".equals(nodeId) || "".equals(readId) || "".equals(writeId)) {
             throw new Exception("创建目标表权限失败");
         }

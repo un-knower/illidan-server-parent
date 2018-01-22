@@ -27,10 +27,7 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 
 import javax.servlet.http.HttpSession;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by lituo on 2018/1/12.
@@ -120,9 +117,11 @@ public class HomeController extends Common {
                 continue;
             }
             String createUserName = getUserNameFromSession(httpSession);
-            String nodeId = authorizeHttpService.createAuth(dbNodeId, dirName, Collections.singletonList(createUserName), null);
-            String readId = authorizeHttpService.createAuth(nodeId, readDirName, Collections.singletonList(createUserName), null);
-            String writeId = authorizeHttpService.createAuth(nodeId, writeDirName, Collections.singletonList(createUserName), null);
+            List<String> createUserNames = Collections.singletonList(createUserName);
+            List<String> adminGroups = Collections.singletonList(ConfigUtils.get("newillidan.authorize.admin.group"));
+            String nodeId = authorizeHttpService.createAuth(dbNodeId, dirName, createUserNames, adminGroups);
+            String readId = authorizeHttpService.createAuth(nodeId, readDirName, createUserNames, adminGroups);
+            String writeId = authorizeHttpService.createAuth(nodeId, writeDirName, createUserNames, adminGroups);
             if ("".equals(nodeId) || "".equals(readId) || "".equals(writeId)) {
                 return ServerResponse.responseByError( "初始化数据库权限失败!!!");
             }
@@ -134,7 +133,7 @@ public class HomeController extends Common {
             authorizeService.insert(authorize);
         }
         if (existAuths.size() > 0){
-            return ServerResponse.responseByError("权限已经存在!!!" + existAuths);
+            return ServerResponse.responseByError("权限已经存在!!!" + Arrays.toString(existAuths.toArray()));
         }
         return ServerResponse.responseBySuccessMessage("初始化数据库权限成功!!!");
     }
