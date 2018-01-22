@@ -1,6 +1,7 @@
 package cn.whaley.datawarehouse.illidan.server.service;
 
 import cn.whaley.datawarehouse.illidan.common.domain.authorize.Authorize;
+import cn.whaley.datawarehouse.illidan.common.domain.db.DbInfo;
 import cn.whaley.datawarehouse.illidan.common.domain.group.TaskGroup;
 import cn.whaley.datawarehouse.illidan.common.domain.project.Project;
 import cn.whaley.datawarehouse.illidan.common.domain.table.TableInfo;
@@ -92,7 +93,7 @@ public class AuthService {
         List<Project> resultProjects = new ArrayList<>();
         //获取project的读权限目录id
         List<String> dir_ids = new ArrayList<>();
-        Map<String, Long> allAuth = new HashMap<>();
+        Map<String, Long> allProjectAuth = new HashMap<>();
         Authorize authorize1 = new Authorize();
         authorize1.setType(AuthorityTypeEnum.PROJECT.getCode());
         List<Authorize> authorizes = authorizeService.findByAuthorize(authorize1);
@@ -100,7 +101,7 @@ public class AuthService {
             for (Authorize a : authorizes) {
                 String readId = a.getReadId();
                 dir_ids.add(readId);
-                allAuth.put(readId, a.getParentId());
+                allProjectAuth.put(readId, a.getParentId());
             }
         }
         //检查当前用户是否有权限查看project
@@ -108,7 +109,7 @@ public class AuthService {
         Map authMap = authorizeHttpService.checkAuth(userName, sysId, dir_ids);
         for (Object obj : authMap.keySet()) {
             if (authMap.get(obj).toString().equals("1")) {
-                Long projectId = allAuth.get(obj.toString());
+                Long projectId = allProjectAuth.get(obj.toString());
                 for (int i = 0; i <= projects.size() - 1; i++) {
                     if (projects.get(i).getId().equals(projectId)) {
                         resultProjects.add(projects.get(i));
@@ -152,7 +153,7 @@ public class AuthService {
     }
 
     public List<Long> filterTableListByDb(String userName) {
-        List<TableInfo> tableInfoList = new ArrayList<>();
+        Map<String, Long> allTableAuth = new HashMap<>();
         List<Long> dbIds = new ArrayList<>();
         List<String> dir_ids = new ArrayList<>();
         Authorize authorize1 = new Authorize();
@@ -160,23 +161,46 @@ public class AuthService {
         List<Authorize> authorizes = authorizeService.findByAuthorize(authorize1);
         if (authorizes != null && authorizes.size() > 0) {
             for (Authorize a : authorizes) {
-                String readId = a.getReadId();
-                dir_ids.add(readId);
+                dir_ids.add(a.getReadId());
+                allTableAuth.put(a.getReadId(), a.getParentId());
             }
         }
         String sysId = ConfigUtils.get("newillidan.authorize.sys_id");
         Map dbAuthMap = authorizeHttpService.checkAuth(userName, sysId, dir_ids);
         for (Object obj : dbAuthMap.keySet()) {
             if (dbAuthMap.get(obj).toString().equals("1")) {
-                Authorize authorizeQuery = new Authorize();
-                authorizeQuery.setReadId(obj.toString());
-                Authorize authorize = authorizeService.getByAuthorize(authorizeQuery);
-                Long dbId = authorize.getParentId();
+                Long dbId = allTableAuth.get(obj.toString());
                 dbIds.add(dbId);
             }
         }
-        System.out.println("dbIds: " + dbIds);
         return dbIds;
+    }
+
+    public List<DbInfo> filterDbList(List<DbInfo> dbInfoList,String userName){
+        Map<String, Long> allDbAuth = new HashMap<>();
+        List<DbInfo> dbInfos = new ArrayList<>();
+        List<String> dir_ids = new ArrayList<>();
+        Authorize authorize1 = new Authorize();
+        authorize1.setType(AuthorityTypeEnum.DATABASE.getCode());
+        List<Authorize> authorizes = authorizeService.findByAuthorize(authorize1);
+        if (authorizes != null && authorizes.size() > 0) {
+            for (Authorize a : authorizes) {
+                dir_ids.add(a.getReadId());
+                allDbAuth.put(a.getReadId(), a.getParentId());
+            }
+        }
+        String sysId = ConfigUtils.get("newillidan.authorize.sys_id");
+        Map dbAuthMap = authorizeHttpService.checkAuth(userName, sysId, dir_ids);
+        for (Object obj : dbAuthMap.keySet()) {
+            if (dbAuthMap.get(obj).toString().equals("1")) {
+                for (int i = 0; i <= dbInfoList.size() - 1; i++) {
+                    if (dbInfoList.get(i).getId().equals(allDbAuth.get(obj.toString()))) {
+                        dbInfos.add(dbInfoList.get(i));
+                    }
+                }
+            }
+        }
+        return dbInfos;
     }
 
     public boolean hasTablePermission(Long tabletId, String operateType, String userName) {

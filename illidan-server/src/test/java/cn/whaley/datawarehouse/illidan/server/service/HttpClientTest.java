@@ -39,34 +39,34 @@ public class HttpClientTest {
         Map<String, String> params = new HashMap<String,String>();
 
         //create dir
-//        String dir_id = "";
-//        params.put("pid", "7");
-//        params.put("dir_name", "database_test");
-//        params.put("group_id", "3");
-//        params.put("uid", "wu.jiulin");
-//        String response = HttpClientUtil.URLPost(url+"/dir", params,"UTF-8");
-//        JSONObject resultJson = new JSONObject(response);
-//        if(resultJson.get("code").toString().equals("200") && resultJson.getString("msg").equals("success")){
-//            JSONObject dir_id_json = resultJson.getJSONObject("data");
-//            dir_id = dir_id_json.getString("dir_id");
-//        }
-//        System.out.println(dir_id);
+        String dir_id = "";
+        params.put("pid", "7_228");
+        params.put("dir_name", "publish_project_21");
+        params.put("group_id", "5");
+        params.put("uid", "wu.jiulin");
+        String response = HttpClientUtil.URLPost(url+"/dir", params,"UTF-8");
+        JSONObject resultJson = new JSONObject(response);
+        if(resultJson.get("code").toString().equals("200") && resultJson.getString("msg").equals("success")){
+            JSONObject dir_id_json = resultJson.getJSONObject("data");
+            dir_id = dir_id_json.getString("dir_id");
+        }
+        System.out.println(dir_id);
 
 
 
         //查询用户是否拥有目录权限
-        params.put("uid", "li.tuo");
-        params.put("sys_id", "7");
-        params.put("dir_id", "7_171");
-        Map result = new HashMap();
-        String response = HttpClientUtil.URLGet(url+"/check_auth", params, "UTF-8");
-        JSONObject resultJson = new JSONObject(response);
-        if(resultJson.get("code").toString().equals("200") && resultJson.getString("msg").equals("success")){
-            result = JSON.parseObject(resultJson.getJSONObject("data").toString());
-        }
-        for (Object obj : result.keySet()){
-            System.out.println("key为："+obj+"值为："+result.get(obj));
-        }
+//        params.put("uid", "li.tuo");
+//        params.put("sys_id", "7");
+//        params.put("dir_id", "7_171");
+//        Map result = new HashMap();
+//        String response = HttpClientUtil.URLGet(url+"/check_auth", params, "UTF-8");
+//        JSONObject resultJson = new JSONObject(response);
+//        if(resultJson.get("code").toString().equals("200") && resultJson.getString("msg").equals("success")){
+//            result = JSON.parseObject(resultJson.getJSONObject("data").toString());
+//        }
+//        for (Object obj : result.keySet()){
+//            System.out.println("key为："+obj+"值为："+result.get(obj));
+//        }
 
 
 

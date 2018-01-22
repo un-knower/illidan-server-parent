@@ -101,7 +101,7 @@ public class TableInfoController extends Common {
             mav.addObject("flag" , flag);
             mav.addObject("hiveTable",fullHiveTable.getHiveTable());
             mav.addObject("mysqlTable",fullHiveTable.getMysqlTable());
-            mav.addObject("mysqlDbInfoList",dbInfoService.getDbInfo(2L));
+//            mav.addObject("mysqlDbInfoList",dbInfoService.getDbInfo(2L));
             String mysqlTableDbCode = "";
             if(mysqlTable!=null){
                 mysqlTableDbCode = mysqlTable.getDbInfo().getDbCode();
@@ -110,8 +110,10 @@ public class TableInfoController extends Common {
         }
         List<DbInfo> hiveDbInfoList = dbInfoService.getDbInfo(1L);//hive
         List<DbInfo> mysqlDbInfoList = dbInfoService.getDbInfo(2L);//mysql
-        mav.addObject("hiveDbInfoList",hiveDbInfoList);
-        mav.addObject("mysqlDbInfoList",mysqlDbInfoList);
+//        mav.addObject("hiveDbInfoList",hiveDbInfoList);
+//        mav.addObject("mysqlDbInfoList",mysqlDbInfoList);
+        mav.addObject("hiveDbInfoList",authService.filterDbList(hiveDbInfoList, getUserNameFromSession(httpSession)));
+        mav.addObject("mysqlDbInfoList",authService.filterDbList(mysqlDbInfoList, getUserNameFromSession(httpSession)));
         mav.addObject("isCopy",id);
         mav.setViewName("table/add");
         return mav;

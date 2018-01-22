@@ -41,9 +41,12 @@
                     <div class="col-md-7">
                         <select class=" show-tick form-control" style="height: 34px;" id="dbId" name="dbId" title="" data-live-search="true">
                             <option value="-1">hive数据库</option>
-                            <c:forEach begin="0" end="${hiveDbInfoList.size()-1}"  var="index">
-                                <option value ="${hiveDbInfoList.get(index).id}" >${hiveDbInfoList.get(index).dbCode}</option>
-                            </c:forEach>
+                            <c:if test ="${hiveDbInfoList.size()>0}">
+                                <c:forEach begin="0" end="${hiveDbInfoList.size()-1}"  var="index">
+                                    <option value ="${hiveDbInfoList.get(index).id}" >${hiveDbInfoList.get(index).dbCode}</option>
+                                </c:forEach>
+                            </c:if>
+
                         </select>
                     </div>
                 </div>
@@ -326,9 +329,11 @@
                     <div class="col-md-7">
                         <select class=" show-tick form-control" style="height: 34px;width: 120px;" id="mysqlDbId" name="dbId" data-live-search="true">
                             <option value="-1">mysql数据库</option>
-                            <c:forEach begin="0" end="${mysqlDbInfoList.size()-1}"  var="index">
-                                <option value ="${mysqlDbInfoList.get(index).id}" >${mysqlDbInfoList.get(index).dbCode}</option>
-                            </c:forEach>
+                            <c:if test ="${mysqlDbInfoList.size()>0}">
+                                <c:forEach begin="0" end="${mysqlDbInfoList.size()-1}"  var="index">
+                                    <option value ="${mysqlDbInfoList.get(index).id}" >${mysqlDbInfoList.get(index).dbCode}</option>
+                                </c:forEach>
+                            </c:if>
                         </select>
                     </div>
                 </div>
