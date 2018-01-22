@@ -434,16 +434,14 @@
             dataType: 'json',
             async: false,
             success: function (data) {
-                if (data.result == true) {
+                if (data.status == "200") {
                     modalAlert("提示", data.msg, closeTip, "ok");
                 } else {
-                    // modalAlert("提示", data.msg, closeWindow, "error");
-                    modalAlert("提示", data.msg, closeTip, "error");
+                    modalAlert("提示", data.msg, closeWindow, "error");
                 }
             },
             error: function() {
-                // modalAlert("提示", "新增输出表失败,请重新添加", closeWindow, "error");
-                modalAlert("提示", "新增输出表失败,请重新添加", closeTip, "error");
+                modalAlert("提示", "新增输出表失败,请重新添加", closeWindow, "error");
             }
         });
     }

@@ -254,7 +254,7 @@
             dataType: 'json',
             async: false,
             success: function (data) {
-                if (data.result == true) {
+                if (data.status == "200") {
                     modalAlert("提示", data.msg, searchList, "ok");
                 } else {
                     modalAlert("提示", data.msg, searchList, "error");
@@ -304,7 +304,7 @@
             dataType: 'json',
             async: false,
             success: function (data) {
-                if (data.result == true) {
+                if (data.status == "200") {
                     modalAlert("提示", data.msg, searchList, "ok");
                 } else {
                     modalAlert("提示", data.msg, searchList, "error");

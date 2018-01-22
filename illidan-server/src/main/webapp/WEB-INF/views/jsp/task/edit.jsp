@@ -166,16 +166,14 @@
             dataType: 'json',
             async: false,
             success: function (data) {
-                if (data.result == true) {
+                if (data.status == "200") {
                     modalAlert("提示", data.msg, closeTip, "ok");
                 } else {
-                    modalAlert("提示", data.msg, closeTip, "error");
-                    // modalAlert("提示", data.msg, closeWindow, "error");
+                    modalAlert("提示", data.msg, closeWindow, "error");
                 }
             },
             error: function (data) {
-                modalAlert("提示", "修改任务失败,请重新修改"+data.msg, closeTip, "error");
-                // modalAlert("提示", "修改任务失败,请重新修改"+data.msg, closeWindow, "error");
+                modalAlert("提示", "修改任务失败,请重新修改"+data.msg, closeWindow, "error");
             }
         });
     }

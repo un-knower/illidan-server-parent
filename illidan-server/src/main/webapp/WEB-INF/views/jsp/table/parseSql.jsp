@@ -42,16 +42,14 @@
             dataType: 'json',
             async: false,
             success: function (data) {
-                if (data.result == true) {
+                if (data.status == "200") {
                     modalAlert("提示", data.msg, closeTip, "ok");
                 } else {
-                    modalAlert("提示", data.msg, closeTip, "error");
-                    // modalAlert("提示", data.msg, closeWindow, "error");
+                    modalAlert("提示", data.msg, closeWindow, "error");
                 }
             },
             error: function() {
-                modalAlert("提示", "解析建表语句失败", closeTip, "error");
-                // modalAlert("提示", "解析建表语句失败", closeWindow, "error");
+                modalAlert("提示", "解析建表语句失败", closeWindow, "error");
             }
         });
     }
