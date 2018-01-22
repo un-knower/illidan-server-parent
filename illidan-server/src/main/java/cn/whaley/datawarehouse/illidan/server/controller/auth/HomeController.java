@@ -103,7 +103,7 @@ public class HomeController extends Common {
         //获取所有数据库
         DbInfoQuery dbInfoQuery = new DbInfoQuery();
         dbInfoQuery.setStatus("1");
-        dbInfoQuery.setStorageId(1L);//hive库
+//        dbInfoQuery.setStorageId(1L);//hive库
         List<DbInfo> dbInfos = dbInfoService.findByDbInfo(dbInfoQuery);
         //创建权限
         List<Long> existAuths = new ArrayList<>();
