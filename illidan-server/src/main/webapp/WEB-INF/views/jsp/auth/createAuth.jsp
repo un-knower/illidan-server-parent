@@ -19,7 +19,7 @@
     <br>
     <button type="button" class="btn btn-success" onclick="createDBAuth()">初始化数据库权限</button>
 
-    <button type="button" class="btn btn-success" onclick="createProjectAuth()">初始化数据库权限</button>
+    <button type="button" class="btn btn-success" onclick="createProjectAuth()">初始化工程权限</button>
 
 </div>
 
