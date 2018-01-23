@@ -27,14 +27,31 @@
                     </div>
                 </div>
             </div>
+
             <div class="col-sm-6">
                 <div class="form-group">
-                    <label for="addUser" class="col-md-2 control-label"><b class="text-danger">*</b>任务添加用户</label>
+                    <label class="col-md-2 control-label"><b class="text-danger">*</b>执行方式</label>
                     <div class="col-md-6">
-                        <input class="form-control" id="addUser" placeholder="请输入任务添加用户">
+                        <select id="executeType" name="executeType" title="请选择执行方式" class="selectpicker show-tick form-control" multiple data-live-search="true">
+                            <option value="hour">hour</option>
+                            <option value="day" selected>day</option>
+                            <option value="week">week</option>
+                            <option value="month">month</option>
+                            <option value="quarter">quarter</option>
+                            <option value="ytd">ytd</option>
+                        </select>
                     </div>
                 </div>
             </div>
+
+            <%--<div class="col-sm-6">--%>
+                <%--<div class="form-group">--%>
+                    <%--<label for="addUser" class="col-md-2 control-label"><b class="text-danger">*</b>任务添加用户</label>--%>
+                    <%--<div class="col-md-6">--%>
+                        <%--<input class="form-control" id="addUser" placeholder="请输入任务添加用户">--%>
+                    <%--</div>--%>
+                <%--</div>--%>
+            <%--</div>--%>
 
             <div class="col-sm-6">
                 <div class="form-group">
@@ -58,21 +75,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-sm-6">
-                <div class="form-group">
-                    <label class="col-md-2 control-label"><b class="text-danger">*</b>执行方式</label>
-                    <div class="col-md-6">
-                        <select id="executeType" name="executeType" title="请选择执行方式" class="selectpicker show-tick form-control" multiple data-live-search="true">
-                            <option value="hour">hour</option>
-                            <option value="day" selected>day</option>
-                            <option value="week">week</option>
-                            <option value="month">month</option>
-                            <option value="quarter">quarter</option>
-                            <option value="ytd">ytd</option>
-                        </select>
-                    </div>
-                </div>
-            </div>
+
             <div class="col-sm-12">
                 <div class="form-group">
                     <label class="col-md-2 control-label"><b class="text-danger">*</b>业务分析语句</label>
@@ -153,7 +156,7 @@
         taskFull.fullHiveTable = fullHiveTable;
         taskFull.taskCode = $("#taskCode").val();
         taskFull.groupId = $("#groupId").val();
-        taskFull.addUser = $("#addUser").val();
+        // taskFull.addUser = $("#addUser").val();
         if ($("#executeType").val()!=null && $("#executeType").val()!=""){
             taskFull.executeType = $("#executeType").val().toString();
         }

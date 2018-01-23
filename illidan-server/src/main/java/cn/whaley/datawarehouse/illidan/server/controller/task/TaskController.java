@@ -304,9 +304,9 @@ public class TaskController extends Common {
         if (!codeReg(task.getTaskCode())) {
             return "任务code只能由英文字母,数字,-,_组成!!!";
         }
-        if (!validateColumnNull(task.getAddUser())) {
-            return validateMessage("任务添加用户");
-        }
+//        if (!validateColumnNull(task.getAddUser())) {
+//            return validateMessage("任务添加用户");
+//        }
         if (!validateColumnNull(task.getFullHiveTable().getHiveTable().getDbId())) {
             return validateMessage("目标数据库");
         }
