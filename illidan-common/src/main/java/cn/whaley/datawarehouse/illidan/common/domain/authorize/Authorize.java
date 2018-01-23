@@ -31,6 +31,10 @@ public class Authorize implements Serializable {
      * 1:project,2:table
      */
     private Integer type;
+    /**
+     * 状态（1：有效，0无效）
+     */
+    private Integer status;
 
     public Long getId() {
         return id;
@@ -86,6 +90,14 @@ public class Authorize implements Serializable {
 
     public void setType(Integer type) {
         this.type = type;
+    }
+
+    public Integer getStatus() {
+        return status;
+    }
+
+    public void setStatus(Integer status) {
+        this.status = status;
     }
 
     @Override

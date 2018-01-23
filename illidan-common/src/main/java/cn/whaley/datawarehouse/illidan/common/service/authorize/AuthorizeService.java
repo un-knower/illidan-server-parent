@@ -18,4 +18,6 @@ public interface AuthorizeService {
 
     void deleteById(Long id);
 
+    void removeByAuthorize(final Authorize authorize);
+
 }

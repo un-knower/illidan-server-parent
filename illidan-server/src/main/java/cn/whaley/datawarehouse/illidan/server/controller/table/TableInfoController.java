@@ -101,7 +101,6 @@ public class TableInfoController extends Common {
             mav.addObject("flag" , flag);
             mav.addObject("hiveTable",fullHiveTable.getHiveTable());
             mav.addObject("mysqlTable",fullHiveTable.getMysqlTable());
-//            mav.addObject("mysqlDbInfoList",dbInfoService.getDbInfo(2L));
             String mysqlTableDbCode = "";
             if(mysqlTable!=null){
                 mysqlTableDbCode = mysqlTable.getDbInfo().getDbCode();
@@ -110,8 +109,6 @@ public class TableInfoController extends Common {
         }
         List<DbInfo> hiveDbInfoList = dbInfoService.getDbInfo(1L);//hive
         List<DbInfo> mysqlDbInfoList = dbInfoService.getDbInfo(2L);//mysql
-//        mav.addObject("hiveDbInfoList",hiveDbInfoList);
-//        mav.addObject("mysqlDbInfoList",mysqlDbInfoList);
         mav.addObject("hiveDbInfoList",authService.filterDbList(hiveDbInfoList, getUserNameFromSession(httpSession)));
         mav.addObject("mysqlDbInfoList",authService.filterDbList(mysqlDbInfoList, getUserNameFromSession(httpSession)));
         mav.addObject("isCopy",id);
@@ -148,13 +145,13 @@ public class TableInfoController extends Common {
                 }
                 logger.info("新增输出表成功!!!");
                 //创建权限
-                fullHiveTable.getHiveTable().setId(tableId);
-                Authorize authorize = authService.createTableAuth(fullHiveTable.getHiveTable(), getUserNameFromSession(httpSession));
-                if (authorize.getNodeId() == null) {
-                    //创建失败，回滚
-                    tableInfoService.dropFullHiveTable(tableId);
-                    return ServerResponse.responseByError( "创建table权限失败");
-                }
+//                fullHiveTable.getHiveTable().setId(tableId);
+//                Authorize authorize = authService.createTableAuth(fullHiveTable.getHiveTable(), getUserNameFromSession(httpSession));
+//                if (authorize.getNodeId() == null) {
+//                    //创建失败，回滚
+//                    tableInfoService.dropFullHiveTable(tableId);
+//                    return ServerResponse.responseByError( "创建table权限失败");
+//                }
                 return ServerResponse.responseBySuccessMessage( "新增输出表成功!!!");
             }else {
                 return ServerResponse.responseByError( "新增输出表失败!!!");

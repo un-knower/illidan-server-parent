@@ -60,6 +60,7 @@ public class AuthService {
         authorize.setWriteId(writeId);
         authorize.setPublishId(publishId);
         authorize.setType(AuthorityTypeEnum.PROJECT.getCode());
+        authorize.setStatus(1);
         authorizeService.insert(authorize);
         return authorize;
     }
@@ -85,6 +86,7 @@ public class AuthService {
         authorize.setReadId(readId);
         authorize.setWriteId(writeId);
         authorize.setType(AuthorityTypeEnum.TABLE.getCode());
+        authorize.setStatus(1);
         authorizeService.insert(authorize);
         return authorize;
     }

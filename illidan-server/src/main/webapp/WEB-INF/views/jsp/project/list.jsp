@@ -62,6 +62,7 @@
                 <span class="lbl"></span> </label>
             </th>
             <th >操作</th>
+            <th >项目ID</th>
             <th >项目code</th>
             <th >项目描述</th>
             <th >所有者</th>
@@ -133,6 +134,7 @@
                             return "<a href='javascript:void(0);' onclick='edit(" + row.id + ");'>编辑</a> <a href='javascript:void(0);' onclick='publish(" + row.id + ");'>发布</a>";
                         }
                     },
+                    {data: "id"},
                     {data: "projectCode"},
                     {data: "projectDes"},
                     {data: "ownerName"},
@@ -172,8 +174,8 @@
 //                            return '<a href="javascript:void(0);" onclick="goToGroup(' + row.id + ');">' + row.projectCode + '</a>';
                             return '<a href="<%=path%>/group/list?projectId=' + row.id + '">' + row.projectCode + '</a>';
                         },
-                        //指定是第三列
-                        "targets": 2
+                        //指定是第四列
+                        "targets": 3
                     }
                 ],
                 "serverSide": true,

@@ -12,8 +12,28 @@
     <meta name="description" content="overview &amp; stats"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
     <jsp:include page="../frame.jsp"/>
+    <style>
+        .loading{
+            background: rgba(0, 0, 0, 0.2);
+            width: 100%;
+            height: 100%;
+            z-index: 99;
+        }
+        .container{position:relative}
+        .loading{position:absolute;z-index:99;}
+
+    </style>
 </head>
 <body>
+<div id="loading" class="loading">
+    <div id="spinner" class="spinner">
+        <div class="rect1"></div>
+        <div class="rect2"></div>
+        <div class="rect3"></div>
+        <div class="rect4"></div>
+        <div class="rect5"></div>
+    </div>
+</div>
 <div class="container">
     <ul class="pager" style="margin-top: 10px;margin-bottom: 0px;">
         <li class="previous"><a style="margin-top: 5px;" href="<%=path%>/project/list"><span aria-hidden="true">&larr;</span> 返回项目列表</a></li>
@@ -103,7 +123,10 @@
                     url: '<%=path%>/group/groupList',
                     type: 'POST',
                     dataType: 'json',
-                    data: getParamWithProjectId()
+                    data: getParamWithProjectId(),
+                    complete: function () {
+                        $("#loading").hide();
+                    }
                 },
                 aoColumns: [
                     {

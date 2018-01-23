@@ -70,4 +70,13 @@ public class AuthorizeServiceImpl implements AuthorizeService {
         }
         authorizeMapper.deleteById(id);
     }
+
+    @Override
+    public void removeByAuthorize(Authorize authorize) {
+        if (authorize == null){
+            logger.error("removeByAuthorize: authorize is null.");
+            return;
+        }
+        authorizeMapper.removeByAuthorize(authorize);
+    }
 }

@@ -11,6 +11,7 @@
             , authorize.writeId AS writeId
             , authorize.publishId AS publishId
             , authorize.type AS type
+            , authorize.status AS status
             , authorize.id AS id
 
         </trim>
@@ -21,6 +22,7 @@
 
     <sql id="smallWhereCase">
         <where>
+            authorize.status = 1
             <if test="authorize != null and authorize.id != null">and authorize.id = #{authorize.id}</if>
             <if test="authorize != null and authorize.parentId != null">and authorize.parentId = #{authorize.parentId}</if>
             <if test="authorize != null and authorize.nodeId != null">and authorize.nodeId = #{authorize.nodeId}</if>
@@ -39,26 +41,27 @@
         <result column="writeId" javaType="String" jdbcType="VARCHAR" property="writeId"/>
         <result column="publishId" javaType="String" jdbcType="VARCHAR" property="publishId"/>
         <result column="type" javaType="int" jdbcType="INTEGER" property="type"/>
+        <result column="status" javaType="int" jdbcType="INTEGER" property="status"/>
 
     </resultMap>
 
     <select id="get"  resultMap="returnAuthorize">
-        select * from authorize authorize where authorize.id = #{id}
+        select * from authorize authorize where authorize.status=1 AND authorize.id = #{id}
     </select>
 
     <select id="getByParentId"  resultMap="returnAuthorize">
-        select * from authorize authorize where authorize.parentId = #{parentId} and authorize.type = #{type}
+        select * from authorize authorize where authorize.status=1 AND authorize.parentId = #{parentId} and authorize.type = #{type}
     </select>
 
     <insert id="insert" parameterType="Authorize" useGeneratedKeys="true" keyProperty="authorize.id">
         insert into authorize
         (
         <trim prefix="" prefixOverrides=",">
-            ,parentId,nodeId,readId,writeId,publishId,type
+            ,parentId,nodeId,readId,writeId,publishId,type,status
         </trim>
         )values(
         <trim prefix="" prefixOverrides=",">
-            ,#{authorize.parentId},#{authorize.nodeId},#{authorize.readId},#{authorize.writeId},#{authorize.publishId},#{authorize.type}
+            ,#{authorize.parentId},#{authorize.nodeId},#{authorize.readId},#{authorize.writeId},#{authorize.publishId},#{authorize.type},#{authorize.status}
         </trim>
         )
     </insert>
@@ -76,7 +79,11 @@
     </select>
 
     <delete id="deleteById">
-        delete from authorize where id = #{id}
+        UPDATE authorize SET status = '0' where status = '1' AND id = #{id}
+    </delete>
+
+    <delete id="removeByAuthorize">
+        UPDATE authorize authorize SET authorize.status = '0' <include refid="smallWhereCase"/>
     </delete>
 
 </mapper>

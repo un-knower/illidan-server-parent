@@ -22,4 +22,6 @@ public interface AuthorizeMapper {
 
     void deleteById(@Param("id") final Long id);
 
+    void removeByAuthorize(@Param("authorize") final Authorize Authorize);
+
 }

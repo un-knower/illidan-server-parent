@@ -5,6 +5,7 @@ import cn.whaley.datawarehouse.illidan.common.domain.owner.Owner;
 import cn.whaley.datawarehouse.illidan.common.domain.owner.OwnerQuery;
 import cn.whaley.datawarehouse.illidan.common.domain.project.Project;
 import cn.whaley.datawarehouse.illidan.common.domain.project.ProjectQuery;
+import cn.whaley.datawarehouse.illidan.common.enums.AuthorityTypeEnum;
 import cn.whaley.datawarehouse.illidan.common.service.authorize.AuthorizeService;
 import cn.whaley.datawarehouse.illidan.common.service.owner.OwnerService;
 import cn.whaley.datawarehouse.illidan.common.service.project.ProjectService;
@@ -255,11 +256,15 @@ public class ProjectController extends Common {
 
             }
             Long id = idList.get(0);
+            Authorize authorize = new Authorize();
+            authorize.setParentId(id);
+            authorize.setType(AuthorityTypeEnum.PROJECT.getCode());
             String userName = getUserNameFromSession(httpSession);
             if(!authService.hasProjectPermission(id, "write", userName)) {
                 return ServerResponse.responseByError(403, "编辑失败，缺少工程写权限");
             }
             projectService.removeByIds(idList);
+            authorizeService.removeByAuthorize(authorize);
             logger.info("删除了项目：" + ids);
             return ServerResponse.responseBySuccessMessage("删除项目成功");
         } catch (Exception e) {
