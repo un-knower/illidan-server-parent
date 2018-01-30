@@ -29,8 +29,8 @@ public class SubmitService {
 
     private Logger logger = LoggerFactory.getLogger(SubmitService.class);
 
-    @Autowired
-    private HiveService hiveService;
+//    @Autowired
+//    private HiveService hiveService;
 
     @Autowired
     private TaskService taskService;
@@ -93,7 +93,8 @@ public class SubmitService {
             logger.info("完整执行sql：\n" + completeSql);
 
             //执行sql
-            hiveService.update(completeSql);
+//            hiveService.update(completeSql);
+            HiveService.execute(task, completeSql);
         }
 
         return true;
