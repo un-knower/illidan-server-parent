@@ -90,7 +90,7 @@ public class AuthController  extends Common {
             authorize.setNodeId(nodeId);
             authorize.setReadId(readId);
             authorize.setWriteId(writeId);
-            authorize.setType(AuthorityTypeEnum.PROJECT.getCode());
+            authorize.setType(AuthorityTypeEnum.DATABASE.getCode());
             authorize.setStatus(1);
             authorizeService.insert(authorize);
         }

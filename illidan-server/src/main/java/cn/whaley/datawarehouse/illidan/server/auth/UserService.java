@@ -17,7 +17,7 @@ public class UserService {
     private static Logger logger = LoggerFactory.getLogger(UserService.class);
 
     public static boolean skipLogin() {
-        String skipLogin = ConfigUtils.get("streaming.skipLogin");
+        String skipLogin = ConfigUtils.get("newillidan.skipLogin");
         if (skipLogin != null && skipLogin.equalsIgnoreCase("true")) {
             return true;
         }
@@ -29,7 +29,7 @@ public class UserService {
             logger.warn("token is null");
             return null;
         }
-        String serverUrl = ConfigUtils.get("streaming.sso.server.url");
+        String serverUrl = ConfigUtils.get("newillidan.sso.server.url");
         String url = "http://" + serverUrl + "/user/getinfo?sso_tn=" + token;
         String response = HttpUtils.get(url);
         if (response == null) {
