@@ -121,7 +121,8 @@ public class TableInfoController extends Common {
     @LoginRequired
     public ServerResponse add(@RequestBody FullHiveTable fullHiveTable, HttpSession httpSession) {
         try {
-            if(validateTable(fullHiveTable).equals("ok")) {
+            String validResult = validateTable(fullHiveTable);
+            if(validResult.equals("ok")) {
                 String userName = getUserNameFromSession(httpSession);
                 Long dbId = fullHiveTable.getHiveTable().getDbId();
                 if (!authService.hasDbPermission(dbId, "write", userName)) {
@@ -154,7 +155,7 @@ public class TableInfoController extends Common {
 //                }
                 return ServerResponse.responseBySuccessMessage( "新增输出表成功!!!");
             }else {
-                return ServerResponse.responseByError( "新增输出表失败!!!");
+                return ServerResponse.responseByError( "新增输出表失败:" + validResult);
             }
         }catch (Exception e){
             e.printStackTrace();
