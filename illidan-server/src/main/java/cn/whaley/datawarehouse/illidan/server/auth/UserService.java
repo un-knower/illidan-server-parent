@@ -30,7 +30,7 @@ public class UserService {
             return null;
         }
         String serverUrl = ConfigUtils.get("newillidan.sso.server.url");
-        String url = "http://" + serverUrl + "/user/getinfo?sso_tn=" + token;
+        String url = serverUrl + "/user/getinfo?sso_tn=" + token;
         String response = HttpUtils.get(url);
         if (response == null) {
             logger.warn("获取用户信息失败，url=" + url);

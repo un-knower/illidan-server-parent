@@ -394,4 +394,14 @@
     }
 
 </script>
+
+<div class="container">
+    <ul class="nav nav-pills">
+        <li role="presentation" style="float: right;">
+            <p style="margin-bottom: 0;">欢迎: ${sessionScope.user.nickname} &nbsp;
+                <a href="<%=path%>/logout" title="登出" class="glyphicon glyphicon-log-out"></a>
+            </p>
+        </li>
+    </ul>
+</div>
 </html>
